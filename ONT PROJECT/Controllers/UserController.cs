@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ONT_PROJECT.Models;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -13,6 +14,13 @@ namespace ONT_PROJECT.Controllers
         {
             return View();
         }
+
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+       
 
     }
 }
