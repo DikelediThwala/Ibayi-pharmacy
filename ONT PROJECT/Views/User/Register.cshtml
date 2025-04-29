@@ -2,64 +2,136 @@
 
 @{
     ViewData["Title"] = "Register";
+    Layout = "_RegisterLayout";
 }
 
-<h2>User Registration</h2>
-
-<form asp-action="Register" method="post">
-    <div class="form-group">
-        <label asp-for="Title"></label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" class="form-control" />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="LastName"></label>
-        <input asp-for="LastName" class="form-control" />
-        <span asp-validation-for="LastName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" type="email" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" type="password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="IDNumber"></label>
-        <input asp-for="IDNumber" class="form-control" />
-        <span asp-validation-for="IDNumber" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Role"></label>
-        <input asp-for="Role" class="form-control" />
-        <span asp-validation-for="Role" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="PhoneNumber"></label>
-        <input asp-for="PhoneNumber" class="form-control" />
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Register</button>
-</form>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+<style>
+    body {
+        background: url('/images/register/oip.jpg') no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        padding: 0;
     }
-}
+
+    .overlay {
+        background-color: rgba(1, 20, 37, 0.85); /* dark overlay for contrast */
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    .custom-card {
+        background-color: #ffffff;
+        border: none;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
+    }
+
+    .custom-card-header {
+        background-color: #1F4959;
+        color: #ffffff;
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+        padding: 1rem 1.5rem;
+    }
+
+    .form-floating > .form-control:focus {
+        border-color: #5C7C89;
+        box-shadow: 0 0 0 0.2rem rgba(92, 124, 137, 0.25);
+    }
+
+    .form-floating > label {
+        color: #5C7C89;
+    }
+
+    .text-muted-custom {
+        color: #242424;
+    }
+
+    .btn-success {
+        background-color: #1F4959;
+        border-color: #1F4959;
+    }
+
+        .btn-success:hover {
+            background-color: #5C7C89;
+            border-color: #5C7C89;
+        }
+</style>
+
+<div class="overlay">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="card custom-card">
+                    <div class="custom-card-header">
+                        <h4 class="mb-0">Register - Pharmacy System</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="text-muted-custom">Fill in your details to create a new user account.</p>
+                        <p class="text-muted-custom">Make sure your contact information is accurate for communication.</p>
+
+                        <form asp-action="Register" method="post">
+                            <div class="row g-3">
+                                <div class="col-md-6 form-floating">
+                                    <input asp-for="Title" class="form-control" placeholder="Title" />
+                                    <label asp-for="Title">Title</label>
+                                    <span asp-validation-for="Title" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6 form-floating">
+                                    <input asp-for="FirstName" class="form-control" placeholder="First Name" />
+                                    <label asp-for="FirstName">First Name</label>
+                                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6 form-floating">
+                                    <input asp-for="LastName" class="form-control" placeholder="Last Name" />
+                                    <label asp-for="LastName">Last Name</label>
+                                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6 form-floating">
+                                    <input asp-for="Email" type="email" class="form-control" placeholder="Email" />
+                                    <label asp-for="Email">Email Address</label>
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6 form-floating">
+                                    <input asp-for="Password" type="password" class="form-control" placeholder="Password" />
+                                    <label asp-for="Password">Password</label>
+                                    <span asp-validation-for="Password" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6 form-floating">
+                                    <input asp-for="IDNumber" class="form-control" placeholder="ID Number" />
+                                    <label asp-for="IDNumber">ID Number</label>
+                                    <span asp-validation-for="IDNumber" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6 form-floating">
+                                    <input asp-for="Role" class="form-control" placeholder="Role" />
+                                    <label asp-for="Role">Role</label>
+                                    <span asp-validation-for="Role" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6 form-floating">
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="Phone Number" />
+                                    <label asp-for="PhoneNumber">Phone Number</label>
+                                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="mt-4 d-flex justify-content-between">
+                                <a asp-controller="Home" asp-action="Index" class="btn btn-success px-4">Back</a>
+                                <button type="submit" class="btn btn-success px-4">Register</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
