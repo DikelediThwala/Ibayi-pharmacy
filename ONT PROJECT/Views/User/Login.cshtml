@@ -174,9 +174,9 @@
     }
 
     .overlay {
-        background: #FF416C;
-        background: -webkit-linear-gradient(to right, #FF4B2B, #FF416C);
-        background: linear-gradient(to right, #FF4B2B, #FF416C);
+        background: #3498db;
+        background: -webkit-linear-gradient(to right, #FF4B2B, #3498db);
+        background: linear-gradient(to right, #FF4B2B, #3498db);
         background-repeat: no-repeat;
         background-size: cover;
         background-position: 0 0;
@@ -269,11 +269,6 @@
 	<div class="form-container sign-up-container">
 		<form action="#">
 			<h1>Create Account</h1>
-			<div class="social-container">
-				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-			</div>
 			<span>or use your email for registration</span>
 			<input type="text" placeholder="Name" />
 			<input type="email" placeholder="Email" />
@@ -283,12 +278,7 @@
 	</div>
 	<div class="form-container sign-in-container">
 		<form action="#">
-			<h1>Sign in</h1>
-			<div class="social-container">
-				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-			</div>
+			<h1>Sign in</h1>			
 			<span>or use your account</span>
 			<input type="email" placeholder="Email" />
 			<input type="password" placeholder="Password" />
@@ -311,3 +301,16 @@
 		</div>
 	</div>
 </div>
+<script>
+    const signUpButton = document.getElementById('signUp');
+    const signInButton = document.getElementById('signIn');
+    const container = document.getElementById('container');
+
+    signUpButton.addEventListener('click', () => {
+        container.classList.add("right-panel-active");
+    });
+
+    signInButton.addEventListener('click', () => {
+        container.classList.remove("right-panel-active");
+    });
+</script>
