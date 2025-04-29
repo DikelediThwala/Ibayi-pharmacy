@@ -2,17 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ONT_PROJECT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,shrink-to-fit=no" />
+    <title>@ViewData["Title"] - IbayiPharmacy</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ONT_PROJECT.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/IbayiPharmacy.styles.css" asp-append-version="true" />
+
+
+    <link href="https://fonts.googleapis.com/css?family=Rubik:400,700|Crimson+Text:400,400i" rel="stylesheet">
+    <link rel="stylesheet" href="fonts/icomoon/style.css">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+
+
+    <link rel="stylesheet" href="css/aos.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        @* default navbar *@
+
+
+        @* <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ONT_PROJECT</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">IbayiPharmacy</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -28,22 +45,218 @@
                     </ul>
                 </div>
             </div>
-        </nav>
+        </nav> *@
+
+        @*  new navabar *@
+
+        <div class="site-wrap">
+
+            <div class="site-navbar py-2">
+
+                <div class="search-wrap">
+                    <div class="container">
+                        <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
+                        <form action="#" method="post">
+                            <input type="text" class="form-control" placeholder="Search keyword and hit enter...">
+                        </form>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="logo">
+                            <div class="site-logo">
+                                <a href="index.html" class="js-logo-clone">IBHAYI PHARMACY</a>
+                            </div>
+                        </div>
+                        <div class="main-nav d-none d-lg-block">
+                            <nav class="site-navigation text-right text-md-center" role="navigation">
+                                <ul class="site-menu js-clone-nav d-none d-lg-block">
+                                    <li class="active"><a href="index.html">Home</a></li>
+                                    <li><a href="shop.html">Store</a></li>
+                                    @*  <li class="has-children">
+                                    <a href="#">Dropdown</a>
+                                    <ul class="dropdown">
+                                        <li><a href="#">Supplements</a></li>
+                                        <li class="has-children">
+                                            <a href="#">Vitamins</a>
+                                            <ul class="dropdown">
+                                                <li><a href="#">Supplements</a></li>
+                                                <li><a href="#">Vitamins</a></li>
+                                                <li><a href="#">Diet &amp; Nutrition</a></li>
+                                                <li><a href="#">Tea &amp; Coffee</a></li>
+                                            </ul>
+                                        </li>
+                                        <li><a href="#">Diet &amp; Nutrition</a></li>
+                                        <li><a href="#">Tea &amp; Coffee</a></li>
+
+                                    </ul>
+                                </li> *@
+                                    <li><a href="about.html">About</a></li>
+                                    <li><a href="contact.html">Contact</a></li>
+                                    <li><a href="about.html">FAQ's'</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <div class="icons">
+                            <a href="#" class="icons-btn d-inline-block js-search-open"><span class="icon-search"></span></a>
+                            <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none">
+                                <span class="icon-menu"></span>
+                            </a>
+                            <a href="#" class="btn btn-primary px-4 py-2">Login</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="site-blocks-cover" style="background-image: url('images/hero_1.jpg');">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-7 mx-auto order-lg-2 align-self-center">
+                            <div class="site-block-cover-content text-center">
+                                <h2 class="sub-title">Effective Medicine, New Medicine Everyday</h2>
+                                <h1>Welcome To Ibayi Pharmacy</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="site-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="title-section text-center col-12">
+                            <h2 class="text-uppercase">Testimonials</h2>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 block-3 products-wrap">
+                            <div class="nonloop-block-3 no-direction owl-carousel">
+
+                                <div class="testimony">
+                                    <blockquote>
+                                        <img src="images/Asenathi.jpg" alt="Image" class="img-fluid w-25 mb-4 rounded-circle">
+                                        <p>&I had a wonderful experience at Ibayi Pharmacy. The staff were very friendly, knowledgeable, and quick to assist me with all my needs. They took the time to explain my medications and even suggested helpful health tips;</p>
+                                    </blockquote>
+
+                                    <p>&mdash; Asenathi Yawa</p>
+                                </div>
+
+                                <div class="testimony">
+                                    <blockquote>
+                                        <img src="images/person_2.jpg" alt="Image" class="img-fluid w-25 mb-4 rounded-circle">
+                                        <p>
+                                            &I am extremely satisfied with the services provided by Ibayi Pharmacy. The staff demonstrated a high level of professionalism, efficiency, and courtesy. Their attention to detail and willingness to go the extra mile made my experience outstanding;
+                                        </p>
+                                    </blockquote>
+
+                                    <p>&mdash; Rebecca Morando</p>
+                                </div>
+
+                                <div class="testimony">
+                                    <blockquote>
+                                        <img src="images/person_3.jpg" alt="Image" class="img-fluid w-25 mb-4 rounded-circle">
+                                        <p>
+                                            &The store was clean, well-organized, and had everything I was looking for. I truly appreciate their professionalism and personal care. I will definitely keep coming back and recommend them to others!;
+                                        </p>
+                                    </blockquote>
+
+                                    <p>&mdash; Lucas Gallone</p>
+                                </div>
+
+                                <div class="testimony">
+                                    <blockquote>
+                                        <img src="images/person_4.jpg" alt="Image" class="img-fluid w-25 mb-4 rounded-circle">
+                                        <p>
+                                            &Greate Service.The interface is friendly. It is very easy to navigate between the tasks.Definitely my go-to pharmacy!;
+                                        </p>
+                                    </blockquote>
+
+                                    <p>&mdash; Andrew Neel</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
-
-    <footer class="border-top footer text-muted">
+    <footer class="site-footer">
         <div class="container">
-            &copy; 2025 - ONT_PROJECT - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="row">
+                <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+
+                    <div class="block-7">
+                        <h3 class="footer-heading mb-4">About Us</h3>
+                        <p>
+                            At Ibayi Pharmacy, we are committed to providing our community with trusted, personalized healthcare services. Since 2024, we have dedicated ourselves to helping our customers live healthier, happier lives. Our team of licensed pharmacists and friendly staff work hard every day to offer expert advice, reliable prescriptions,online and over-the-counter solutions, and wellness support. We believe healthcare should be easy, accessible, and compassionate — and we are proud to be your pharmacy of choice.
+                        </p>
+                    </div>
+
+                </div>
+                <div class="col-lg-3 mx-auto mb-5 mb-lg-0">
+                    <h3 class="footer-heading mb-4">Quick Links</h3>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">FAQ's</a></li>
+                        <li><a href="#">Contact</a></li>
+
+                    </ul>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="block-5 mb-5">
+                        <h3 class="footer-heading mb-4">Contact Info</h3>
+                        <ul class="list-unstyled">
+                            <li class="address">415 Fake St. Mountain View, Gqeberha, Summerstrand, SA</li>
+                            <li class="phone"><a href="tel://23923929210">+27 83 754 5485</a></li>
+                            <li class="email">ibayipharm24@ibhayi.com</li>
+                        </ul>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="row pt-5 mt-5 text-center">
+                <div class="col-md-12">
+                    <p>
+
+                        Copyright &copy;
+                        <script>document.write(new Date().getFullYear());</script> All rights reserved
+                    </p>
+                </div>
+
+            </div>
         </div>
     </footer>
+    </div>
+
+
+    @* </footer> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/aos.js"></script>
+
+    <script src="js/main.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
