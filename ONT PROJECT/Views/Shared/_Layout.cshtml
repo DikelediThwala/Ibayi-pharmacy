@@ -1,6 +1,11 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- FAQ Styles -->
+    <link rel="stylesheet" href="~/css/faq-style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/responsive-grid.css" asp-append-version="true" />
+
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1,shrink-to-fit=no" />
     <title>@ViewData["Title"] - IbayiPharmacy</title>
@@ -136,6 +141,10 @@
     <script src="~/js/wow.min.js"></script>
     <script src="~/js/theme.js"></script>
     @RenderSection("Scripts", required: false)
+
+    <!-- jQuery and FAQ Script -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/faq.js" asp-append-version="true"></script>
 
 </body>
 </html>

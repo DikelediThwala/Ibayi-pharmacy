@@ -154,6 +154,73 @@
             @RenderBody()
         </main>
     </div> *@
+
+    <!-- Link CSS -->
+    @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+    <link rel="stylesheet" href="~/css/faq-style.css" />
+    <link rel="stylesheet" href="~/css/responsive-grid.css" />
+
+
+    <div class="faq_7" unique-script-id="w-w-dm-id">
+        <!-- ✳️ Your FAQ HTML content goes here (accordion-like structure) -->
+    </div>
+    <style>
+        body {
+            background-color: yellow;
+        }
+    </style>
+
+
+    <!-- Include JS (jQuery must be before your script) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/faq.js"></script>
+    f5
+    <div class="faq_7" unique-script-id="w-w-dm-id">
+        <div class="responsive-container-block">
+            <div class="responsive-cell-block wk-tab-12 wk-mobile-12 wk-desk-5 wk-ipadp-5 faq-head-bg" id="imgk">
+                <div class="faq-head-content">
+                    <p class="text-blk faq-heading1">
+                        1. What services does Ibhayi Pharmacy offer?
+                    </p>
+                    <p class="text-blk faq-subheading">
+                        We offer prescription services, over-the-counter medicines, health consultations, and home delivery.
+                    </p>
+                </div>
+            </div>
+            <div class="responsive-cell-block wk-tab-12 wk-mobile-12 wk-desk-7 wk-ipadp-7 faq-dropdown-bg" id="imiw">
+                <div class="container-block" id="iwk5t">
+                    <div class="faq">
+                        <span class="faq-question-container">
+                            <p class="text-blk faq-questions">
+                                2. Do I need a prescription to buy medication?
+                            </p>
+                            <img class="openimg" src="https://workik-widget-assets.s3.amazonaws.com/widget-assets/images/arrow.svg">
+                        </span>
+                        <div class="answer-box">
+                            <p class="text-blk faq-answer">
+                                A prescription is required for prescription medications, but not for over-the-counter products.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="faq">
+                        <span class="faq-question-container">
+                            <p class="text-blk faq-questions">
+                                3. Do you offer home delivery?
+                            </p>
+                            <img class="openimg" src="https://workik-widget-assets.s3.amazonaws.com/widget-assets/images/arrow.svg">
+                        </span>
+                        <div class="answer-box">
+                            <p class="text-blk faq-answer">
+                                Yes, we offer home delivery for medications within our service area.
+                            </p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+ @*    footer *@
     <footer class="site-footer">
         <div class="container">
             <div class="row">
@@ -162,8 +229,10 @@
                     <div class="block-7">
                         <h3 class="footer-heading mb-4">About Us</h3>
                         <p>
-                            At Ibayi Pharmacy, we are committed to providing our community with trusted, personalized healthcare services. Since 2024, we have dedicated ourselves to helping our customers live healthier, happier lives. Our team of licensed pharmacists and friendly staff work hard every day to offer expert advice, reliable prescriptions,online and over-the-counter solutions, and wellness support. We believe healthcare should be easy, accessible, and compassionate — and we are proud to be your pharmacy of choice.
-                        </p>
+                            At Ibayi Pharmacy, we are committed to being available when our community needs us most. Our operating hours are as follows: 
+                            Monday – Friday: 8:00 AM – 6:00 PM
+                            Saturday: 9:00 AM – 2:00 PM
+                            Sunday & Public Holidays: Closed
                     </div>
 
                 </div>

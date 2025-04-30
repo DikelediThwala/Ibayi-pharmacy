@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Folder Include="Views\Login\" />
+    <Folder Include="Views\NewFolder\" />
   </ItemGroup>
 
 </Project>
