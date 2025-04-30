@@ -1,4 +1,786 @@
-﻿
+﻿@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,shrink-to-fit=no" />
+    <title>@ViewData["Title"] - IbayiPharmacy</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/IbayiPharmacy.styles.css" asp-append-version="true" />
+
+
+    <link href="https://fonts.googleapis.com/css?family=Rubik:400,700|Crimson+Text:400,400i" rel="stylesheet">
+    <link rel="stylesheet" href="fonts/icomoon/style.css">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+
+
+
+    <link rel="stylesheet" href="css/aos.css">
+    <link rel="stylesheet" href="css/style.css">
+
+
+    <style>
+
+
+        .faq_7 * {
+            font-family: Nunito, sans-serif;
+        }
+
+        .faq_7 .responsive-cell-block {
+            min-height: 75px;
+        }
+
+        .faq_7 .text-blk {
+            margin-top: 0px;
+            margin-right: 0px;
+            margin-bottom: 0px;
+            margin-left: 0px;
+            line-height: 25px;
+        }
+
+        .faq_7 .responsive-container-block {
+            min-height: 75px;
+            height: fit-content;
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 0px;
+            margin-right: auto;
+            margin-bottom: 0px;
+            margin-left: auto;
+            justify-content: flex-start;
+            padding-top: 0px;
+            padding-right: 0px;
+            padding-bottom: 0px;
+            padding-left: 0px;
+        }
+
+        .faq_7 .faq-head-bg {
+            background-color: #03a9f4;
+            color: white;
+            padding-top: 80px;
+            padding-right: 60px;
+            padding-bottom: 80px;
+            padding-left: 60px;
+            margin-top: 0px;
+            margin-right: 0px;
+            margin-bottom: 0px;
+            margin-left: auto;
+        }
+
+        .faq_7 .text-blk.faq-heading1 {
+            font-size: 40px;
+            line-height: 55px;
+            font-weight: 900;
+            margin-top: 0px;
+            margin-right: 0px;
+            margin-bottom: 20px;
+            margin-left: 0px;
+        }
+
+        .faq_7 .text-blk.faq-subheading {
+            font-size: 18px;
+            line-height: 26px;
+        }
+
+        .faq_7 .faq-dropdown-bg {
+            padding-top: 80px;
+            padding-right: 60px;
+            padding-bottom: 80px;
+            padding-left: 60px;
+        }
+
+        .faq_7 .faq {
+            display: block;
+            flex-direction: column;
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            border-bottom-color: #aaaaaa;
+            margin-top: 0px;
+            margin-right: 0px;
+            margin-bottom: 25px;
+            margin-left: 0px;
+        }
+
+        .faq_7 .faq-question-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0px;
+            margin-right: 0px;
+            margin-bottom: 20px;
+            margin-left: 0px;
+        }
+
+            .faq_7 .faq-question-container:hover {
+                cursor: pointer;
+            }
+
+        .faq_7 .text-blk.faq-questions {
+            color: #525252;
+            font-size: 20px;
+        }
+
+        .faq_7 .text-blk.faq-answer {
+            padding-top: 0px;
+            padding-right: 0px;
+            padding-bottom: 0px;
+            padding-left: 20px;
+            color: #9c9c9c;
+            font-size: 18px;
+            line-height: 26px;
+            margin-top: 0px;
+            margin-right: 0px;
+            margin-bottom: 20px;
+            margin-left: 0px;
+        }
+
+        .faq_7 .text-blk.faq-subheading {
+            margin-top: 0px;
+            margin-right: 0px;
+            margin-bottom: 50px;
+            margin-left: 0px;
+            max-width: 590px;
+            font-size: 18px;
+        }
+
+        .faq_7 .answer-box {
+            max-height: 0px;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            transition-duration: 0.5s;
+            transition-timing-function: ease;
+            transition-delay: 0s;
+            transition-property: max-height;
+        }
+
+        .faq_7 .faq.active .openimg {
+            transform: rotate(180deg);
+        }
+
+        .faq_7 .openimg {
+            transition-duration: 0.3s;
+            transition-timing-function: ease-in;
+            transition-delay: 0s;
+            transition-property: transform;
+        }
+
+        .faq_7 .faq.active .answer-box {
+            max-height: 550px;
+        }
+
+        .faq_7 .faq-head-content {
+            margin-top: 0px;
+            margin-right: 0px;
+            margin-bottom: 0px;
+            margin-left: auto;
+            max-width: 450px;
+        }
+
+        .faq_7 .container-block {
+            max-width: 800px;
+        }
+
+        @@media (max-width: 1024px) {
+            .faq_7 .text-blk.faq-answer {
+                font-size: 18px;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .faq_7 .text-blk.faq-heading1 {
+                font-size: 30px;
+                line-height: 40px;
+                margin-top: 0px;
+                margin-right: 0px;
+                margin-bottom: 15px;
+                margin-left: 0px;
+            }
+
+            .faq_7 .faq-head-content {
+                margin-top: 0px;
+                margin-right: auto;
+                margin-bottom: 0px;
+                margin-left: auto;
+                max-width: 500px;
+                text-align: center;
+            }
+
+            .faq_7 .faq-head-bg {
+                padding-top: 50px;
+                padding-right: 60px;
+                padding-bottom: 30px;
+                padding-left: 60px;
+            }
+
+            .faq_7 .faq-dropdown-bg {
+                padding-top: 50px;
+                padding-right: 60px;
+                padding-bottom: 50px;
+                padding-left: 60px;
+            }
+
+            .faq_7 .text-blk.faq-questions {
+                font-size: 18px;
+            }
+
+            .faq_7 .text-blk.faq-answer {
+                font-size: 16px;
+            }
+
+            .faq_7 .text-blk.faq-subheading {
+                margin-top: 0px;
+                margin-right: 0px;
+                margin-bottom: 30px;
+                margin-left: 0px;
+            }
+        }
+
+        @@media (max-width: 500px) {
+            .faq_7 .responsive-cell-block.wk-tab-12.wk-mobile-12.wk-desk-5.wk-ipadp-5.faq-head-bg {
+                padding-top: 80px;
+                padding-right: 30px;
+                padding-bottom: 80px;
+                padding-left: 30px;
+            }
+
+            .faq_7 .responsive-cell-block.wk-tab-12.wk-mobile-12.wk-desk-7.wk-ipadp-7.faq-dropdown-bg {
+                padding-top: 80px;
+                padding-right: 30px;
+                padding-bottom: 80px;
+                padding-left: 30px;
+            }
+
+            .faq_7 .responsive-cell-block.wk-tab-12.wk-mobile-12.wk-desk-5.wk-ipadp-5.faq-head-bg {
+                padding-top: 50px;
+                padding-right: 30px;
+                padding-bottom: 30px;
+                padding-left: 30px;
+            }
+
+            .faq_7 .responsive-cell-block.wk-tab-12.wk-mobile-12.wk-desk-7.wk-ipadp-7.faq-dropdown-bg {
+                padding-top: 50px;
+                padding-right: 30px;
+                padding-bottom: 50px;
+                padding-left: 30px;
+            }
+
+            .faq_7 .text-blk.faq-answer {
+                padding-top: 0px;
+                padding-right: 0px;
+                padding-bottom: 0px;
+                padding-left: 0px;
+                line-height: 22px;
+                font-size: 16px;
+            }
+
+            .faq_7 .text-blk.faq-questions {
+                font-size: 18px;
+            }
+
+            .faq_7 .text-blk.faq-heading1 {
+                font-size: 26px;
+            }
+
+            .faq_7 .text-blk.faq-subheading {
+                font-size: 17px;
+                line-height: 24px;
+            }
+        }
+        /*   responsive css */
+        @@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800&amp;display=swap');
+
+        *,
+        *:before,
+        *:after {
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        .wk-desk-1 {
+            width: 8.333333%;
+        }
+
+        .wk-desk-2 {
+            width: 16.666667%;
+        }
+
+        .wk-desk-3 {
+            width: 25%;
+        }
+
+        .wk-desk-4 {
+            width: 33.333333%;
+        }
+
+        .wk-desk-5 {
+            width: 41.666667%;
+        }
+
+        .wk-desk-6 {
+            width: 50%;
+        }
+
+        .wk-desk-7 {
+            width: 58.333333%;
+        }
+
+        .wk-desk-8 {
+            width: 66.666667%;
+        }
+
+        .wk-desk-9 {
+            width: 75%;
+        }
+
+        .wk-desk-10 {
+            width: 83.333333%;
+        }
+
+        .wk-desk-11 {
+            width: 91.666667%;
+        }
+
+        .wk-desk-12 {
+            width: 100%;
+        }
+
+        @@media (max-width: 1024px) {
+            .wk-ipadp-1 {
+                width: 8.333333%;
+            }
+
+            .wk-ipadp-2 {
+                width: 16.666667%;
+            }
+
+            .wk-ipadp-3 {
+                width: 25%;
+            }
+
+            .wk-ipadp-4 {
+                width: 33.333333%;
+            }
+
+            .wk-ipadp-5 {
+                width: 41.666667%;
+            }
+
+            .wk-ipadp-6 {
+                width: 50%;
+            }
+
+            .wk-ipadp-7 {
+                width: 58.333333%;
+            }
+
+            .wk-ipadp-8 {
+                width: 66.666667%;
+            }
+
+            .wk-ipadp-9 {
+                width: 75%;
+            }
+
+            .wk-ipadp-10 {
+                width: 83.333333%;
+            }
+
+            .wk-ipadp-11 {
+                width: 91.666667%;
+            }
+
+            .wk-ipadp-12 {
+                width: 100%;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .wk-tab-1 {
+                width: 8.333333%;
+            }
+
+            .wk-tab-2 {
+                width: 16.666667%;
+            }
+
+            .wk-tab-3 {
+                width: 25%;
+            }
+
+            .wk-tab-4 {
+                width: 33.333333%;
+            }
+
+            .wk-tab-5 {
+                width: 41.666667%;
+            }
+
+            .wk-tab-6 {
+                width: 50%;
+            }
+
+            .wk-tab-7 {
+                width: 58.333333%;
+            }
+
+            .wk-tab-8 {
+                width: 66.666667%;
+            }
+
+            .wk-tab-9 {
+                width: 75%;
+            }
+
+            .wk-tab-10 {
+                width: 83.333333%;
+            }
+
+            .wk-tab-11 {
+                width: 91.666667%;
+            }
+
+            .wk-tab-12 {
+                width: 100%;
+            }
+        }
+
+        @@media (max-width: 500px) {
+            .wk-mobile-1 {
+                width: 8.333333%;
+            }
+
+            .wk-mobile-2 {
+                width: 16.666667%;
+            }
+
+            .wk-mobile-3 {
+                width: 25%;
+            }
+
+            .wk-mobile-4 {
+                width: 33.333333%;
+            }
+
+            .wk-mobile-5 {
+                width: 41.666667%;
+            }
+
+            .wk-mobile-6 {
+                width: 50%;
+            }
+
+            .wk-mobile-7 {
+                width: 58.333333%;
+            }
+
+            .wk-mobile-8 {
+                width: 66.666667%;
+            }
+
+            .wk-mobile-9 {
+                width: 75%;
+            }
+
+            .wk-mobile-10 {
+                width: 83.333333%;
+            }
+
+            .wk-mobile-11 {
+                width: 91.666667%;
+            }
+
+            .wk-mobile-12 {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+
+        <div class="site-wrap">
+
+            <div class="site-navbar py-2">
+
+                <div class="search-wrap">
+                    <div class="container">
+                        <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
+                        <form action="#" method="post">
+                            <input type="text" class="form-control" placeholder="Search keyword and hit enter...">
+                        </form>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="logo">
+                            <div class="site-logo">
+                                <img src="~/images/landingpage/logo 2.png" style="width:120px; height:100px" />
+                            </div>
+                        </div>
+                        <div class="main-nav d-none d-lg-block">
+                            <nav class="site-navigation text-right text-md-center" role="navigation">
+                                <ul class="site-menu js-clone-nav d-none d-lg-block">
+                                    <li class="active"><a href="#home">Home</a></li>
+                                    <li><a href="#about-us">About</a></li>
+                                    <li><a href="#services">Services</a></li>
+                                    <li><a href="#testimonials">testimonials</a></li>
+                                    <li><a href="#contact">Contact</a></li>
+                                    <li><a href="#faq">FAQ's</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <div class="icons">
+                            <a href="#" class="icons-btn d-inline-block js-search-open"><span class="icon-search"></span></a>
+                            <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none">
+                                <span class="icon-menu"></span>
+                            </a>
+
+
+                        </div>
+                        <div margin-left:200px">
+                            <a class="btn btn-primary px-4 py-2" asp-controller="User" asp-action="Login">Login</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+         </div>
+    </header>
+
+    <div class="faq_7" unique-script-id="w-w-dm-id">
+        <div class="responsive-container-block">
+            <div class="responsive-cell-block wk-tab-12 wk-mobile-12 wk-desk-5 wk-ipadp-5 faq-head-bg" id="imgk">
+                <div class="faq-head-content">
+                    <p class="text-blk faq-heading1">
+                        How can we help you?
+                    </p>
+                    <p class="text-blk faq-subheading">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Dignissim sit commodo nisl faucibus felis amet
+                    </p>
+                </div>
+            </div>
+            <div class="responsive-cell-block wk-tab-12 wk-mobile-12 wk-desk-7 wk-ipadp-7 faq-dropdown-bg" id="imiw">
+                <div class="container-block" id="iwk5t">
+                    <div class="faq">
+                        <span class="faq-question-container">
+                            <p class="text-blk faq-questions">
+                                Lorem ipsum dolor sit amet?
+                            </p>
+                            <img class="openimg" src="https://workik-widget-assets.s3.amazonaws.com/widget-assets/images/arrow.svg">
+                        </span>
+                        <div class="answer-box">
+                            <p class="text-blk faq-answer">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="faq">
+                        <span class="faq-question-container">
+                            <p class="text-blk faq-questions">
+                                Lorem ipsum dolor sit amet?
+                            </p>
+                            <img class="openimg" src="https://workik-widget-assets.s3.amazonaws.com/widget-assets/images/arrow.svg">
+                        </span>
+                        <div class="answer-box">
+                            <p class="text-blk faq-answer">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="faq">
+                        <span class="faq-question-container">
+                            <p class="text-blk faq-questions">
+                                Lorem ipsum dolor sit amet?
+                            </p>
+                            <img class="openimg" src="https://workik-widget-assets.s3.amazonaws.com/widget-assets/images/arrow.svg">
+                        </span>
+                        <div class="answer-box">
+                            <p class="text-blk faq-answer">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="faq">
+                        <span class="faq-question-container">
+                            <p class="text-blk faq-questions">
+                                Lorem ipsum dolor sit amet?
+                            </p>
+                            <img class="openimg" src="https://workik-widget-assets.s3.amazonaws.com/widget-assets/images/arrow.svg">
+                        </span>
+                        <div class="answer-box">
+                            <p class="text-blk faq-answer">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="faq">
+                        <span class="faq-question-container">
+                            <p class="text-blk faq-questions">
+                                Lorem ipsum dolor sit amet?
+                            </p>
+                            <img class="openimg" src="https://workik-widget-assets.s3.amazonaws.com/widget-assets/images/arrow.svg">
+                        </span>
+                        <div class="answer-box">
+                            <p class="text-blk faq-answer">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  <br />
+  <br />
+  <br />
+    <footer class="site-footer bg-secondary text-white pt-5 pb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                    <div class="block-7">
+                        <h3 class="footer-heading mb-4">Opening Hours</h3>
+                        <ul class="list-unstyled">
+                            <li>Monday - Friday: 08:00 AM – 06:00 PM</li>
+                            <li>Saturday: 08:00 AM – 04:00 PM</li>
+                            <li>Sunday & Public Holidays: Closed</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 mx-auto mb-5 mb-lg-0">
+                    <h3 class="footer-heading mb-4 text-black">Quick Links</h3>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="footer-link !text-black">Home</a></li>
+                        <li><a href="#" class="footer-link !text-black">FAQ's</a></li>
+                        <li><a href="#" class="footer-link !text-black">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-6 col-lg-3" id="contact">
+                    <div class="block-5 mb-5">
+                        <h3 class="footer-heading mb-4">Contact Info</h3>
+                        <ul class="list-unstyled">
+                            <li class="address">415 Fake St. Mountain View, Gqeberha, Summerstrand, SA</li>
+                            <li class="phone"><a href="tel://23923929210">+27 83 754 5485</a></li>
+                            <li class="email">ibayipharm24@ibhayi.com</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row pt-5 mt-5 text-center">
+                <div class="col-md-12">
+                    <p>
+
+                        Copyright &copy;
+                        <script>document.write(new Date().getFullYear());</script> All rights reserved
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/aos.js"></script>
+    <script src="js/main.js"></script>
+
+
+    <script>
+        $(document).ready(function()
+        {
+          let faqQuestionContainers = document.querySelectorAll(`[unique-script-id="w-w-dm-id"] .faq-question-container`);
+
+          faqQuestionContainers.forEach(function(faqQuestionContainer) {
+            faqQuestionContainer.onclick = function() {
+              this.parentElement.classList.toggle("active");
+            };
+          });
+        })
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* 
+@{
+    ViewData["Title"] = "FAQ";
+    
+}
+
 <style>
 
 
@@ -593,4 +1375,4 @@
         };
       });
     })
-     </script>
+     </script> *@
