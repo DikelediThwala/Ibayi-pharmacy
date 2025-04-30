@@ -1,6 +1,5 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿
+@model ONT_PROJECT.Models.User
 
 <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 @{
@@ -110,9 +109,9 @@
         box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
         position: relative;
         overflow: hidden;
-        width: 768px;
+        width: 1200px;
         max-width: 100%;
-        min-height: 480px;
+        min-height: 600px;
     }
 
     .form-container {
@@ -272,10 +271,50 @@
 	<div class="form-container sign-up-container">
 		<form action="#">
 			<h1>Create Account</h1>
-			<span>or use your email for registration</span>
-			<input type="text" placeholder="Name" />
-			<input type="email" placeholder="Email" />
-			<input type="password" placeholder="Password" />
+			
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <input asp-for="Title" class="form-control" placeholder="Title" />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <input asp-for="FirstName" class="form-control" placeholder="First Name" />
+                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <input asp-for="LastName" class="form-control" placeholder="Last Name" />
+                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <input asp-for="Email" type="email" class="form-control" placeholder="Email" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Password" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <input asp-for="IDNumber" class="form-control" placeholder="ID Number" />
+                    <span asp-validation-for="IDNumber" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <input asp-for="Role" class="form-control" placeholder="Role" />
+                    <span asp-validation-for="Role" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <input asp-for="PhoneNumber" class="form-control" placeholder="Phone Number" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                </div>
+            </div>
+
+
 			<button>Sign Up</button>
 		</form>
 	</div>
