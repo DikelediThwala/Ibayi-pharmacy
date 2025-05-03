@@ -1,302 +1,164 @@
 ﻿@{
     ViewData["Title"] = "Login";
-    Layout = null;
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1,shrink-to-fit=no" />
-    <title>@ViewData["Title"] - IbayiPharmacy</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/IbayiPharmacy.styles.css" asp-append-version="true" />
 
 
-    <link href="https://fonts.googleapis.com/css?family=Rubik:400,700|Crimson+Text:400,400i" rel="stylesheet">
-    <link rel="stylesheet" href="fonts/icomoon/style.css">
+<div class="site-wrap">
 
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/magnific-popup.css">
-    <link rel="stylesheet" href="css/jquery-ui.css">
-    <link rel="stylesheet" href="css/owl.carousel.min.css">
-    <link rel="stylesheet" href="css/owl.theme.default.min.css">
-    
-
-
-    <link rel="stylesheet" href="css/aos.css">
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <header>
-
-        <div class="site-wrap">
-
-            <div class="site-navbar py-2">
-
-                <div class="search-wrap">
-                    <div class="container">
-                        <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
-                        <form action="#" method="post">
-                            <input type="text" class="form-control" placeholder="Search keyword and hit enter...">
-                        </form>
-                    </div>
-                </div>
-
-                <div class="container">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="logo">
-                            <div class="site-logo">
-                                <img src="~/images/landingpage/logo 2.png" style="width:120px; height:100px" />
-                            </div>
-                        </div>
-                        <div class="main-nav d-none d-lg-block">
-                            <nav class="site-navigation text-right text-md-center" role="navigation">
-                                <ul class="site-menu js-clone-nav d-none d-lg-block">
-                                    <li class="active"><a href="#home">Home</a></li>
-                                    <li><a href="#about-us">About</a></li>
-                                    <li><a href="#services">Services</a></li>
-                                    <li><a href="#testimonials">testimonials</a></li>
-                                    <li><a href="#contact">Contact</a></li>
-                                    <li><a href="#faq">FAQ's</a></li>
-                                </ul>
-                            </nav>
-                        </div>
-                        <div class="icons">
-                            <a href="#" class="icons-btn d-inline-block js-search-open"><span class="icon-search"></span></a>
-                            <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none">
-                                <span class="icon-menu"></span>
-                            </a>
-                           
-                            
-                        </div>
-                        <div margin-left:200px">
-                            <a class="btn btn-primary px-4 py-2" asp-controller="User" asp-action="Login">Login</a>
+    @* @Home Section@ *@          
+    <section id="home" class="site-blocks-cover">
+        <div class="site-blocks-cover" style="background-image: url('images/landingpage/backgroundpicture.jpeg');">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-7 mx-auto order-lg-2 align-self-center">
+                        <div class="site-block-cover-content text-center">
+                            <h2 class="sub-title">Effective Medicine, New Medicine Everyday</h2>
+                            <h1>Welcome To Ibayi Pharmacy</h1>
                         </div>
                     </div>
                 </div>
             </div>
-
-            @* @Home Section@  *@          
-            <section id="home" class="site-blocks-cover">
-				<div class="site-blocks-cover" style="background-image: url('images/landingpage/backgroundpicture.jpeg');">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-7 mx-auto order-lg-2 align-self-center">
-                                <div class="site-block-cover-content text-center">
-                                    <h2 class="sub-title">Effective Medicine, New Medicine Everyday</h2>
-                                    <h1>Welcome To Ibayi Pharmacy</h1>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-           
-          @*   @About Us Section@  *@    
-             <section class="py-5 bg-light" id="about-us">
-                <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <h2 class="mb-4">About Us</h2>
-                            <p class="lead">
-                                At <strong>Ibayi Pharmacy</strong>, we are committed to providing our community with trusted, personalized healthcare services.
-                            </p>
-                            <p>
-                                Since 2024, we have dedicated ourselves to helping our customers live healthier, happier lives. Our team of licensed pharmacists and friendly staff work hard every day to offer expert advice, reliable prescriptions, online and over-the-counter solutions, and wellness support.
-                            </p>
-                            <p>
-                                We believe healthcare should be easy, accessible, and compassionate — and we are proud to be your pharmacy of choice.
-                            </p>
-                        </div>
-
-                        <div class="col-md-6 text-center">
-                            <img src="~/images/about_us.jpg" alt="About Ibayi Pharmacy" class="img-fluid rounded shadow-sm" />
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <hr />
-@* 
-            @Services Section@  *@           
-           <section id="services" class="py-5 bg-light">
-                <div class="container">
-                    <div class="row text-center mb-5">
-                        <div class="col-12">
-                            <h2 class="display-4 text-uppercase">Our Services</h2>
-                            <p class="lead">At Ibhayi Pharmacy, we offer a range of specialized services for our customers, pharmacists, and pharmacy managers to ensure smooth prescription management and medication dispensing.</p>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <!-- Service 1: Customer Services -->
-                        <div class="col-md-4 mb-4">
-                            <div class="card border-light shadow-sm h-100">
-                                <img src="~/images/landingpage/customer.jpg" class="card-img-top" alt="Customer Services"/>
-
-                                <div class="card-body">
-                                    <h4 class="card-title">Customer Services</h4>
-                                    <p class="card-text">As a customer, you can easily register, load your prescriptions, and track your repeat prescriptions. You will be notified when your prescriptions are ready for collection and can generate detailed reports of your dispensed prescriptions.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Service 2: Pharmacist Services -->
-                        <div class="col-md-4 mb-4">
-                            <div class="card border-light shadow-sm h-100">
-                                <img src="~/images/landingpage/pharmacist.jpg" class="card-img-top" alt="Pharmacist Services" />
-                                <div class="card-body">
-                                    <h4 class="card-title">Pharmacist Services</h4>
-                                    <p class="card-text">Pharmacists can dispense prescriptions, check for patient allergies, manage prescription repeats, and ensure all prescriptions are properly documented. Pharmacists can also generate reports based on medications dispensed.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Service 3: Pharmacy Manager Services -->
-                        <div class="col-md-4 mb-4">
-                            <div class="card border-light shadow-sm h-100">
-                                <img src="~/images/landingpage/manager.jpg" class="card-img-top" alt="Pharmacy Manager Services" />
-                                <div class="card-body">
-                                    <h4 class="card-title">Pharmacy Manager Services</h4>
-                                    <p class="card-text">Pharmacy managers have full control over pharmacy details, medication stock, suppliers, and doctor records. They can also manage inventory levels, place orders, and generate stock-level reports to ensure a smooth pharmacy operation.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-
-            <hr />
-@* 
-            @Testimonials Section@ *@            
-
-            <section id="testimonials" class="py-5">
-                <div class="site-section">
-                    <div class="container">
-                        <div class="row">
-                            <div class="title-section text-center col-12">
-                                <h2 class="text-uppercase">Testimonials</h2>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 block-3 products-wrap">
-                                <div class="nonloop-block-3 no-direction owl-carousel">
-
-                                    <div class="testimony">
-                                        <blockquote>
-                                            <img src="images/Asenathi.jpg" alt="Image" class="img-fluid w-25 mb-4 rounded-circle">
-                                            <p>&I had a wonderful experience at Ibayi Pharmacy. The staff were very friendly, knowledgeable, and quick to assist me with all my needs. They took the time to explain my medications and even suggested helpful health tips;</p>
-                                        </blockquote>
-
-                                        <p>&mdash; Asenathi Yawa</p>
-                                    </div>
-
-                                    <div class="testimony">
-                                        <blockquote>
-                                            <img src="images/person_2.jpg" alt="Image" class="img-fluid w-25 mb-4 rounded-circle">
-                                            <p>
-                                                &I am extremely satisfied with the services provided by Ibayi Pharmacy. The staff demonstrated a high level of professionalism, efficiency, and courtesy. Their attention to detail and willingness to go the extra mile made my experience outstanding;
-                                            </p>
-                                        </blockquote>
-
-                                        <p>&mdash; Rebecca Morando</p>
-                                    </div>
-
-                                    <div class="testimony">
-                                        <blockquote>
-                                            <img src="images/person_3.jpg" alt="Image" class="img-fluid w-25 mb-4 rounded-circle">
-                                            <p>
-                                                &The store was clean, well-organized, and had everything I was looking for. I truly appreciate their professionalism and personal care. I will definitely keep coming back and recommend them to others!;
-                                            </p>
-                                        </blockquote>
-
-                                        <p>&mdash; Lucas Gallone</p>
-                                    </div>
-
-                                    <div class="testimony">
-                                        <blockquote>
-                                            <img src="images/person_4.jpg" alt="Image" class="img-fluid w-25 mb-4 rounded-circle">
-                                            <p>
-                                                &Greate Service.The interface is friendly. It is very easy to navigate between the tasks.Definitely my go-to pharmacy!;
-                                            </p>
-                                        </blockquote>
-
-                                        <p>&mdash; Andrew Neel</p>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
-    </header>
+    </section>
 
-    <footer class="site-footer bg-secondary text-white pt-5 pb-3">
+
+    @*@About Us Section@*@    
+    <section class="py-5 bg-light" id="about-us">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
-                    <div class="block-7">
-                        <h3 class="footer-heading mb-4">Opening Hours</h3>
-                        <ul class="list-unstyled">
-                            <li>Monday - Friday: 08:00 AM – 06:00 PM</li>
-                            <li>Saturday: 08:00 AM – 04:00 PM</li>
-                            <li>Sunday & Public Holidays: Closed</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 mx-auto mb-5 mb-lg-0">
-                    <h3 class="footer-heading mb-4 text-black">Quick Links</h3>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link !text-black">Home</a></li>
-                        <li><a href="#" class="footer-link !text-black">FAQ's</a></li>
-                        <li><a href="#" class="footer-link !text-black">Contact</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-md-6 col-lg-3" id="contact">
-                    <div class="block-5 mb-5">
-                        <h3 class="footer-heading mb-4">Contact Info</h3>
-                        <ul class="list-unstyled">
-                            <li class="address">415 Fake St. Mountain View, Gqeberha, Summerstrand, SA</li>
-                            <li class="phone"><a href="tel://23923929210">+27 83 754 5485</a></li>
-                            <li class="email">ibayipharm24@ibhayi.com</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="row pt-5 mt-5 text-center">
-                <div class="col-md-12">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h2 class="mb-4">About Us</h2>
+                    <p class="lead">
+                        At <strong>Ibayi Pharmacy</strong>, we are committed to providing our community with trusted, personalized healthcare services.
+                    </p>
                     <p>
-
-                        Copyright &copy;
-                        <script>document.write(new Date().getFullYear());</script> All rights reserved
+                        Since 2024, we have dedicated ourselves to helping our customers live healthier, happier lives. Our team of licensed pharmacists and friendly staff work hard every day to offer expert advice, reliable prescriptions, online and over-the-counter solutions, and wellness support.
+                    </p>
+                    <p>
+                        We believe healthcare should be easy, accessible, and compassionate — and we are proud to be your pharmacy of choice.
                     </p>
                 </div>
 
+                <div class="col-md-6 text-center">
+                    <img src="~/images/about_us.jpg" alt="About Ibayi Pharmacy" class="img-fluid rounded shadow-sm" />
+                </div>
             </div>
         </div>
-    </footer>
+    </section>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <hr />
+
+    @*@Services Section@  *@           
+    <section id="services" class="py-5 bg-light">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-12">
+                    <h2 class="display-4 text-uppercase">Our Services</h2>
+                    <p class="lead">At Ibhayi Pharmacy, we offer a range of specialized services for our customers, pharmacists, and pharmacy managers to ensure smooth prescription management and medication dispensing.</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card border-light shadow-sm h-100">
+                        <img src="~/images/landingpage/customer.jpg" class="card-img-top" alt="Customer Services" />
+
+                        <div class="card-body">
+                            <h4 class="card-title">Customer Services</h4>
+                            <p class="card-text">As a customer, you can easily register, load your prescriptions, and track your repeat prescriptions. You will be notified when your prescriptions are ready for collection and can generate detailed reports of your dispensed prescriptions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card border-light shadow-sm h-100">
+                        <img src="~/images/landingpage/pharmacist.jpg" class="card-img-top" alt="Pharmacist Services" />
+                        <div class="card-body">
+                            <h4 class="card-title">Pharmacist Services</h4>
+                            <p class="card-text">Pharmacists can dispense prescriptions, check for patient allergies, manage prescription repeats, and ensure all prescriptions are properly documented. Pharmacists can also generate reports based on medications dispensed.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card border-light shadow-sm h-100">
+                        <img src="~/images/landingpage/manager.jpg" class="card-img-top" alt="Pharmacy Manager Services" />
+                        <div class="card-body">
+                            <h4 class="card-title">Pharmacy Manager Services</h4>
+                            <p class="card-text">Pharmacy managers have full control over pharmacy details, medication stock, suppliers, and doctor records. They can also manage inventory levels, place orders, and generate stock-level reports to ensure a smooth pharmacy operation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <hr />
+
+    @*@Testimonials Section@ *@            
+    <section id="testimonials" class="py-5">
+        <div class="site-section">
+            <div class="container">
+                <div class="row">
+                    <div class="title-section text-center col-12">
+                        <h2 class="text-uppercase">Testimonials</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 block-3 products-wrap">
+                        <div class="nonloop-block-3 no-direction owl-carousel">
+
+                            <div class="testimony">
+                                <blockquote>
+                                    <img src="images/Asenathi.jpg" alt="Image" class="img-fluid w-25 mb-4 rounded-circle">
+                                    <p>&I had a wonderful experience at Ibayi Pharmacy. The staff were very friendly, knowledgeable, and quick to assist me with all my needs. They took the time to explain my medications and even suggested helpful health tips;</p>
+                                </blockquote>
+
+                                <p>&mdash; Asenathi Yawa</p>
+                            </div>
+
+                            <div class="testimony">
+                                <blockquote>
+                                    <img src="images/person_2.jpg" alt="Image" class="img-fluid w-25 mb-4 rounded-circle">
+                                    <p>
+                                        &I am extremely satisfied with the services provided by Ibayi Pharmacy. The staff demonstrated a high level of professionalism, efficiency, and courtesy. Their attention to detail and willingness to go the extra mile made my experience outstanding;
+                                    </p>
+                                </blockquote>
+
+                                <p>&mdash; Rebecca Morando</p>
+                            </div>
+
+                            <div class="testimony">
+                                <blockquote>
+                                    <img src="images/person_3.jpg" alt="Image" class="img-fluid w-25 mb-4 rounded-circle">
+                                    <p>
+                                        &The store was clean, well-organized, and had everything I was looking for. I truly appreciate their professionalism and personal care. I will definitely keep coming back and recommend them to others!;
+                                    </p>
+                                </blockquote>
+
+                                <p>&mdash; Lucas Gallone</p>
+                            </div>
+
+                            <div class="testimony">
+                                <blockquote>
+                                    <img src="images/person_4.jpg" alt="Image" class="img-fluid w-25 mb-4 rounded-circle">
+                                    <p>
+                                        &Greate Service.The interface is friendly. It is very easy to navigate between the tasks.Definitely my go-to pharmacy!;
+                                    </p>
+                                </blockquote>
+
+                                <p>&mdash; Andrew Neel</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
 
 
-    <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/jquery-ui.js"></script>
-    <script src="js/popper.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/owl.carousel.min.js"></script>
-    <script src="js/jquery.magnific-popup.min.js"></script>
-    <script src="js/aos.js"></script>
 
-    <script src="js/main.js"></script>
 
-</body>
-</html>

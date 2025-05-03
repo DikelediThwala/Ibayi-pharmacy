@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Thor Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 250px;
+            background-color: #011425;
+            color: #ffffff;
+            transition: width 0.3s;
+            z-index: 1000;
+        }
+
+            .sidebar.collapsed {
+                width: 80px;
+            }
+
+            .sidebar .nav-link {
+                color: #5C7C89;
+                white-space: nowrap;
+                transition: background-color 0.3s, color 0.3s;
+            }
+
+                .sidebar .nav-link:hover,
+                .sidebar .nav-link.active {
+                    background-color: #1F4959;
+                    color: white;
+                }
+
+            .sidebar.collapsed .nav-link span {
+                display: none;
+            }
+
+            .sidebar h4 {
+                white-space: nowrap;
+            }
+
+        .content {
+            margin-left: 250px;
+            padding: 2rem;
+            height: 100%;
+            overflow-y: auto;
+            transition: margin-left 0.3s;
+        }
+
+            .content.collapsed {
+                margin-left: 80px;
+            }
+
+        .collapse-button {
+            cursor: pointer;
+        }
+
+        #collapse-icon {
+            font-size: 2rem;
+        }
+
+        .sidebar.collapsed #main-icon {
+            display: none;
+        }
+
+        .img-fluid {
+            width: 70px;
+            height: 60px;
+            margin-top: 20px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar" id="sidebar">
+        <img src="~/images/logo_2-removebg-preview.png" alt="Thor Logo" class="img-fluid" />
+
+        <div class="p-3 mt-auto collapse-button d-flex align-items-center gap-2" onclick="toggleSidebar()">
+            <i class="bi bi-list fs-3" id="collapse-icon"></i>
+        </div>
+
+        <ul class="nav flex-column p-2">
+            <li class="nav-item"><a class="nav-link active" asp-controller="Manager" asp-action="Dashboard"><i class="bi bi-grid"></i> <span>Dashboard</span></a></li>
+            <li class="nav-item"><a class="nav-link" asp-controller="Pharmacy" asp-action="Index"><i class="bi bi-pencil-square"></i> <span>Manage Details</span></a></li>
+            <li class="nav-item"><a class="nav-link" asp-controller="Supplier" asp-action="Index"><i class="bi bi-truck"></i> <span>Suppliers</span></a></li>
+            <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#medicationSubmenu" role="button" aria-expanded="false" aria-controls="medicationSubmenu" href="javascript:void(0);">
+
+                    <span><i class="bi bi-capsule"></i> <span>Medication</span></span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <div class="collapse ps-3" id="medicationSubmenu">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Medicine" asp-action="Index">
+                                <i class="bi bi-pencil-square"></i> Manage Medication
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="DosageForm" asp-action="Index">
+                                <i class="bi bi-diagram-3"></i> Dosage Forms
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-person-badge"></i> <span>Manage Doctor</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-people"></i> <span>Manage Users</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-box-seam"></i> <span>Manage Stock</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-collection"></i> <span>Active Ingredients</span></a></li>
+
+            <br />
+            <br />
+            <br />
+            <br />
+
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-gear"></i> <span>Settings</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-box-arrow-right"></i> <span>Logout</span></a></li>
+        </ul>
+    </div>
+
+    <div class="content" id="content">
+        @RenderBody()
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            const icon = document.getElementById('collapse-icon');
+
+            sidebar.classList.toggle('collapsed');
+            content.classList.toggle('collapsed');
+
+            if (sidebar.classList.contains('collapsed')) {
+                icon.classList.remove('bi-chevron-left');
+                icon.classList.add('bi-chevron-right');
+            } else {
+                icon.classList.remove('bi-chevron-right');
+                icon.classList.add('bi-chevron-left');
+            }
+        }
+    </script>
+</body>
+</html>

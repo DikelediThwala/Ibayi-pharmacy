@@ -8,14 +8,29 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Login\**" />
+    <Compile Remove="Views\NewFolder\**" />
+    <Content Remove="Views\Login\**" />
+    <Content Remove="Views\NewFolder\**" />
+    <EmbeddedResource Remove="Views\Login\**" />
+    <EmbeddedResource Remove="Views\NewFolder\**" />
+    <None Remove="Views\Login\**" />
+    <None Remove="Views\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\images\.DS_Store" />
     <None Include="wwwroot\scss\.DS_Store" />
     <None Include="wwwroot\scss\bootstrap\.DS_Store" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Login\" />
-    <Folder Include="Views\NewFolder\" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>
