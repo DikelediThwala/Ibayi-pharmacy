@@ -9,7 +9,10 @@ namespace ONT_PROJECT.Controllers
         {
             return View();
         }
-
+        public IActionResult Create()
+        {
+            return View();
+        }
         public async Task<IActionResult> Login()
         {
             return View();
