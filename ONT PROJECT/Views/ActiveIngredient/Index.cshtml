@@ -1,0 +1,13 @@
+﻿@model ONT_PROJECT.Models.Pharmacy
+
+@{
+    ViewData["Title"] = "Manage Active Ingredients";
+    Layout = "_ManagerLayout";
+}
+
+<h2 class="mb-4">Manage Ingredients</h2>
+<hr style="height: 5px; background-color: #011425; border: none;" />
+<br />
+<a asp-action="Create" asp-controller="ActiveIngredient" class="btn btn-primary mb-3">
+    <i class="bi bi-plus-circle"></i> Add Ingredient
+</a>
