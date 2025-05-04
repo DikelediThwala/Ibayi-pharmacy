@@ -34,9 +34,20 @@
 
                 <div class="col-md-6">
                     <label asp-for="Schedule" class="form-label">Schedule <span class="text-danger">*</span></label>
-                    <input asp-for="Schedule" class="form-control" placeholder="e.g., 1 (For Schedule 1)" />
+                    <select asp-for="Schedule" class="form-select">
+                        <option value="">-- Select Schedule --</option>
+                        <option value="1">Schedule 1</option>
+                        <option value="2">Schedule 2</option>
+                        <option value="3">Schedule 3</option>
+                        <option value="4">Schedule 4</option>
+                        <option value="5">Schedule 5</option>
+                        <option value="6">Schedule 6</option>
+                        <option value="7">Schedule 7</option>
+                        <option value="8">Schedule 8</option>
+                    </select>
                     <span asp-validation-for="Schedule" class="text-danger small"></span>
                 </div>
+
             </div>
 
             <div class="row mb-4">
