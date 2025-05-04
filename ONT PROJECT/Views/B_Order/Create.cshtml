@@ -1,0 +1,79 @@
+﻿@model ONT_PROJECT.Models.B_Order
+
+@{
+    ViewData["Title"] = "Manage Orders";
+    Layout = "_ManagerLayout";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-dark">
+        <i class="bi bi-bag-check-fill me-2 text-primary"></i> Create New Order
+    </h2>
+</div>
+
+<hr style="height: 4px; background-color: #011425; border: none;" />
+
+<div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
+    <i class="bi bi-info-circle-fill"></i>
+    Please fill out all required fields marked with <span class="text-danger">*</span>.
+</div>
+
+<div class="card shadow p-4">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label asp-for="DatePlaced" class="form-label">Date Placed <span class="text-danger">*</span></label>
+                    <input asp-for="DatePlaced" type="date" class="form-control" />
+                    <span asp-validation-for="DatePlaced" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="DateRecieved" class="form-label">Date Received </label>
+                    <input asp-for="DateRecieved" type="date" class="form-control" />
+                    <span asp-validation-for="DateRecieved" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Status" class="form-label">Order Status <span class="text-danger">*</span></label>
+                <select asp-for="Status" class="form-select">
+                    <option value="">-- Select Status --</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Delivered">Recieved</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger small"></span>
+            </div>
+
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Pharmacy Manager <span class="text-danger">*</span></label>
+                    <select asp-for="PharmacyManagerID" asp-items="ViewBag.PharmacyManagers" class="form-select">
+                        <option value="">-- Select Pharmacy Manager --</option>
+                    </select>
+                    <span asp-validation-for="PharmacyManagerID" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Supplier <span class="text-danger">*</span></label>
+                    <select asp-for="SupplierID" asp-items="ViewBag.Suppliers" class="form-select">
+                        <option value="">-- Select Supplier --</option>
+                    </select>
+                    <span asp-validation-for="SupplierID" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Index" class="btn btn-primary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
