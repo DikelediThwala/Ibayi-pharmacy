@@ -92,34 +92,30 @@
 
         <ul class="nav flex-column p-2">
             <li class="nav-item"><a class="nav-link active" asp-controller="Manager" asp-action="Dashboard"><i class="bi bi-grid"></i> <span>Dashboard</span></a></li>
-            <li class="nav-item"><a class="nav-link" asp-controller="Pharmacy" asp-action="Index"><i class="bi bi-pencil-square"></i> <span>Manage Details</span></a></li>
-            <li class="nav-item"><a class="nav-link" asp-controller="Supplier" asp-action="Index"><i class="bi bi-truck"></i> <span>Suppliers</span></a></li>
             <li class="nav-item">
                 <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#medicationSubmenu" role="button" aria-expanded="false" aria-controls="medicationSubmenu" href="javascript:void(0);">
 
-                    <span><i class="bi bi-capsule"></i> <span>Medication</span></span>
+                    <span><i class="bi bi-capsule"></i> <span>Prescription</span></span>
                     <i class="bi bi-chevron-down"></i>
                 </a>
                 <div class="collapse ps-3" id="medicationSubmenu">
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Medicine" asp-action="Index">
-                                <i class="bi bi-pencil-square"></i> Manage Medication
+                                <i class="bi bi-pencil-square"></i> Upload prescription
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="DosageForm" asp-action="Index">
-                                <i class="bi bi-diagram-3"></i> Dosage Forms
+                                <i class="bi bi-diagram-3"></i> Check status
                             </a>
                         </li>
                     </ul>
                 </div>
             </li>
 
-            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-person-badge"></i> <span>Register as a new user</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-people"></i> <span>Manage Prescriptions</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-box-seam"></i> <span>Order Medication</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-collection"></i> <span>Notifications</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-people"></i> <span>Manage Repeats</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-box-seam"></i> <span>PDF report</span></a></li>
 
             <br />
             <br />
