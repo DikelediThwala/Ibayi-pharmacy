@@ -8,5 +8,9 @@ namespace ONT_PROJECT.Controllers
         {
             return View();
         }
+        public IActionResult create()
+        {
+            return View();
+        }
     }
 }
