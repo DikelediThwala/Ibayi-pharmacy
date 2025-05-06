@@ -32,6 +32,7 @@ namespace ONT_PROJECT.Models
         [Required]
         [Phone]
         public string PhoneNumber { get; set; }
+        public byte[] ProfilePicture { get; set; }
     }
 
 }
