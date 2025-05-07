@@ -1,5 +1,95 @@
-﻿@{
+﻿ @{
     ViewData["Title"] = "Dashboard";
     Layout = "_ClientLayout";
 }
-<h2 class="text-primary">Welcome to The Dashboard</h2>
+
+
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .star-rating {
+            color: gold;
+            font-size: 1.2rem;
+        }
+
+        .dashboard-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .notification-item {
+            border-bottom: 1px solid #eaeaea;
+            padding: 10px 0;
+        }
+
+            .notification-item:last-child {
+                border-bottom: none;
+            }
+    </style>
+</head>
+<body class="bg-light">
+
+        <div class="card p-4 dashboard-card">
+            <div class="mb-3">
+                <h4>Hello, <strong>Qhama Nodada</strong> 👋</h4>
+                <p>Welcome back! Here's your account overview.</p>
+            </div>
+
+            <div class="row">
+                <!-- Rating -->
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 bg-white rounded shadow-sm">
+                        <h5 class="mb-2">Your Rating</h5>
+                        <div class="star-rating">
+                            ★★★★☆ <span class="text-muted">(4.0)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Repeats Left -->
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 bg-white rounded shadow-sm">
+                        <h5 class="mb-2">Repeats Left</h5>
+                        <p class="fs-4 text-primary">3 / 10</p>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" style="width: 30%;">30%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Status -->
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 bg-white rounded shadow-sm">
+                        <h5 class="mb-2">Account Status</h5>
+                        <span class="badge bg-success p-2">Active</span>
+                        <!-- Change to bg-warning or bg-danger as needed -->
+                    </div>
+                </div>
+
+                <!-- Recent Notifications -->
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 bg-white rounded shadow-sm">
+                        <h5 class="mb-3">Recent Notifications</h5>
+                        <div class="notification-item">
+                            <strong>Reminder:</strong> Your next session is tomorrow at 10AM.
+                        </div>
+                        <div class="notification-item">
+                            <strong>Update:</strong> Your profile was viewed 5 times today.
+                        </div>
+                        <div class="notification-item">
+                            <strong>Message:</strong> New message from support.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+

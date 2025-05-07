@@ -2,27 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>@ViewData["Title"] - Thor Dashboard</title>
+    <title>@ViewData["Title"] - Ibayi Pharmacy</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
     <style>
         html, body {
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden;
         }
 
         .sidebar {
             position: fixed;
             top: 0;
-            left: 0;
             bottom: 0;
             width: 250px;
             background-color: #011425;
-            color: #ffffff;
-            transition: width 0.3s;
+            color: white;
             z-index: 1000;
+            transition: width 0.3s;
         }
 
             .sidebar.collapsed {
@@ -32,7 +31,6 @@
             .sidebar .nav-link {
                 color: #5C7C89;
                 white-space: nowrap;
-                transition: background-color 0.3s, color 0.3s;
             }
 
                 .sidebar .nav-link:hover,
@@ -45,100 +43,158 @@
                 display: none;
             }
 
-            .sidebar h4 {
-                white-space: nowrap;
+            .sidebar .logo-section {
+                padding: 1rem;
+                text-align: center;
             }
 
-        .content {
+                .sidebar .logo-section h4 {
+                    white-space: nowrap;
+                }
+
+        .main {
             margin-left: 250px;
-            padding: 2rem;
-            height: 100%;
-            overflow-y: auto;
             transition: margin-left 0.3s;
         }
 
-            .content.collapsed {
-                margin-left: 80px;
-            }
+        .sidebar.collapsed ~ .main {
+            margin-left: 80px;
+        }
+
+        .top-navbar {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
 
         .collapse-button {
             cursor: pointer;
         }
 
-        #collapse-icon {
-            font-size: 2rem;
-        }
-
-        .sidebar.collapsed #main-icon {
+        .sidebar.collapsed .logo-section h4,
+        .sidebar.collapsed .img-fluid {
             display: none;
         }
 
         .img-fluid {
-            width: 70px;
+            width: 150px;
             height: 60px;
-            margin-top: 20px;
-            margin-left: 10px;
+            margin-top: 10px;
         }
+
+        .top-navbar {
+            background-color: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .dropdown-menu {
+            min-width: 180px;
+        }
+
+            .dropdown-menu .dropdown-item i {
+                font-size: 1rem;
+            }
+
+        .sidebar .profile-section {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar.collapsed .profile-text {
+            display: none;
+        }
+
     </style>
 </head>
 <body>
 
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <img src="~/images/logo_2-removebg-preview.png" alt="Thor Logo" class="img-fluid" />
+
+        <div class="profile-header d-flex align-items-center p-3 border-bottom">
+            <img src="~/images/WhatsApp Image 2025-05-07 at 10.26.24.jpeg" alt="Profile" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+            <div class="profile-text">
+                <div class="fw-bold">Qhama Nodada</div>
+                <div style="color:cadetblue;">Client</div>
+            </div>
+        </div>
 
         <div class="p-3 mt-auto collapse-button d-flex align-items-center gap-2" onclick="toggleSidebar()">
             <i class="bi bi-list fs-3" id="collapse-icon"></i>
         </div>
 
         <ul class="nav flex-column p-2">
-            <li class="nav-item"><a class="nav-link active" asp-controller="Manager" asp-action="Dashboard"><i class="bi bi-grid"></i> <span>Dashboard</span></a></li>
+            <li class="nav-item"><a class="nav-link active" asp-controller="Client" asp-action="Dashboard"><i class="bi bi-grid"></i> <span>Dashboard</span></a></li>
             <li class="nav-item">
-                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#medicationSubmenu" role="button" aria-expanded="false" aria-controls="medicationSubmenu" href="javascript:void(0);">
-
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#medicationSubmenu">
                     <span><i class="bi bi-capsule"></i> <span>Prescription</span></span>
                     <i class="bi bi-chevron-down"></i>
                 </a>
                 <div class="collapse ps-3" id="medicationSubmenu">
                     <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Prescription" asp-action="Index">
-                                <i class="bi bi-pencil-square"></i> Upload prescription
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Prescription" asp-action="Create">
-                                <i class="bi bi-diagram-3"></i> Check status
-                            </a>
-                        </li>
+                        <li><a class="nav-link" asp-controller="Prescription" asp-action="Index"><i class="bi bi-pencil-square"></i> Upload Prescription</a></li>
+                        <li><a class="nav-link" asp-controller="Prescription" asp-action="Index"><i class="bi bi-diagram-3"></i>Collection Status</a></li>
                     </ul>
                 </div>
             </li>
-
-            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-people"></i> <span>Manage Repeats</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-box-seam"></i> <span>PDF report</span></a></li>
-
-            <br />
-            <br />
-            <br />
-            <br />
-
-            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-gear"></i> <span>Settings</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-box-arrow-right"></i> <span>Logout</span></a></li>
+            <li class="nav-item"><a class="nav-link" asp-controller="Doctor" asp-action="Index"><i class="bi bi-person-badge"></i> <span>Manage repeats </span></a></li>
+            <li class="nav-item"><a class="nav-link" asp-controller="User" asp-action="Index"><i class="bi bi-people"></i> <span>PDF report</span></a></li>
         </ul>
     </div>
 
-    <div class="content" id="content">
-        @RenderBody()
+
+    <div class="main" id="main">
+        <div class="top-navbar d-flex justify-content-between align-items-center px-3 py-2 shadow-sm" style="background-color: #f8f9fa;">
+            <!-- Left: Logo -->
+            <img src="~/images/logo_3-removebg-preview.png" alt="Thor Logo" class="img-fluid" style="height: 50px;" />
+
+            <!-- Right: Profile Dropdown -->
+            <div class="dropdown">
+                <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-bell me-3 fs-5"></i>
+                    <span class="fw-bold me-2">Qhama Nodada</span>
+                    <img src="~/images/WhatsApp Image 2025-05-07 at 10.26.24.jpeg" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="profileDropdown">
+                    <li>
+                        <a class="dropdown-item" asp-controller="B_Order" asp-action="Index">
+                            <i class="bi bi-gear me-2"></i> Settings
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+
+
+
+        <div class="content-area">
+            @RenderBody()
+        </div>
     </div>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const content = document.getElementById('content');
             const icon = document.getElementById('collapse-icon');
+            const main = document.getElementById('main');
 
             sidebar.classList.toggle('collapsed');
-            content.classList.toggle('collapsed');
+            main.classList.toggle('collapsed');
 
             if (sidebar.classList.contains('collapsed')) {
                 icon.classList.remove('bi-chevron-left');
@@ -151,3 +207,8 @@
     </script>
 </body>
 </html>
+
+
+
+
+
