@@ -2,79 +2,193 @@
     ViewData["Title"] = "Dashboard";
     Layout = "_ManagerLayout";
 }
-<h2 class="text-primary">Dashboard</h2>
-@* 
 
-<div class="container-fluid mt-4">
-    <!-- Welcome Header -->
-    <div class="mb-4">
-        <h2 class="text-primary">Welcome to Thor Dashboard</h2>
-        <p class="text-muted">Here’s what’s happening with your liquidity and wallet today.</p>
-    </div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Metric Cards -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card text-white bg-primary shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Total Liquidity</h5>
-                    <p class="card-text fs-4">$1,250,000</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Staked Assets</h5>
-                    <p class="card-text fs-4">$530,000</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-warning shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Pending Rewards</h5>
-                    <p class="card-text fs-4">$12,450</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-info shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Wallet Balance</h5>
-                    <p class="card-text fs-4">3.24 BTC</p>
-                </div>
-            </div>
-        </div>
-    </div>
+<h2 class="text-primary" >Pharmacy Manager Dashboard</h2>
+<hr style="height: 4px; background-color: #011425; border: none;" />
+<div class="container py-4">
 
-    <!-- Charts or Recent Activity -->
-    <div class="row g-4">
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    Liquidity Performance
-                </div>
-                <div class="card-body">
-                    <p class="text-muted">Chart or graph goes here</p>
-                    <div class="text-center text-muted py-5 border rounded bg-light">[ Chart Placeholder ]</div>
+    <div class="container mt-4">
+        <div class="row g-3">
+            <div class="col-md-2">
+                <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #007bff, #00aaff);">
+                    <div><strong>Total Medications</strong></div>
+                    <div class="fs-4 fw-bold">1,240</div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    Recent Activity
+           
+            <div class="col-md-2">
+                <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #28a745, #4caf50);">
+                    <div><strong>Suppliers</strong></div>
+                    <div class="fs-4 fw-bold">17</div>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Added 1.2 BTC to liquidity pool</li>
-                        <li class="list-group-item">Claimed 0.3 BTC rewards</li>
-                        <li class="list-group-item">Swapped ETH for BTC</li>
-                        <li class="list-group-item">Connected new wallet</li>
-                    </ul>
+            </div>
+            <div class="col-md-2">
+                <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #17a2b8, #00bcd4);">
+                    <div><strong>Pharmacists</strong></div>
+                    <div class="fs-4 fw-bold">8</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card p-3 text-center text-dark shadow rounded-3" style="background: linear-gradient(135deg, #ffc107, #ff9800);">
+                    <div><strong>Doctors</strong></div>
+                    <div class="fs-4 fw-bold">15</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #6c757d, #495057);">
+                    <div><strong>Customers</strong></div>
+                    <div class="fs-4 fw-bold">324</div>
                 </div>
             </div>
         </div>
     </div>
-</div> *@
+
+    <!-- Graphs Section -->
+    <div class="row g-3 mt-4" >
+        <div class="col-md-6">
+            <div class="card p-3">
+                <div class="chart-heading">Total Sales Per Year</div>
+                <canvas id="salesPerYearChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6" >
+            <div class="card p-3">
+                <div class="chart-heading">Best Sold Medicines</div>
+                <canvas id="bestSoldMedicineChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-4">
+        <div class="col-md-6">
+            <div class="card p-3">
+                <div class="chart-heading">Dosage Form Distribution</div>
+                <canvas id="dosageFormChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-3">
+                <div class="chart-heading">Top Suppliers (Stock Supplied)</div>
+                <canvas id="supplierPieChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        body {
+            background-color: #f5f7fa;
+        }
+
+        .card {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+
+        .dashboard-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .chart-heading {
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 18px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sales Per Year Chart
+        new Chart(document.getElementById('salesPerYearChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['2020', '2021', '2022', '2023', '2024'],
+                datasets: [{
+                    label: 'Total Sales (in ZAR)',
+                    data: [95000, 110000, 125000, 140000, 167000],
+                    borderColor: '#4e73df',
+                    backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    y: { title: { display: true, text: 'Sales (ZAR)' } },
+                    x: { title: { display: true, text: 'Year' } }
+                }
+            }
+        });
+
+        // Best Sold Medicines Chart
+        new Chart(document.getElementById('bestSoldMedicineChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Paracetamol', 'Ibuprofen', 'Amoxicillin', 'Metformin', 'Aspirin'],
+                datasets: [{
+                    label: 'Units Sold',
+                    data: [5800, 4700, 4300, 4000, 3500],
+                    backgroundColor: '#1cc88a'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { title: { display: true, text: 'Units Sold' } },
+                    x: { title: { display: true, text: 'Medicine' } }
+                }
+            }
+        });
+
+        // Dosage Form Chart
+        new Chart(document.getElementById('dosageFormChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Tablets', 'Capsules', 'Syrups', 'Injections', 'Creams'],
+                datasets: [{
+                    label: 'Count',
+                    data: [540, 320, 220, 180, 150],
+                    backgroundColor: '#f6c23e'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { title: { display: true, text: 'Dosage Forms' } },
+                    y: { title: { display: true, text: 'Count' } }
+                }
+            }
+        });
+
+        // Supplier Pie Chart
+        new Chart(document.getElementById('supplierPieChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['MediCare Ltd', 'PharmaTech', 'GlobalDrugs', 'HealthCorp', 'Others'],
+                datasets: [{
+                    data: [540, 410, 260, 190, 140],
+                    backgroundColor: ['#1cc88a', '#4e73df', '#f6c23e', '#e74a3b', '#858796']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'right' } }
+            }
+        });
+    </script>
+}
