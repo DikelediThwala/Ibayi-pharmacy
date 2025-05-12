@@ -1,0 +1,199 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "View Prescription";
+    Layout = "PharmacistLayout";
+}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-dark">
+        <i class="bi bi-hospital me-2 text-primary"></i>Dispense Prescription
+    </h2>
+</div>
+
+<div class="row mb-4 align-items-end">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <label for="CustomerID" class="form-label">
+                Customers <span class="text-danger">*</span>
+            </label>
+            <select for="CustomerID" class="form-select">
+                <option value="">-- Select Customer --</option>
+                <option value="Asenathi Lubelo">Asenathi Lubelo</option>
+                <option value="Heken Bayui">Heken Bayui</option>
+                <option value="Incident Feran">Incident Feran</option>
+                <option value="Emihle Wetboi">Emihle Wetboi</option>
+            </select>
+            <span validation-for="CustomerID" class="text-danger small"></span>
+        </div>
+        <div class="col-md-3">
+            <a asp-controller="Pharmacist" asp-action="CreateUser" type="button" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> Add
+            </a>
+        </div>
+        <div class="col-md-3">
+            <div class="search-container">
+                <input type="text" placeholder="Search Customer..." class="form-control">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <label for="CustomerID" class="form-label">CustomerID</label>
+            <input for="CustomerID" type="text" class="form-control" disabled />
+            <span validation-for="CustomerID" class="text-danger small"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label for="Date Of Birth" class="form-label">Date Of Birth</label>
+            <input for="Date Of Birth" type="text" class="form-control" disabled />
+            <span validation-for="Date Of Birth" class="text-danger small"></span>
+        </div>
+    </div>
+
+
+
+    <div class="col-md-6">
+        <div class="white_shd full margin_bottom_30">
+            <div class="full graph_head">
+                <div class="heading1 margin_0">
+                    <h2>Contextual Table</h2>
+                </div>
+            </div>
+            <div class="table_section padding_infor_info">
+                <div class="table-responsive-sm">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Medication</th>
+                                <th>Quantity</th>
+                                <th>Instructions</th>
+                                <th>Repeats</th>
+                                <th>Repeats Left</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Allergex</td>
+                                <td>3</td>
+                                <td>Take 3 aday</td>
+                                <td>3</td>
+                                <td>2</td>
+
+                            </tr>
+                            <tr class="table-primary">
+                                <td>Allergex</td>
+                                <td>3</td>
+                                <td>Take 3 aday</td>
+                                <td>3</td>
+                                <td>2</td>
+                            </tr>
+                            <tr class="table-success">
+                                <td>Allergex</td>
+                                <td>3</td>
+                                <td>Take 3 aday</td>
+                                <td>3</td>
+                                <td>2</td>
+                            </tr>
+                            <tr class="table-danger">
+                                <td>Allergex</td>
+                                <td>3</td>
+                                <td>Take 3 aday</td>
+                                <td>3</td>
+                                <td>2</td>
+                            </tr>
+                            <tr class="table-info">
+                                <td>Allergex</td>
+                                <td>3</td>
+                                <td>Take 3 aday</td>
+                                <td>3</td>
+                                <td>2</td>
+                            </tr>
+                            <tr class="table-warning">
+                                <td>Allergex</td>
+                                <td>3</td>
+                                <td>Take 3 aday</td>
+                                <td>3</td>
+                                <td>2</td>
+                            </tr>
+                            <tr class="table-active">
+                                <td>Active</td>
+                                <td>Activeson</td>
+                                <td>act@example.com</td>
+                            </tr>
+                            @* <tr class="table-secondary">
+                                <td>Secondary</td>
+                                <td>Secondson</td>
+                                <td>sec@example.com</td>
+                            </tr>
+                            <tr class="table-light">
+                                <td>Light</td>
+                                <td>Angie</td>
+                                <td>angie@example.com</td>
+                            </tr>
+                            <tr class="table-dark text-dark">
+                                <td>Dark</td>
+                                <td>Bo</td>
+                                <td>bo@example.com</td>
+                            </tr> *@
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+@*<div class="col-md-6">
+    <div class="white_shd full margin_bottom_30">
+        <div class="full graph_head">
+            <div class="heading1 margin_0">
+                <h2>Table Head Colors</h2>
+            </div>
+        </div>
+         <div class="table_section padding_infor_info">
+            <div class="table-responsive-sm">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Medication</th>
+                            <th>Quantity</th>
+                            <th>Instructions</th>
+                            <th>Repeats</th>
+                            <th>Repeats Left</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                                <td>Panado</td>
+                                <td>Allergex</td>
+                                <td>Anadon</td>                         
+                        </tr>
+                        <tr>
+                                <td>4</td>
+                                <td>3</td>
+                                <td>5</td>                             
+                        </tr>
+                        <tr>
+                                <td>Take 5 a day</td>
+                                <td>Take 4,3 times a day</td>
+                                <td>Take 5 a day</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>2</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>              
+            </div>
+        </div>
+    </div>
+</div> *@

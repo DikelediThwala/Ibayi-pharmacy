@@ -1,0 +1,220 @@
+﻿@model ONT_PROJECT.Models.Prescription;
+
+@{
+    ViewData["Title"] = "Load Prescription";
+    Layout = "PharmacistLayout";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    .search-container {
+        position: relative;
+        width: 180px;
+    }
+
+        .search-container input[type="text"] {
+            width: 100%;
+            padding: 6px 30px 6px 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .search-container .search-icon {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #888;
+            pointer-events: none;
+        }
+
+
+    .data-line {
+        display: flex;
+        gap: 40px; /* space between the pairs */
+        font-family: sans-serif;
+        margin-bottom: 10px;
+    }
+
+    .data-row {
+        display: flex;
+        align-items: center;
+    }
+
+    .data-label {
+        font-weight: bold;
+        margin-right: 8px;
+        min-width: 120px; /* adjust as needed */
+    }
+
+    .data-display {
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        color: #333;
+        white-space: nowrap;
+    }
+</style>
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-dark">
+        <i class="bi bi-hospital me-2 text-primary"></i> Load Prescription
+    </h2>
+</div>
+<!-- Separator -->
+<hr style="height: 4px; background-color: #011425; border: none;" />
+
+<!-- Info Card -->
+<div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
+    <i class="bi bi-info-circle-fill"></i>
+    Please ensure all details are accurate before saving. Fields marked with <span class="text-danger">*</span> are required.
+</div>
+<!-- Form Card -->
+<div class="card shadow p-4">
+    <div class="card-body">
+        <form asp-action="SaveUser" enctype="multipart/form-data" method="post">
+            <h2>Customer Prescription</h2>
+            <hr />
+            <div class="row mb-4 align-items-end">
+              <div class="row mb-4">
+                <div class="col-md-6">
+                    <label asp-for="CustomerID" class="form-label">
+                        Customers <span class="text-danger">*</span>
+                    </label>
+                    <select asp-for="CustomerID" class="form-select">
+                        <option value="">-- Select Customer --</option>
+                        <option value="Asenathi Lubelo">Asenathi Lubelo</option>
+                        <option value="Heken Bayui">Heken Bayui</option>
+                        <option value="Incident Feran">Incident Feran</option>
+                        <option value="Emihle Wetboi">Emihle Wetboi</option>
+                    </select>
+                    <span asp-validation-for="CustomerID" class="text-danger small"></span>
+                </div>
+                <div class="col-md-3">
+                    <a asp-controller="Pharmacist" asp-action="CreateUser" type="button" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Add
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <div class="search-container">
+                        <input type="text" placeholder="Search Customer..." class="form-control">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                </div>
+              </div>
+                <div class="row mb-4">
+                <div class="col-md-4">
+                    <label for="CustomerID" class="form-label">CustomerID</label>
+                    <input for="CustomerID" type="text" class="form-control" disabled />
+                    <span validation-for="CustomerID" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="Date Of Birth" class="form-label">Date Of Birth</label>
+                    <input for="Date Of Birth" type="text" class="form-control" disabled />
+                    <span validation-for="Date Of Birth" class="text-danger small"></span>
+                </div>
+                </div>
+              
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="DoctorID" class="form-label">Doctors <span class="text-danger">*</span></label>
+                        <select asp-for="DoctorID" class="form-select">
+                            <option value="">-- Select Doctor --</option>
+                            <option value="Dickson Bejan">Dickson Bejan</option>
+                            <option value="Feran Millan">Feran Millan</option>
+                            <option value="Evidence Relam">Evidence Relam</option>                           
+                        </select>
+                        <span asp-validation-for="DoctorID" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Date" class="form-label">Date</label>
+                        <input asp-for="Date" type="date" class="form-control" />
+                        <span asp-validation-for="Date" class="text-danger small"></span>
+                    </div>
+            </div>
+            <div class="row mb-4">
+              
+                <div class="col-md-3">
+                  
+                    <label for="Medication" class="form-label"> Medication <span class="text-danger">*</span></label>
+                        <select for="Medication" class="form-select">
+                            <option value="">-- Select Medication --</option>
+                            <option value="Panado">Panado</option>
+                            <option value="Allergex">Allergex</option>
+                            <option value="Anadon">Arnadon</option>
+                        </select>
+                    <span validation-for="Medication" class="text-danger small"></span>
+                </div>
+                <div class="col-md-3">
+                    <label for="Quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
+                        
+                        <input type="number" id="qty" name="qty" value="0" min="0" max="100" step="1" class="form-control">
+                        <span validation-for="Quantity" class="text-danger small"></span>
+                </div>
+                <div class="col-md-3">
+                        <label for="Instructions" class="form-label">Instructions <span class="text-danger">*</span></label>
+                        <select for="Instructions" class="form-select">
+                            <option value="">-- Select Medication --</option>
+                            <option value="Panado">Take 5 a day</option>
+                            <option value="Allergex">Take 2, 4 times a day</option>
+                            <option value="Anadon">Take 1 every 2 hours</option>
+                        </select>
+                        <span validation-for="Instructions" class="text-danger small"></span>
+                </div>
+
+                 <div class="col-md-3">
+                    <button type="button" onclick="addRow()" class="form-label">+</button>
+                        <button type="button" onclick="removeRow(this)" class="form-label">–</button>
+                 </div>
+            </div>
+                <div class="input-group mb-3">
+                    <input type="file" class="form-control" id="inputGroupFile02">
+                    <label asp-for="PrescriptionPhoto" class="input-group-text" for="inputGroupFile02">Upload Prescription</label>
+                </div>
+          </div>  
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+                <a href="/User/Index" class="btn btn-primary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bootstrap Icons (if not already included globally) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+
+<script>
+    let rowIndex = 0;
+
+    function addRow() {
+        const container = document.getElementById('medication-container');
+        const template = document.getElementById('template-row').outerHTML;
+
+        // Replace INDEX with the current rowIndex
+        const newRowHtml = template.replace(/INDEX/g, rowIndex);
+        rowIndex++;
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = newRowHtml;
+        const newRow = tempDiv.firstElementChild;
+        newRow.style.display = 'flex';
+
+        container.appendChild(newRow);
+    }
+
+    function removeRow(button) {
+        const row = button.closest('.medication-row');
+        if (row) row.remove();
+    }
+</script>
+
