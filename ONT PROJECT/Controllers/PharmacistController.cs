@@ -8,5 +8,10 @@ namespace ONT_PROJECT.Controllers
         {
             return View();
         }
+        public async Task<IActionResult> CreateUser()
+        {
+            return View();
+        }
+
     }
 }

@@ -2,9 +2,13 @@
 
 namespace ONT_PROJECT.Controllers
 {
-    public class Repeats : Controller
+    public class RepeatsController : Controller
     {
         public IActionResult Index()
+        {
+            return View();
+        }
+        public IActionResult Create()
         {
             return View();
         }
