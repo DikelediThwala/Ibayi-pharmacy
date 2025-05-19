@@ -12,5 +12,6 @@
         public int DoctorID { get; set; }
 
         public byte[] PrescriptionPhoto { get; set; }
+        public string Status { get; internal set; }
     }
 }
