@@ -2,7 +2,7 @@
 
 namespace ONT_PROJECT.Controllers
 {
-    public class ClientController : Controller
+    public class CustomerController : Controller
     {
         public IActionResult Dashboard()
         {
