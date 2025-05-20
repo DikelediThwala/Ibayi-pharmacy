@@ -1,191 +1,368 @@
-﻿@* @model ONT_PROJECT.Models.Repeats *@
-
+﻿
 @{
     ViewData["Title"] = "Upload prescription";
     Layout = "_CustomerLayout";
 }
+<h2 style="font-weight:bold; color:#007bff; font-size:18px; margin-bottom:15px;">Add New Prescription</h2>
 
-<h2 class="mb-4">Add prescriprtion</h2>
-<hr style="height: 5px; background-color: #011425; border: none;" />
-<br />
-<a asp-action="Create" asp-controller="Prescription" class="btn btn-primary mb-3">
-    <i class="bi bi-plus-circle"></i> Add Prescription
-</a>
-@* @{
-    ViewData["Title"] = "Upload prescription";
-    Layout = "_ClientLayout";
-}
+<form class="add-prescription-form" method="post" action="#" enctype="multipart/form-data">
+    <label for="customerId">Customer ID:</label>
+    <input type="text" id="customerId" name="customerId" placeholder="Enter Customer ID" />
 
-<h1>UPLOAD PRESCRIPTION</h1>
+    <label for="doctorId">Doctor ID:</label>
+    <input type="text" id="doctorId" name="doctorId" placeholder="Enter Doctor ID" />
+
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" />
+
+    <label for="photo">Prescription PDF:</label>
+    <input type="file" id="photo" name="photo" accept="application/pdf" />
+
+    <button type="submit">Add</button>
+</form>
+
+<h2 style="font-weight:bold; color:#007bff; font-size:18px; margin-bottom:20px;">My Prescriptions</h2>
+
 <style>
-    body {
-        font-family: sans-serif;
-        background-color: #eeeeee;
+    .prescription-table {
+        width: 80%;
+        margin: auto auto 40px auto;
+        background-color: #e6f2ff;
+        border-radius: 10px;
+        overflow: hidden;
+        font-size: 14px;
     }
 
-    .file-upload {
-        background-color: #ffffff;
-        width: 600px;
-        margin: 0 auto;
-        padding: 20px;
+        .prescription-table th, .prescription-table td {
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .prescription-table img {
+            width: 80px;
+            border-radius: 6px;
+        }
+
+        .prescription-table thead {
+            background-color: #cce6ff;
+        }
+
+    .action-buttons .btn {
+        padding: 4px 8px;
+        font-size: 12px;
+        margin: 2px;
     }
 
-    .file-upload-btn {
-        width: 100%;
-        margin: 0;
-        color: #fff;
-        background: #1FB264;
-        border: none;
-        padding: 10px;
+    .badge {
+        padding: 4px 6px;
+        font-size: 12px;
         border-radius: 4px;
-        border-bottom: 4px solid #15824B;
-        transition: all .2s ease;
-        outline: none;
-        text-transform: uppercase;
-        font-weight: 700;
+        display: inline-block;
+        min-width: 70px;
     }
 
-        .file-upload-btn:hover {
-            background: #1AA059;
-            color: #ffffff;
-            transition: all .2s ease;
-            cursor: pointer;
-        }
-
-        .file-upload-btn:active {
-            border: 0;
-            transition: all .2s ease;
-        }
-
-    .file-upload-content {
-        display: none;
-        text-align: center;
+    .bg-success {
+        background-color: #28a745;
+        color: white;
     }
 
-    .file-upload-input {
-        position: absolute;
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        outline: none;
-        opacity: 0;
-        cursor: pointer;
+    .bg-secondary {
+        background-color: #6c757d;
+        color: white;
     }
 
-    .image-upload-wrap {
-        margin-top: 20px;
-        border: 4px dashed #1FB264;
-        position: relative;
+    .bg-warning {
+        background-color: #ffc107;
+        color: black;
     }
 
-        .image-dropping,
-        .image-upload-wrap:hover {
-            background-color: #1FB264;
-            border: 4px dashed #ffffff;
-        }
-
-    .image-title-wrap {
-        padding: 0 15px 15px 15px;
-        color: #222;
+    .bg-info {
+        background-color: #17a2b8;
+        color: white;
     }
 
-    .drag-text {
-        text-align: center;
-    }
-
-        .drag-text h3 {
-            font-weight: 100;
-            text-transform: uppercase;
-            color: #15824B;
-            padding: 60px 0;
-        }
-
-    .file-upload-image {
-        max-height: 200px;
-        max-width: 200px;
+    /* Form styles */
+    .add-prescription-form {
+        width: 80%;
         margin: auto;
-        padding: 20px;
+        background-color: #f0f8ff;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 6px #cce6ff;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        font-size: 14px;
     }
 
-    .remove-image {
-        width: 200px;
-        margin: 0;
-        color: #fff;
-        background: #cd4535;
-        border: none;
-        padding: 10px;
-        border-radius: 4px;
-        border-bottom: 4px solid #b02818;
-        transition: all .2s ease;
-        outline: none;
-        text-transform: uppercase;
-        font-weight: 700;
-    }
+        .add-prescription-form label {
+            font-weight: 600;
+            margin-right: 5px;
+        }
 
-        .remove-image:hover {
-            background: #c13b2a;
-            color: #ffffff;
-            transition: all .2s ease;
+        .add-prescription-form input[type="text"],
+        .add-prescription-form input[type="date"],
+        .add-prescription-form input[type="file"] {
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            flex: 1 1 120px;
+            min-width: 120px;
+        }
+
+        .add-prescription-form button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
             cursor: pointer;
+            font-weight: 600;
+            flex: 0 0 auto;
         }
 
-        .remove-image:active {
-            border: 0;
-            transition: all .2s ease;
-        }
+            .add-prescription-form button:hover {
+                background-color: #0056b3;
+            }
 </style>
 
-<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<div class="file-upload">
-    <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button>
+<table class="table table-bordered prescription-table">
+    <thead>
+        <tr>
+            <th>Customer ID</th>
+            <th>Doctor ID</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Prescription Photo</th>
+            <th>Download</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1001</td>
+            <td>2001</td>
+            <td>2025-05-10</td>
+            <td><span class="badge bg-success">Active</span></td>
+            <td>
+                <img src="~/Content/prescriptions/prescription1.jpg" alt="Prescription" />
+            </td>
+            <td>
+                <a href="~/Content/prescriptions/prescription1.pdf" class="btn btn-primary btn-sm" download>Download</a>
+            </td>
+            <td class="action-buttons">
+                <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                <a href="#" class="btn btn-info btn-sm">Request Dispense</a>
+            </td>
+        </tr>
+        <tr>
+            <td>1002</td>
+            <td>2002</td>
+            <td>2025-04-18</td>
+            <td><span class="badge bg-warning">Requested</span></td>
+            <td>
+                <img src="~/Content/prescriptions/prescription2.jpg" alt="Prescription" />
+            </td>
+            <td>
+                <a href="~/Content/prescriptions/prescription2.pdf" class="btn btn-primary btn-sm" download>Download</a>
+            </td>
+            <td class="action-buttons">
+                <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                <a href="#" class="btn btn-info btn-sm">Request Dispense</a>
+            </td>
+        </tr>
+        <tr>
+            <td>1003</td>
+            <td>2003</td>
+            <td>2025-03-20</td>
+            <td><span class="badge bg-secondary">Expired</span></td>
+            <td>
+                <img src="~/Content/prescriptions/prescription3.jpg" alt="Prescription" />
+            </td>
+            <td>
+                <a href="~/Content/prescriptions/prescription3.pdf" class="btn btn-primary btn-sm" download>Download</a>
+            </td>
+            <td class="action-buttons">
+                <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                <a href="#" class="btn btn-info btn-sm">Request Dispense</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+@* 
+<h2 style="margin-bottom: 15px;">Add New Prescription</h2>
 
-    <div class="image-upload-wrap">
-        <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" />
-        <div class="drag-text">
-            <h3>Drag and drop a file or select add file</h3>
-        </div>
-    </div>
-    <div class="file-upload-content">
-        <img class="file-upload-image" src="#" alt="your image" />
-        <div class="image-title-wrap">
-            <button type="button" onclick="removeUpload()" class="remove-image">Remove <span class="image-title">Uploaded file</span></button>
-        </div>
-    </div>
-</div>
-
-        <script>
-                function readURL(input) {
-      if (input.files && input.files[0]) {
-
-        var reader = new FileReader();
-
-        reader.onload = function(e) {
-          $('.image-upload-wrap').hide();
-
-          $('.file-upload-image').attr('src', e.target.result);
-          $('.file-upload-content').show();
-
-          $('.image-title').html(input.files[0].name);
-        };
-
-        reader.readAsDataURL(input.files[0]);
-
-      } else {
-        removeUpload();
-      }
+<style>
+    .prescription-table {
+        width: 80%;
+        margin: 20px auto 40px auto;
+        background-color: #e6f2ff;
+        border-radius: 10px;
+        overflow: hidden;
+        font-size: 14px;
     }
 
-    function removeUpload() {
-      $('.file-upload-input').replaceWith($('.file-upload-input').clone());
-      $('.file-upload-content').hide();
-      $('.image-upload-wrap').show();
-    }
-    $('.image-upload-wrap').bind('dragover', function () {
-            $('.image-upload-wrap').addClass('image-dropping');
-        });
-        $('.image-upload-wrap').bind('dragleave', function () {
-            $('.image-upload-wrap').removeClass('image-dropping');
-    });
+        .prescription-table th, .prescription-table td {
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
 
-        </script> *@
+        .prescription-table img {
+            width: 80px;
+            border-radius: 6px;
+        }
+
+        .prescription-table thead {
+            background-color: #cce6ff;
+        }
+
+    .action-buttons .btn {
+        padding: 4px 8px;
+        font-size: 12px;
+        margin: 2px;
+    }
+
+    .badge {
+        padding: 4px 6px;
+        font-size: 12px;
+        border-radius: 4px;
+    }
+
+    .bg-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .bg-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    /* Form styles */
+    .add-prescription-form {
+        width: 80%;
+        margin: auto;
+        background-color: #f0f8ff;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 6px #cce6ff;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        font-size: 14px;
+    }
+
+        .add-prescription-form label {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .add-prescription-form input[type="text"],
+        .add-prescription-form input[type="date"] {
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            flex: 1 1 120px;
+            min-width: 120px;
+        }
+
+        .add-prescription-form select {
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            flex: 1 1 140px;
+            min-width: 140px;
+        }
+
+        .add-prescription-form button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            flex: 0 0 auto;
+        }
+
+            .add-prescription-form button:hover {
+                background-color: #0056b3;
+            }
+</style>
+
+<form class="add-prescription-form" method="post" action="#">
+    <label for="customerId">Customer ID:</label>
+    <input type="text" id="customerId" name="customerId" placeholder="Enter Customer ID" />
+
+    <label for="doctorId">Doctor ID:</label>
+    <input type="text" id="doctorId" name="doctorId" placeholder="Enter Doctor ID" />
+
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" />
+
+
+    <label for="photo">Prescription PDF:</label>
+    <input type="file" id="photo" name="photo" accept="application/pdf" />
+
+    <button type="submit">Add</button>
+</form>
+
+<h2 style="margin-bottom: 20px;">My Prescriptions</h2>
+
+<table class="table table-bordered prescription-table">
+    <thead>
+        <tr>
+            <th>Customer ID</th>
+            <th>Doctor ID</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Prescription Photo</th>
+            <th>Download</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1001</td>
+            <td>2001</td>
+            <td>2025-05-10</td>
+            <td><span class="badge bg-success">Active</span></td>
+            <td>
+                <img src="~/Content/prescriptions/prescription1.jpg" alt="Prescription" />
+            </td>
+            <td>
+                <a href="~/Content/prescriptions/prescription1.pdf" class="btn btn-primary btn-sm" download>Download</a>
+            </td>
+            <td class="action-buttons">
+                <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        <tr>
+            <td>1002</td>
+            <td>2002</td>
+            <td>2025-04-18</td>
+            <td><span class="badge bg-secondary">Expired</span></td>
+            <td>
+                <img src="~/Content/prescriptions/prescription2.jpg" alt="Prescription" />
+            </td>
+            <td>
+                <a href="~/Content/prescriptions/prescription2.pdf" class="btn btn-primary btn-sm" download>Download</a>
+            </td>
+            <td class="action-buttons">
+                <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                <a href="#" class="btn btn-info btn-sm">Request Dispense</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+  *@
