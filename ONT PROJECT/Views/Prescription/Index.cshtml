@@ -141,6 +141,7 @@
         </tr>
     </thead>
     <tbody>
+        <!-- ACTIVE Prescription: Request Dispense is BLUE and clickable -->
         <tr>
             <td>1001</td>
             <td>2001</td>
@@ -158,6 +159,8 @@
                 <a href="#" class="btn btn-info btn-sm">Request Dispense</a>
             </td>
         </tr>
+
+        <!-- REQUESTED Prescription: Request Dispense is GREYED OUT -->
         <tr>
             <td>1002</td>
             <td>2002</td>
@@ -172,9 +175,30 @@
             <td class="action-buttons">
                 <a href="#" class="btn btn-warning btn-sm">Edit</a>
                 <a href="#" class="btn btn-danger btn-sm">Delete</a>
-                <a href="#" class="btn btn-info btn-sm">Request Dispense</a>
+                <button class="btn btn-secondary btn-sm" disabled>Requested</button>
             </td>
         </tr>
+
+        <!-- READY FOR COLLECTION Prescription: Request Dispense is GREYED OUT -->
+        <tr>
+            <td>1004</td>
+            <td>2004</td>
+            <td>2025-05-15</td>
+            <td><span class="badge bg-info">Ready for Collection</span></td>
+            <td>
+                <img src="~/Content/prescriptions/prescription4.jpg" alt="Prescription" />
+            </td>
+            <td>
+                <a href="~/Content/prescriptions/prescription4.pdf" class="btn btn-primary btn-sm" download>Download</a>
+            </td>
+            <td class="action-buttons">
+                <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                <button class="btn btn-secondary btn-sm" disabled>Dispense Sent</button>
+            </td>
+        </tr>
+
+        <!-- EXPIRED Prescription: Request Dispense is BLUE (can be disabled if needed) -->
         <tr>
             <td>1003</td>
             <td>2003</td>
@@ -193,6 +217,7 @@
             </td>
         </tr>
     </tbody>
+
 </table>
 @* 
 <h2 style="margin-bottom: 15px;">Add New Prescription</h2>
