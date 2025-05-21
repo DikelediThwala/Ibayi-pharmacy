@@ -8,10 +8,11 @@ namespace ONT_PROJECT.Controllers
         {
             return View();
         }
-        public IActionResult create()
+        public IActionResult Create()
         {
             return View();
         }
+
     }
 }
 //using Microsoft.AspNetCore.Http;

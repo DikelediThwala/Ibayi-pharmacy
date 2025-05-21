@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Upload prescription";
+    Layout = "_CustomerLayout";
+}
+
+   @using ONT_PROJECT.Models
+
+@{
+    var medicines = new List<Medicine>
+    {
+        new Medicine { MedicineID = 1, MedicineName = "Panado", SalesPrice = 10 },
+        new Medicine { MedicineID = 2, MedicineName = "Cough Syrup", SalesPrice = 25 },
+        new Medicine { MedicineID = 3, MedicineName = "Allergex", SalesPrice = 15 }
+    };
+
+    var prescriptionLines = new List<PrescriptionLine>
+    {
+        new PrescriptionLine { LineID = 1, PrescriptionID = 101, MedicineID = 1, Quantity = 2, Instructions = "Take twice a day", Repeats = 1, RepeatsLeft = 1 },
+        new PrescriptionLine { LineID = 2, PrescriptionID = 101, MedicineID = 2, Quantity = 1, Instructions = "Once a day", Repeats = 0, RepeatsLeft = 0 }
+    };
+
+    decimal totalAmount = 0;
+}
+
+<h3 style="font-weight:bold; color:blue; margin-bottom:15px;">Prescription Details</h3>
+
+<table style="width:900px; border-collapse: separate; border-spacing: 0; border: 1px solid #ccc; font-family: Arial, sans-serif; border-radius: 10px; overflow: hidden;">
+    <thead>
+        <tr style="background-color:#f0f8ff;">
+            <th style="border-bottom: 1px solid #ccc; padding: 8px; text-align:left;">Medicine</th>
+            <th style="border-bottom: 1px solid #ccc; padding: 8px; text-align:right;">Quantity</th>
+            <th style="border-bottom: 1px solid #ccc; padding: 8px; text-align:right;">Unit Price</th>
+            <th style="border-bottom: 1px solid #ccc; padding: 8px; text-align:right;">Total</th>
+            <th style="border-bottom: 1px solid #ccc; padding: 8px; text-align:left;">Instructions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var line in prescriptionLines)
+        {
+            var med = medicines.FirstOrDefault(m => m.MedicineID == line.MedicineID);
+            if (med != null)
+            {
+                var lineTotal = (decimal)med.SalesPrice * line.Quantity;
+                totalAmount += lineTotal;
+                <tr>
+                    <td style="padding: 8px; border-bottom: 1px solid #ccc;">@med.MedicineName</td>
+                    <td style="padding: 8px; text-align:right; border-bottom: 1px solid #ccc;">@line.Quantity</td>
+                    <td style="padding: 8px; text-align:right; border-bottom: 1px solid #ccc;">@med.SalesPrice.ToString("C")</td>
+                    <td style="padding: 8px; text-align:right; border-bottom: 1px solid #ccc;">@lineTotal.ToString("C")</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #ccc;">@line.Instructions</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<h4 style="margin-top:15px;">Total Amount Due: <strong>@totalAmount.ToString("C")</strong></h4>
