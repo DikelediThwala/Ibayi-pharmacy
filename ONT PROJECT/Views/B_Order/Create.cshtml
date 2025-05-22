@@ -1,5 +1,169 @@
 ﻿@model ONT_PROJECT.Models.B_Order
 
+
+@{
+    ViewData["Title"] = "Create Medication Order";
+    Layout = "_ManagerLayout";
+}
+
+
+<div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
+    <i class="bi bi-info-circle-fill"></i>
+    Please ensure all details are accurate before saving. Fields marked with <span class="text-danger">*</span> are required.
+</div>
+<div class="container mt-4">
+    
+    <div class="card shadow p-4">
+        <div class="card-body">
+            <h2>  <i class="bi bi-bag-check-fill me-2 text-primary"></i>Create Medication Order
+            </h2>
+
+            <hr style="height: 5px; background-color: #011425; border: none;" />
+            <form asp-action="Create" method="post">
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" asp-for="Status">
+                        <option disabled selected>-- Select Status --</option>
+                        <option value="1">Placed</option>
+                        <option value="2">Pending</option>
+                        <option value="3">Cancelled</option>
+                        <option value="4">Received</option>
+
+
+                    </select>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="DatePlaced" class="form-label">Date Placed<span class="text-danger">*</span></label>
+                        <input asp-for="DatePlaced" class="form-control" type="date" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="DateRecieved" class="form-label">Date Received</label>
+                        <input asp-for="DateRecieved" class="form-control" type="date" />
+                    </div>
+
+                </div>
+
+                <h5 class="mt-4">Items to Order</h5>
+                <table class="table table-bordered" id="medicationTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Medication<span class="text-danger">*</span></th>
+                            <th>Quantity <span class="text-danger">*</span></th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="medicationTableBody">
+                        <tr>
+                            <td>
+                                <select class="form-select" name="OrderLines[0].MedicationID">
+                                    <option disabled selected>-- Select Medication --</option>
+                                    <option value="1">Panado</option>
+                                    <option value="2">Brufen</option>
+                                    <option value="3">Augmentin</option>
+                                    <option value="4">Allergex</option>
+                                    <option value="5">Disprin</option>
+                                    <option value="6">Glucophage</option>
+                                    <option value="7">Simvacor</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input class="form-control" type="number" name="OrderLines[0].Quantity" value="1" />
+                            </td>
+                           
+                        </tr>
+                    </tbody>
+
+                </table>
+
+                <!-- Add Medication Button -->
+                <div class="mb-3">
+                    <button type="button" class="btn btn-outline-primary" onclick="addMedicationRow()">
+                        <i class="bi bi-plus-circle"></i> Add Medication
+                    </button>
+                </div>
+
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="/B_Order/Index" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Submit Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    <script>
+        let rowIndex = 1; 
+
+        function addMedicationRow() {
+            const table = document.getElementById("medicationTableBody");
+
+            const newRow = document.createElement("tr");
+
+            newRow.innerHTML = `
+                <td>
+                    <select class="form-select" name="OrderLines[${rowIndex}].MedicationID">
+                        <option disabled selected>-- Select Medication --</option>
+                        <option value="1">Panado</option>
+                        <option value="2">Brufen</option>
+                        <option value="3">Augmentin</option>
+                        <option value="4">Allergex</option>
+                        <option value="5">Disprin</option>
+                        <option value="6">Glucophage</option>
+                        <option value="7">Simvacor</option>
+                    </select>
+                </td>
+                <td><input class="form-control" type="number" name="OrderLines[${rowIndex}].Quantity" value="1" /></td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                </td>
+            `;
+
+            table.appendChild(newRow);
+            rowIndex++;
+        }
+
+        function removeRow(button) {
+            const row = button.closest("tr");
+            row.remove();
+        }
+    </script>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* @model ONT_PROJECT.Models.B_Order
+
 @{
     ViewData["Title"] = "Manage Orders";
     Layout = "_ManagerLayout";
@@ -77,3 +241,4 @@
         </form>
     </div>
 </div>
+ *@

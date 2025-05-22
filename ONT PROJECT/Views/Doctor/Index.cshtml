@@ -1,13 +1,103 @@
-﻿@model ONT_PROJECT.Models.Doctor
-
-@{
+﻿@{
     ViewData["Title"] = "Manage Doctors";
     Layout = "_ManagerLayout";
 }
 
-<h2 class="mb-4">Manage Doctors </h2>
-<hr style="height: 5px; background-color: #011425; border: none;" />
-<br />
-<a asp-action="Create" asp-controller="Doctor" class="btn btn-primary mb-3">
-    <i class="bi bi-plus-circle"></i> Add Doctor
-</a>
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Manage Doctor</h2>
+        <a asp-action="Create" asp-controller="Doctor" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>Add Doctor
+        </a>
+    </div>
+    <hr style="height: 5px; background-color: #011425; border: none;" />
+</div>
+
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="card h-100 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title text-primary">Mokoena Papi</h5>
+            <div style="height: 3px; background-color: #011425; width: 350px; margin-top: 5px; margin-bottom: 10px;"></div>
+            <h6 class="card-subtitle mb-2 text-muted">Cardiologist</h6>
+            <p class="card-text mb-1"><strong>Email:</strong> mokoenapapi@gmail.com</p>
+            <p class="card-text"><strong>Phone:</strong> 0721234567</p>
+        </div>
+        <hr />
+        <div class="card-footer bg-transparent border-top-0 d-flex justify-content-end gap-2">
+            <a asp-action="Edit" asp-route-id="1" class="btn btn-sm btn-primary">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
+            <a asp-action="Delete" asp-route-id="1" class="btn btn-sm btn-danger">
+                <i class="bi bi-trash"></i> Delete
+            </a>
+        </div>
+    </div>
+
+
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Mary Tshabalala</h5>
+                <div style="height: 3px; background-color: #011425; width: 350px; margin-top: 5px; margin-bottom: 10px;"></div>
+
+                <h6 class="card-subtitle mb-2 text-muted">Neurologist</h6>
+                <p class="card-text mb-1"><strong>Email:</strong> mary.tshabalala@gmail.com</p>
+                <p class="card-text"><strong>Phone:</strong> 0734567890</p>
+            </div>
+            <hr />
+            <div class="card-footer bg-transparent border-top-0 d-flex justify-content-end gap-2">
+                <a asp-action="Edit" asp-route-id="2" class="btn btn-sm btn-primary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a asp-action="Delete" asp-route-id="2" class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Thabo Dlamini</h5>
+                <div style="height: 3px; background-color: #011425; width: 350px; margin-top: 5px; margin-bottom: 10px;"></div>
+
+                <h6 class="card-subtitle mb-2 text-muted">Pediatrician</h6>
+                <p class="card-text mb-1"><strong>Email:</strong> thabodlamini@gmail.com</p>
+                <p class="card-text"><strong>Phone:</strong> 0719876543</p>
+            </div>
+            <hr />
+            <div class="card-footer bg-transparent border-top-0 d-flex justify-content-end gap-2">
+                <a asp-action="Edit" asp-route-id="3" class="btn btn-sm btn-primary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a asp-action="Delete" asp-route-id="3" class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Lindiwe Mokoena</h5>
+                <div style="height: 3px; background-color: #011425; width: 350px; margin-top: 5px; margin-bottom: 10px;"></div>
+
+                <h6 class="card-subtitle mb-2 text-muted">General Practitioner</h6>
+                <p class="card-text mb-1"><strong>Email:</strong> lindiwemokoenam@gmail.com</p>
+                <p class="card-text"><strong>Phone:</strong> 0763210987</p>
+            </div>
+            <hr />
+            <div class="card-footer bg-transparent border-top-0 d-flex justify-content-end gap-2">
+                <a asp-action="Edit" asp-route-id="4" class="btn btn-sm btn-primary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a asp-action="Delete" asp-route-id="4" class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

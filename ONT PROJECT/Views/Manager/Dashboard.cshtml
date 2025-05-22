@@ -14,46 +14,55 @@
 
         <div class="row g-3">
             <div class="col-md-2">
-                <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #007bff, #00aaff);">
-                    <div><strong>Total Medications</strong></div>
-                    <div class="fs-4 fw-bold">1,240</div>
-                </div>
+                <a href="/Medicine/Index" style="text-decoration: none;">
+                    <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #007bff, #00aaff);">
+                        <div><strong>Total Medications</strong></div>
+                        <div class="fs-4 fw-bold">8</div>
+                    </div>
+                </a>
             </div>
-           
+
             <div class="col-md-2">
-                <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #28a745, #4caf50);">
-                    <div><strong>Suppliers</strong></div>
-                    <div class="fs-4 fw-bold">17</div>
-                </div>
+                <a href="/Supplier/Index" style="text-decoration: none;">
+                    <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #28a745, #4caf50);">
+                        <div><strong>Suppliers</strong></div>
+                        <div class="fs-4 fw-bold">7</div>
+                    </div>
+                </a>
             </div>
+
             <div class="col-md-2">
-                <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #17a2b8, #00bcd4);">
-                    <div><strong>Pharmacists</strong></div>
-                    <div class="fs-4 fw-bold">8</div>
-                </div>
+                <a href="/User/Index" style="text-decoration: none;">
+                    <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #17a2b8, #00bcd4);">
+                        <div><strong>Pharmacists</strong></div>
+                        <div class="fs-4 fw-bold">3</div>
+                    </div>
+                </a>
             </div>
+
             <div class="col-md-2">
-                <div class="card p-3 text-center text-dark shadow rounded-3" style="background: linear-gradient(135deg, #ffc107, #ff9800);">
-                    <div><strong>Doctors</strong></div>
-                    <div class="fs-4 fw-bold">15</div>
-                </div>
+                <a href="/Doctor/Index" style="text-decoration: none;">
+                    <div class="card p-3 text-center text-dark shadow rounded-3" style="background: linear-gradient(135deg, #ffc107, #ff9800);">
+                        <div><strong>Doctors</strong></div>
+                        <div class="fs-4 fw-bold">4</div>
+                    </div>
+                </a>
             </div>
+
             <div class="col-md-2">
-                <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #6c757d, #495057);">
-                    <div><strong>Customers</strong></div>
-                    <div class="fs-4 fw-bold">324</div>
-                </div>
+                <a href="/User/Index?id=Customers" style="text-decoration: none;">
+                    <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #6c757d, #495057);">
+                        <div><strong>Customers</strong></div>
+                        <div class="fs-4 fw-bold">324</div>
+                    </div>
+                </a>
             </div>
-            <div class="col-md-2">
-                <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg,#4caf50 ,  #17a2b8);">
-                    <div><strong>Business Rates</strong></div>
-                    <div class="fs-4 fw-bold">88%</div>
-                </div>
-            </div>
+
+
         </div>
+
     </div>
 
-    <!-- Graphs Section -->
     <div class="row g-3 mt-4" >
         <div class="col-md-6">
             <div class="card p-3">
@@ -114,7 +123,7 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Sales Per Year Chart
+
         new Chart(document.getElementById('salesPerYearChart').getContext('2d'), {
             type: 'line',
             data: {
@@ -140,7 +149,7 @@
             }
         });
 
-        // Best Sold Medicines Chart
+
         new Chart(document.getElementById('bestSoldMedicineChart').getContext('2d'), {
             type: 'bar',
             data: {
@@ -161,7 +170,6 @@
             }
         });
 
-        // Dosage Form Chart
         new Chart(document.getElementById('dosageFormChart').getContext('2d'), {
             type: 'bar',
             data: {
@@ -182,7 +190,6 @@
             }
         });
 
-        // Supplier Pie Chart
         new Chart(document.getElementById('supplierPieChart').getContext('2d'), {
             type: 'doughnut',
             data: {
