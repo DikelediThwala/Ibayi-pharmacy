@@ -11,5 +11,7 @@ namespace ONT_PROJECT.Models
         }
 
         public DbSet<Supplier> Suppliers { get; set; }
+        public object Prescriptions { get; internal set; }
+        public DbSet<B_Order> B_Orders { get; set; }
     }
 }
