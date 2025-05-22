@@ -135,9 +135,9 @@
         </div>
 
         <ul class="nav flex-column p-2">
-            <li class="nav-item"><a class="nav-link active" asp-controller="Manager" asp-action="Dashboard"><i class="bi bi-grid"></i> <span>Dashboard</span></a></li>
-            <li class="nav-item"><a class="nav-link" asp-controller="Pharmacy" asp-action="Index"><i class="bi bi-pencil-square"></i> <span>Manage Details</span></a></li>
-            <li class="nav-item"><a class="nav-link" asp-controller="Supplier" asp-action="Index"><i class="bi bi-truck"></i> <span>Suppliers</span></a></li>
+            <li class="nav-item"><a class="nav-link active" asp-controller="Manager" asp-action="Dashboard" title="Dashboard" data-bs-toggle="tooltip"><i class="bi bi-grid"></i> <span>Dashboard</span></a></li>
+            <li class="nav-item"><a class="nav-link" asp-controller="Pharmacy" asp-action="Index" title="Pharmacy Details" data-bs-toggle="tooltip"><i class="bi bi-pencil-square"></i> <span>Manage Details</span></a></li>
+            <li class="nav-item"><a class="nav-link" asp-controller="Supplier" asp-action="Index" title="Suppliers" data-bs-toggle="tooltip"><i class="bi bi-truck"></i> <span>Suppliers</span></a></li>
             <li class="nav-item">
                 <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#medicationSubmenu">
                     <span><i class="bi bi-capsule"></i> <span>Medication</span></span>
@@ -145,17 +145,17 @@
                 </a>
                 <div class="collapse ps-3" id="medicationSubmenu">
                     <ul class="nav flex-column">
-                        <li><a class="nav-link" asp-controller="Medicine" asp-action="Index"><i class="bi bi-pencil-square"></i> Manage Medication</a></li>
-                        <li><a class="nav-link" asp-controller="DosageForm" asp-action="Index"><i class="bi bi-diagram-3"></i> Dosage Forms</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="ActiveIngredient" asp-action="Create"><i class="bi bi-collection"></i> <span>Active Ingredients</span></a></li>
+                        <li><a class="nav-link" asp-controller="Medicine" asp-action="Index" title="Manage Medication" data-bs-toggle="tooltip"><i class="bi bi-pencil-square"></i> Manage Medication</a></li>
+                        <li><a class="nav-link" asp-controller="DosageForm" asp-action="Index" title="Dosage Forms" data-bs-toggle="tooltip"><i class="bi bi-diagram-3"></i> Dosage Forms</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="ActiveIngredient" asp-action="Create" title="Add Ingredient" data-bs-toggle="tooltip" ><i class="bi bi-collection"></i> <span>Add Ingredient</span></a></li>
 
                     </ul>
                 </div>
             </li>
-            <li class="nav-item"><a class="nav-link" asp-controller="Doctor" asp-action="Index"><i class="bi bi-person-badge"></i> <span>Manage Doctor</span></a></li>
-            <li class="nav-item"><a class="nav-link" asp-controller="User" asp-action="Index"><i class="bi bi-people"></i> <span>Manage Users</span></a></li>
-            <li class="nav-item"><a class="nav-link" asp-controller="B_Order" asp-action="Index"><i class="bi bi-box-seam"></i> <span>Manage Stock</span></a></li>
-            <li class="nav-item"><a class="nav-link" asp-controller="Manager" asp-action="Report"><i class="bi bi-collection"></i> <span>Report</span></a></li>
+            <li class="nav-item"><a class="nav-link" asp-controller="Doctor" asp-action="Index" title="Manage Doctors" data-bs-toggle="tooltip"><i class="bi bi-person-badge"></i> <span>Manage Doctors</span></a></li>
+            <li class="nav-item"><a class="nav-link" asp-controller="User" asp-action="Index" title="Manage User" data-bs-toggle="tooltip"><i class="bi bi-people"></i> <span>Manage Users</span></a></li>
+            <li class="nav-item"><a class="nav-link" asp-controller="B_Order" asp-action="Index" title="Manage Stock" data-bs-toggle="tooltip"><i class="bi bi-box-seam"></i> <span>Manage Stock</span></a></li>
+            <li class="nav-item"><a class="nav-link" asp-controller="Manager" asp-action="Report" title="Report" data-bs-toggle="tooltip"><i class="bi bi-collection"></i> <span>Report</span></a></li>
 
         </ul>
     </div>
