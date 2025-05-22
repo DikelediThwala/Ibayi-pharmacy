@@ -2,13 +2,13 @@
 
 namespace ONT_PROJECT.Controllers
 {
-    public class Prescription : Controller
+    public class CustomerOrderController : Controller
     {
         public IActionResult Index()
         {
             return View();
         }
-        public IActionResult create()
+        public IActionResult Create()
         {
             return View();
         }

@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Order Medication";
+    Layout = "_CustomerLayout";
+}
+
+<h4 style="color: blue; font-weight: bold;">Order New Medication</h4>
+<form class="mb-4" enctype="multipart/form-data">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>Medication Name</label>
+            <input type="text" class="form-control" placeholder="Enter medication name" />
+        </div>
+        <div class="form-group col-md-3">
+            <label>Quantity</label>
+            <input type="number" class="form-control" min="1" value="1" />
+        </div>
+        <div class="form-group col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Order</button>
+        </div>
+    </div>
+</form>

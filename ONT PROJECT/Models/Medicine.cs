@@ -17,7 +17,8 @@ namespace ONT_PROJECT.Models
 
         [Required]
         [StringLength(50)]
-        public string Ingredients { get; set; }
+        public List<string> Ingredients { get; set; } = new List<string>();
+
 
         [Required]
         public float SalesPrice { get; set; }

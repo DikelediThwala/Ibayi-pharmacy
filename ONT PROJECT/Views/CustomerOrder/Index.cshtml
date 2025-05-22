@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "My Orders";
+    Layout = "_CustomerLayout";
+}
+<h4 style="color: blue; font-weight: bold;">My Medication Orders</h4>
+<table class="table table-bordered" style="background-color: #e6f2ff; border-radius: 10px;">
+    <thead class="thead-light">
+        <tr>
+            <th>Medication</th>
+            <th>Quantity</th>
+            <th>Order Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Panado</td>
+            <td>2</td>
+            <td>2025-05-18</td>
+            <td><span class="badge badge-warning">Pending</span></td>
+            <td>
+                <a href="#" class="btn btn-danger btn-sm">Cancel</a>
+            </td>
+        </tr>
+        <tr>
+            <td>Vitamin C</td>
+            <td>1</td>
+            <td>2025-05-15</td>
+            <td><span class="badge badge-success">Ready</span></td>
+            <td>
+                <button class="btn btn-secondary btn-sm" disabled>Collected</button>
+            </td>
+        </tr>
+    </tbody>
+</table>

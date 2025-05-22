@@ -30,6 +30,9 @@ namespace ONT_PROJECT.Models
         public string Role { get; set; }
 
         [Required]
+        public string Allergies { get; set; }
+
+        [Required]
         [Phone]
         public string PhoneNumber { get; set; }
         public byte[] ProfilePicture { get; set; }

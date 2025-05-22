@@ -1,0 +1,88 @@
+﻿@model ONT_PROJECT.Models.B_Order
+
+@{
+    ViewData["Title"] = "Create Medication Order";
+    Layout = "_ManagerLayout";
+}
+
+
+<div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
+    <i class="bi bi-info-circle-fill"></i> Order selected medication
+</div>
+<div class="container mt-4">
+
+    <div class="card shadow p-4">
+        <div class="card-body">
+            <h2>
+                <i class="bi bi-bag-check-fill me-2 text-primary"></i>Create Medication Order
+            </h2>
+
+            <hr style="height: 5px; background-color: #011425; border: none;" />
+            <form asp-action="Create" method="post">
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" asp-for="Status">
+                        <option disabled selected>-- Select Status --</option>
+                        <option value="1">Placed</option>
+                        <option value="2">Pending</option>
+                        <option value="3">Cancelled</option>
+                        <option value="4">Received</option>
+
+
+                    </select>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="DatePlaced" class="form-label">Date Placed  Name <span class="text-danger">*</span></label>
+                        <input asp-for="DatePlaced" class="form-control" type="date" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="DateRecieved" class="form-label">Date Received</label>
+                        <input asp-for="DateRecieved" class="form-control" type="date" />
+                    </div>
+
+                </div>
+
+
+                <h5 class="mt-4">Items to Order</h5>
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Medication <span class="text-danger">*</span></th>
+                            <th>Quantity <span class="text-danger">*</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input class="form-control" value="Paracetamol" /></td>
+                            <td><input class="form-control" type="number" value="1" /></td>
+                        </tr>
+                        <tr>
+                            <td><input class="form-control" value="Amoxicillin" /></td>
+                            <td><input class="form-control" type="number" value="1" /></td>
+                        </tr>
+                        <tr>
+                            <td><input class="form-control" value="Ibuprofen" /></td>
+                            <td><input class="form-control" type="number" value="1" /></td>
+                        </tr>
+                        <tr>
+                            <td><input class="form-control" value="Cetirizine" /></td>
+                            <td><input class="form-control" type="number" value="1" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+           
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="/B_Order/Index" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </a>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Submit Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

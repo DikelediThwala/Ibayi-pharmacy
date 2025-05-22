@@ -2,12 +2,11 @@
 
 namespace ONT_PROJECT.Controllers
 {
-    public class ClientController : Controller
+    public class CustomerReport : Controller
     {
-        public IActionResult Dashboard()
+        public IActionResult Index()
         {
             return View();
         }
     }
 }
-

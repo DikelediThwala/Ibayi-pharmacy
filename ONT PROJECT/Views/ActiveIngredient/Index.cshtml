@@ -11,3 +11,68 @@
 <a asp-action="Create" asp-controller="ActiveIngredient" class="btn btn-primary mb-3">
     <i class="bi bi-plus-circle"></i> Add Ingredient
 </a>
+
+
+<h2>Pharmacy Medications and Their Active Ingredients</h2>
+
+<div class="card mb-3">
+    <div class="card-header bg-primary text-white">
+        <strong>Panado</strong>
+    </div>
+    <div class="card-body">
+        <ul>
+            <li>Paracetamol</li>
+        </ul>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header bg-success text-white">
+        <strong>Augmentin</strong>
+    </div>
+    <div class="card-body">
+        <ul>
+            <li>Amoxicillin</li>
+            <li>Clavulanic Acid</li>
+        </ul>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header bg-info text-white">
+        <strong>Myprodol</strong>
+    </div>
+    <div class="card-body">
+        <ul>
+            <li>Ibuprofen</li>
+            <li>Paracetamol</li>
+            <li>Codeine</li>
+        </ul>
+    </div>
+</div>
+
+
+<h2>Active Ingredients by Medication</h2>
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Medication</th>
+            <th>Active Ingredients</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Panado</td>
+            <td>Paracetamol</td>
+        </tr>
+        <tr>
+            <td>Myprodol</td>
+            <td>Ibuprofen, Paracetamol, Codeine</td>
+        </tr>
+        <tr>
+            <td>Augmentin</td>
+            <td>Amoxicillin, Clavulanic Acid</td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_CustomerLayout";
+}
+
+<h2 style="font-weight:bold; color:blue;">Prescription Report</h2>
+
+<div style="margin-top: 20px;">
+    <label><strong>From Date:</strong></label>
+    <input type="date" style="margin-right: 20px;" />
+
+    <label><strong>To Date:</strong></label>
+    <input type="date" />
+
+    <button style="margin-left: 20px; padding: 5px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px;">
+        Generate Report (PDF)
+    </button>
+</div>
+
+<br />
+
+<div style="margin-top: 30px; border-radius: 12px; overflow: hidden; width: 95%; margin-left:auto; margin-right:auto;">
+    <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
+        <thead style="background-color: #e6f0ff; color: black; font-weight: bold;">
+            <tr>
+                <th style="padding: 10px; border: 1px solid #ccc;">Prescription ID</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Customer</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Doctor</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Medication(s)</th>
+                <th style="padding: 10px; border: 1px solid #ccc;">Date Dispensed</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ccc;">RX12345</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">John Doe</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">Dr. Smith</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    Paracetamol 500mg<br />
+                    Amoxicillin 250mg
+                </td>
+                <td style="padding: 10px; border: 1px solid #ccc;">2025-05-20</td>
+            </tr>
+            <!-- Add more dummy rows as needed -->
+        </tbody>
+    </table>
+</div>
