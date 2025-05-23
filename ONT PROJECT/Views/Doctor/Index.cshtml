@@ -3,6 +3,33 @@
     Layout = "_ManagerLayout";
 }
 
+<style>
+    .card:hover {
+        transform: scale(1.03);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+    }
+
+    .card-body strong,
+    .card-title,
+    .card-subtitle {
+        transition: color 0.3s ease;
+    }
+
+    .card:hover .card-body strong,
+    .card:hover .card-title,
+    .card:hover .card-subtitle {
+        color: #011425;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+        transition: all 0.3s ease;
+    }
+</style>
+
+
 <div class="container my-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">Manage Doctor</h2>
@@ -17,7 +44,7 @@
 <div class="row row-cols-1 row-cols-md-3 g-4">
     <div class="card h-100 shadow-sm">
         <div class="card-body">
-            <h5 class="card-title">Mokoena Papi</h5>
+            <h5 class="card-title" style="background-color:cadetblue;">Mokoena Papi</h5>
             <div style="height: 3px; background-color: #011425; width: 350px; margin-top: 5px; margin-bottom: 10px;"></div>
             <h6 class="card-subtitle mb-2 text-muted">Cardiologist</h6>
             <p class="card-text mb-1"><strong>Email:</strong> mokoenapapi@gmail.com</p>
@@ -38,7 +65,7 @@
     <div class="col">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">Mary Tshabalala</h5>
+                <h5 class="card-title" style="background-color:cadetblue;">Mary Tshabalala</h5>
                 <div style="height: 3px; background-color: #011425; width: 350px; margin-top: 5px; margin-bottom: 10px;"></div>
 
                 <h6 class="card-subtitle mb-2 text-muted">Neurologist</h6>
@@ -60,7 +87,7 @@
     <div class="col">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">Thabo Dlamini</h5>
+                <h5 class="card-title" style="background-color:cadetblue;">Thabo Dlamini</h5>
                 <div style="height: 3px; background-color: #011425; width: 350px; margin-top: 5px; margin-bottom: 10px;"></div>
 
                 <h6 class="card-subtitle mb-2 text-muted">Pediatrician</h6>
@@ -82,7 +109,7 @@
     <div class="col">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">Lindiwe Mokoena</h5>
+                <h5 class="card-title" style="background-color:cadetblue;">Lindiwe Mokoena</h5>
                 <div style="height: 3px; background-color: #011425; width: 350px; margin-top: 5px; margin-bottom: 10px;"></div>
 
                 <h6 class="card-subtitle mb-2 text-muted">General Practitioner</h6>

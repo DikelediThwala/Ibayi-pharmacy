@@ -67,9 +67,19 @@
 
 
                         </div>
-                        <div margin-left:200px">
-                            <a class="btn btn-primary px-4 py-2" asp-controller="User" asp-action="Login">Login</a>
+                        <div style="margin-left: 200px;">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle px-4 py-2" type="button" id="loginDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Login As
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="loginDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Manager" asp-action="Dashboard" asp-route-role="Manager">Manager</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Customer" asp-action="Dashboard" asp-route-role="Customer">Customer</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Pharmacist" asp-action="Index" asp-route-role="Pharmacist">Pharmacist</a></li>
+                                </ul>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
