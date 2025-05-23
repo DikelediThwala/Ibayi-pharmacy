@@ -8,7 +8,7 @@
 <!-- Page Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-dark">
-        <i class="bi bi-hospital me-2 text-primary"></i> Register A User
+        <i class="bi bi-hospital me-2 text-primary"></i> Register User
     </h2>
 </div>
 
@@ -82,27 +82,15 @@
                     <input asp-for="Password" class="form-control" />
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
-                <div class="col-md-6">
-                    <label asp-for="Role" class="form-label">Role <span class="text-danger">*</span></label>
-                    <select asp-for="Role" class="form-select">
-                        <option value="">-- Select Role --</option>
-                        <option value="Customer">Customer</option>
-                        <option value="Pharmacist">Pharmacist</option>
-                        <option value="Manager">Manager</option>
-
-                    </select>
-                    <span asp-validation-for="Role" class="text-danger small"></span>
-                </div>
-
             </div>
             <!-- Action Buttons -->
             <div class="d-flex justify-content-between mt-4">
-                <a href="/User/Index" class="btn btn-primary">
+                <a href="/Pharmacist/LoadPrescription" class="btn btn-primary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
-                <button type="submit" class="btn btn-primary">
+                <a href="/Pharmacist/LoadPrescription"  class="btn btn-primary">
                     <i class="bi bi-save me-1"></i> Save
-                </button>
+                </a>
             </div>
         </form>
     </div>

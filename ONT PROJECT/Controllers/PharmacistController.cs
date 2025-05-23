@@ -12,11 +12,19 @@ namespace ONT_PROJECT.Controllers
         {
             return View();
         }
+        public async Task<IActionResult> CreateDoctor()
+        {
+            return View();
+        }
         public async Task<IActionResult> LoadPrescription()
         {
             return View();
         }
         public async Task<IActionResult> ViewPrescription()
+        {
+            return View();
+        }
+        public async Task<IActionResult> DispensePrescription()
         {
             return View();
         }
