@@ -5,6 +5,8 @@ VisualStudioVersion = 17.13.35818.85
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ONT PROJECT", "ONT PROJECT\ONT PROJECT.csproj", "{83CEC4C9-8E54-4EB2-9DFC-94E1485F10CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IBayiLibrary", "IBayiLibrary\IBayiLibrary.csproj", "{873FCE92-82AB-42BA-BD4F-CC6B59B020A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,14 @@ Global
 		{83CEC4C9-8E54-4EB2-9DFC-94E1485F10CF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{83CEC4C9-8E54-4EB2-9DFC-94E1485F10CF}.Release|x86.ActiveCfg = Release|x86
 		{83CEC4C9-8E54-4EB2-9DFC-94E1485F10CF}.Release|x86.Build.0 = Release|x86
+		{873FCE92-82AB-42BA-BD4F-CC6B59B020A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{873FCE92-82AB-42BA-BD4F-CC6B59B020A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{873FCE92-82AB-42BA-BD4F-CC6B59B020A7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{873FCE92-82AB-42BA-BD4F-CC6B59B020A7}.Debug|x86.Build.0 = Debug|Any CPU
+		{873FCE92-82AB-42BA-BD4F-CC6B59B020A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{873FCE92-82AB-42BA-BD4F-CC6B59B020A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{873FCE92-82AB-42BA-BD4F-CC6B59B020A7}.Release|x86.ActiveCfg = Release|Any CPU
+		{873FCE92-82AB-42BA-BD4F-CC6B59B020A7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

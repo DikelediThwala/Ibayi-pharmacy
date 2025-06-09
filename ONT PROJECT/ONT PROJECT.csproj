@@ -30,4 +30,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\IBayiLibrary\IBayiLibrary.csproj" />
+  </ItemGroup>
+
 </Project>
