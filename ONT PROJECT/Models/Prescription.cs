@@ -9,11 +9,12 @@ namespace ONT_PROJECT.Models
         [Key]
         public int PrescriptionID { get; set; }
         public DateOnly Date {  get; set; }
-        
+
+        [Required]
+
         [ForeignKey("CustomerID")]
         public Customer CustomerID { get; set; }
 
-        
         [ForeignKey("PharmacistID")]
         public Pharmacist PharmacistID { get; set; }
 
