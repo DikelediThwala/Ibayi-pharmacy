@@ -8,23 +8,25 @@ namespace ONT_PROJECT.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> CreateUser()
+      
+        public IActionResult CreateUser()
         {
             return View();
         }
-        public async Task<IActionResult> CreateDoctor()
+        public IActionResult CreateDoctor()
         {
             return View();
         }
-        public async Task<IActionResult> LoadPrescription()
+        public IActionResult LoadPrescription()
         {
             return View();
         }
-        public async Task<IActionResult> ViewPrescription()
+       
+        public IActionResult ViewPrescription()
         {
             return View();
         }
-        public async Task<IActionResult> DispensePrescription()
+        public IActionResult DispensePrescription()
         {
             return View();
         }

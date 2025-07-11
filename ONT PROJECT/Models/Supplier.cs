@@ -1,23 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 
-namespace ONT_PROJECT.Models
+namespace ONT_PROJECT.Models;
+
+public partial class Supplier
 {
-    public class Supplier
-    {
-        public int SupplierID { get; set; }
+    public int SupplierId { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
-        [Required]
-        [MaxLength(11)]
-        public string ContactNo { get; set; }
+    public string ContactNo { get; set; } = null!;
 
-        [Required]
-        [EmailAddress]
-        [MaxLength(50)]
-        public string Email { get; set; }
-    }
+    public string Email { get; set; } = null!;
+
+    public virtual ICollection<BOrder> BOrders { get; set; } = new List<BOrder>();
 }
-

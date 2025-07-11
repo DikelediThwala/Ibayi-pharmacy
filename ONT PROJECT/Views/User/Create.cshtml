@@ -1,30 +1,38 @@
-﻿@model ONT_PROJECT.Models.User
+﻿@model ONT_PROJECT.Models.TblUser
 
 @{
     ViewData["Title"] = "Manage Users";
     Layout = "_ManagerLayout";
 }
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @Html.Raw(TempData["Error"])
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
 
-<!-- Page Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-dark">
         <i class="bi bi-hospital me-2 text-primary"></i> Register A User
     </h2>
 </div>
 
-<!-- Separator -->
 <hr style="height: 4px; background-color: #011425; border: none;" />
 
-<!-- Info Card -->
 <div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
     <i class="bi bi-info-circle-fill"></i>
     Please ensure all details are accurate before saving. Fields marked with <span class="text-danger">*</span> are required.
 </div>
 
-<!-- Form Card -->
 <div class="card shadow p-4">
     <div class="card-body">
-        <form asp-action="SaveUser" enctype="multipart/form-data" method="post">
+        <form asp-action="SaveUser" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <h2>Personal Details</h2>
             <hr />
             <div class="row mb-4">
@@ -41,15 +49,14 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label asp-for="IDNumber" class="form-label">ID Number <span class="text-danger">*</span></label>
-                    <input asp-for="IDNumber" class="form-control" />
-                    <span asp-validation-for="IDNumber" class="text-danger small"></span>
+                    <label asp-for="Idnumber" class="form-label">ID Number <span class="text-danger">*</span></label>
+                    <input asp-for="Idnumber" class="form-control" />
+                    <span asp-validation-for="Idnumber" class="text-danger small"></span>
                 </div>
-               
             </div>
+
             <div class="row mb-4">
                 <div class="col-md-6">
-
                     <label asp-for="FirstName" class="form-label"> Firstname <span class="text-danger">*</span></label>
                     <input asp-for="FirstName" class="form-control" placeholder="e.g.,Dikeledi" />
                     <span asp-validation-for="FirstName" class="text-danger small"></span>
@@ -61,6 +68,7 @@
                     <span asp-validation-for="LastName" class="text-danger small"></span>
                 </div>
             </div>
+
             <h2>Contact Details</h2>
             <hr />
             <div class="row mb-4">
@@ -75,12 +83,13 @@
                     <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
                 </div>
             </div>
+
             <hr />
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <label asp-for="Password" class="form-label">Password <span class="text-danger">*</span></label>
-                    <input asp-for="Password" class="form-control"/>
-                    <span asp-validation-for="Password" class="text-danger small"></span>
+                    <label asp-for="ProfilePicture" class="form-label">Profile Picture</label>
+                    <input asp-for="ProfileFile" class="form-control" type="file" />
+                    <span asp-validation-for="ProfileFile" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
                     <label asp-for="Role" class="form-label">Role <span class="text-danger">*</span></label>
@@ -88,23 +97,28 @@
                         <option value="">-- Select Role --</option>
                         <option value="Customer">Customer</option>
                         <option value="Pharmacist">Pharmacist</option>
-                        <option value="Manager">Manager</option>
-
+                        <option value="PharmacyManager">PharmacyManager</option>
                     </select>
                     <span asp-validation-for="Role" class="text-danger small"></span>
                 </div>
+                <input asp-for="Password" type="hidden" value="temp123!" />
 
             </div>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="row mb-4" id="healthCouncilSection" style="display: none;">
+                        <div class="col-md-6">
+                            <label for="HealthCouncilRegNo" class="form-label">Health Council Reg. No <span class="text-danger">*</span></label>
+                            <input name="HealthCouncilRegNo" class="form-control" placeholder="e.g., HPCSA123456" />
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-           
-
-
-            <!-- Action Buttons -->
             <div class="d-flex justify-content-between mt-4">
                 <a href="/User/Index" class="btn btn-primary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
-
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-save me-1"></i> Save
                 </button>
@@ -113,5 +127,34 @@
     </div>
 </div>
 
-<!-- Bootstrap Icons (if not already included globally) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        const roleSelect = document.querySelector("[name='Role']");
+        const healthSection = document.getElementById("healthCouncilSection");
+
+        roleSelect.addEventListener("change", function () {
+            if (this.value === "Pharmacist") {
+                healthSection.style.display = "block";
+            } else {
+                healthSection.style.display = "none";
+            }
+        });
+
+
+        window.addEventListener("DOMContentLoaded", () => {
+            if (roleSelect.value === "Pharmacist") {
+                healthSection.style.display = "block";
+            }
+        });
+    </script>
+}
+
+
+
+
+
+
+

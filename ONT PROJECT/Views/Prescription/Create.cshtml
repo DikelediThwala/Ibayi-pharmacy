@@ -8,15 +8,15 @@
 @{
     var medicines = new List<Medicine>
     {
-        new Medicine { MedicineID = 1, MedicineName = "Panado", SalesPrice = 10 },
-        new Medicine { MedicineID = 2, MedicineName = "Cough Syrup", SalesPrice = 25 },
-        new Medicine { MedicineID = 3, MedicineName = "Allergex", SalesPrice = 15 }
+        new Medicine { MedicineId = 1, MedicineName = "Panado", SalesPrice = 10 },
+        new Medicine { MedicineId = 2, MedicineName = "Cough Syrup", SalesPrice = 25 },
+        new Medicine { MedicineId = 3, MedicineName = "Allergex", SalesPrice = 15 }
     };
 
     var prescriptionLines = new List<PrescriptionLine>
     {
-        new PrescriptionLine { LineID = 1, PrescriptionID = 101, MedicineID = 1, Quantity = 2, Instructions = "Take twice a day", Repeats = 1, RepeatsLeft = 1 },
-        new PrescriptionLine { LineID = 2, PrescriptionID = 101, MedicineID = 2, Quantity = 1, Instructions = "Once a day", Repeats = 0, RepeatsLeft = 0 }
+        new PrescriptionLine { PrescriptionLineId = 1, PrescriptionId = 101, MedicineId = 1, Quantity = 2, Instructions = "Take twice a day", Repeats = 1, RepeatsLeft = 1 },
+        new PrescriptionLine { PrescriptionLineId = 2, PrescriptionId = 101, MedicineId = 2, Quantity = 1, Instructions = "Once a day", Repeats = 0, RepeatsLeft = 0 }
     };
 
     decimal totalAmount = 0;
@@ -37,7 +37,7 @@
     <tbody>
         @foreach (var line in prescriptionLines)
         {
-            var med = medicines.FirstOrDefault(m => m.MedicineID == line.MedicineID);
+            var med = medicines.FirstOrDefault(m => m.MedicineId == line.MedicineId);
             if (med != null)
             {
                 var lineTotal = (decimal)med.SalesPrice * line.Quantity;

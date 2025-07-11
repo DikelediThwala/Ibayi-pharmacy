@@ -1,27 +1,27 @@
-﻿using ONT_PROJECT.Models;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
-namespace ONT_PROJECT.Models
+namespace ONT_PROJECT.Models;
+
+public partial class Prescription
 {
-    public class Prescription
-    {
-        [Key]
-        public int PrescriptionID { get; set; }
-        public DateOnly Date {  get; set; }
+    public int PrescriptionId { get; set; }
 
-        [Required]
+    public DateOnly Date { get; set; }
 
-        [ForeignKey("CustomerID")]
-        public Customer CustomerID { get; set; }
+    public int CustomerId { get; set; }
 
-        [ForeignKey("PharmacistID")]
-        public Pharmacist PharmacistID { get; set; }
+    public int PharmacistId { get; set; }
 
-        public byte[] PrescriptionPhoto { get; set; }
-        public string Status { get; internal set; }
+    public byte[] PrescriptionPhoto { get; set; } = null!;
 
-        [ForeignKey("DoctorID")]
-        public Doctor DoctorID { get; set; }
-    }
+    public int DoctorId { get; set; }
+
+    public virtual Customer Customer { get; set; } = null!;
+
+    public virtual Doctor Doctor { get; set; } = null!;
+
+    public virtual Pharmacist Pharmacist { get; set; } = null!;
+
+    public virtual ICollection<PrescriptionLine> PrescriptionLines { get; set; } = new List<PrescriptionLine>();
 }
