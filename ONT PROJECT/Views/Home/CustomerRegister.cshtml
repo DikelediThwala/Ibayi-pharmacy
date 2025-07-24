@@ -1,0 +1,124 @@
+﻿@model ONT_PROJECT.Models.TblUser
+@{
+    ViewData["Title"] = "Customer Registration";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg p-4 rounded" style="background-color: #e6f2ff;">
+                <h2 class="text-center mb-4">Register as a New Customer</h2>
+                <form asp-action="Register" method="post">
+                    <div class="form-group mb-3">
+                        <label asp-for="FirstName"></label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="LastName"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Idnumber"></label>
+                        <input asp-for="Idnumber" class="form-control" />
+                        <span asp-validation-for="Idnumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="PhoneNumber"></label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Email"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <!-- Allergies dropdown and list -->
+                    <div class="form-group mb-3">
+                        <label>Allergies</label>
+                        <div class="input-group">
+                            <select id="allergyDropdown" class="form-select">
+                                <option value="" selected disabled>Select an allergy</option>
+                                <option value="Penicillin">Penicillin</option>
+                                <option value="Ibuprofen">Ibuprofen</option>
+                                <option value="Aspirin">Aspirin</option>
+                                <option value="Peanuts">Peanuts</option>
+                                <option value="Shellfish">Shellfish</option>
+                                <option value="Dust">Dust</option>
+                                <option value="Latex">Latex</option>
+                                <!-- Add more options as needed -->
+                            </select>
+                            <button type="button" class="btn btn-outline-primary" onclick="addAllergy()">Add</button>
+                        </div>
+
+                        <ul id="allergyList" class="list-group mt-2 mb-2"></ul>
+
+                        <!-- Hidden field bound to the model -->
+                        <input type="hidden" asp-for="Allergies" id="Allergies" />
+                        <span asp-validation-for="Allergies" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 text-uppercase">Register</button>
+                </form>
+
+                <div class="mt-3 text-center">
+                    <p>
+                        Already have an account?
+                        <a asp-controller="Home" asp-action="Login" class="btn btn-link p-0 align-baseline">Log in</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* @section Scripts { *@
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const allergyList = document.getElementById("allergyList");
+        const allergyDropdown = document.getElementById("allergyDropdown");
+        const allergyHiddenInput = document.getElementById("Allergies");
+
+        function addAllergy() {
+            const selected = allergyDropdown.value;
+            const selectedText = allergyDropdown.options[allergyDropdown.selectedIndex].text;
+
+            if (!selected || selected === "") return;
+
+            // Check if allergy is already added
+            const existing = Array.from(allergyList.children)
+                .some(li => li.dataset.value === selected);
+            if (existing) return;
+
+            // Create allergy list item
+            const li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.dataset.value = selected;
+            li.innerHTML = `
+                ${selectedText}
+                <button type="button" class="btn btn-sm btn-danger" onclick="removeAllergy(this)">Remove</button>
+            `;
+            allergyList.appendChild(li);
+
+            updateAllergies();
+        }
+
+        function removeAllergy(button) {
+            button.parentElement.remove();
+            updateAllergies();
+        }
+
+        function updateAllergies() {
+            const allergies = Array.from(allergyList.children)
+                .map(li => li.dataset.value);
+            allergyHiddenInput.value = allergies.join(", ");
+        }
+    </script>
+}
