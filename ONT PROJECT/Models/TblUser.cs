@@ -33,7 +33,7 @@ public partial class TblUser
 
     [Required(ErrorMessage = "Title is required")]
     public string Title { get; set; } = null!;
-    public string Allergies { get; set; } = null!;
+    public string? Allergies { get; set; } = null!;
     public byte[]? ProfilePicture { get; set; }
 
     // 🔥 Add this
