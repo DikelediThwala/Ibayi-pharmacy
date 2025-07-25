@@ -96,6 +96,50 @@
         </table>
         <button class="btn btn-success place-order-btn">Place Order</button>
     </div>
+    <!-- Other Available Medications (Non-Prescription) -->
+    <div class="card mb-5">
+        <div class="card-body">
+            <h5>Other Available Medications</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered mt-2">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Medication</th>
+                            <th>Quantity</th>
+                            <th>Instructions</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" class="medication-checkbox" value="Vitamin C" data-price="30"></td>
+                            <td>Vitamin C</td>
+                            <td>30 tablets</td>
+                            <td>1 tablet daily</td>
+                            <td>R30</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="medication-checkbox" value="Antacid" data-price="25"></td>
+                            <td>Antacid</td>
+                            <td>1 bottle</td>
+                            <td>10ml when needed</td>
+                            <td>R25</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="medication-checkbox" value="Nasal Spray" data-price="60"></td>
+                            <td>Nasal Spray</td>
+                            <td>1 spray bottle</td>
+                            <td>1 spray per nostril 2x daily</td>
+                            <td>R60</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-success place-order-btn">Place Order</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Order Summary -->
     <div id="order-summary" class="alert alert-info mt-4" style="display: none;"></div>
