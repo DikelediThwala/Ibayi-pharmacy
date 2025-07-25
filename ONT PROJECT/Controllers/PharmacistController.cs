@@ -46,19 +46,25 @@ namespace ONT_PROJECT.Controllers
             return View();
         }
       
-        public IActionResult CreateUser()
+        
         public IActionResult ProcessOrder()
         {
 
             return View();
         }
         public IActionResult CreateDoctor()
+        {
+            return View();
+        }
         public IActionResult OrderDetails()
         {
 
             return View();
         }
         public IActionResult LoadPrescription()
+        {
+            return View();
+        }
         [HttpPost]
         //[ValidateAntiFogeryToken]
         public async Task<IActionResult> CreateUser(tblUser user)
@@ -90,12 +96,12 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("Index");          
         }
 
-        public async Task<IActionResult> LoadPrescription()
-        {
-            //var CustomerName = await _prescriptionRepository.GetCustomerName();
-            //ViewBag.CustomerID = new SelectList(CustomerName, "CustomerID", "FirstName");
-            return View();
-        }
+        //public IActionResult LoadPrescription()
+        //{
+        //    var CustomerName = await _prescriptionRepository.GetCustomerName();
+        //    ViewBag.CustomerID = new SelectList(CustomerName, "CustomerID", "FirstName");
+        //    return View();
+        //}
         //[HttpPost]
         //public async Task<IActionResult> LoadPresciption(Prescription prescriptions)
         //{
@@ -119,18 +125,16 @@ namespace ONT_PROJECT.Controllers
         //    }
         //    return RedirectToAction("Index");
         //}
-        public async Task<IActionResult> CreateDoctor()
-        {
-            return View();
-        }
-       
-        public IActionResult ViewPrescription()
-       
+        
         public async Task<IActionResult> ViewPrescription()
         {
             return View();
         }
         public IActionResult DispensePrescription()
+        {
+            return View();
+        }
+        public IActionResult UnprocessedPrescription()
         {
             return View();
         }
