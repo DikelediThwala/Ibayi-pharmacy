@@ -137,25 +137,18 @@
                 </a>
                 <div class="collapse ps-3" id="medicationSubmenu">
                     <ul class="nav flex-column">
-                        <li><a class="nav-link" asp-controller="Prescription" asp-action="Index"><i class="bi bi-pencil-square"></i> Upload Prescription</a></li>
-                        <li><a class="nav-link" asp-controller="Prescription" asp-action="Create"><i class="bi bi-diagram-3"></i>Amount Due</a></li>
+                        <li><a class="nav-link" asp-controller="Prescription" asp-action="Create"><i class="bi bi-pencil-square"></i> Upload Prescription</a></li>
+                        <li><a class="nav-link" asp-controller="Prescription" asp-action="Index"><i class="bi bi-diagram-3"></i>View Prescription</a></li>
                     </ul>
                 </div>
             </li>
             <li class="nav-item"><a class="nav-link" asp-controller="Repeats" asp-action="Index"><i class="bi bi-person-badge"></i> <span>Manage repeats </span></a></li>
-            @* <li class="nav-item">
-                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#medicationSubmenu">
-                    <span><i class="bi bi-capsule"></i> <span>Medications</span></span>
-                    <i class="bi bi-chevron-down"></i>
+
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="CustomerReport" asp-action="Index">
+                    <i class="bi bi-gear"></i> <span>Settings</span>
                 </a>
-                <div class="collapse ps-3" id="medicationSubmenu">
-                    <ul class="nav flex-column">
-                        <li><a class="nav-link" asp-controller="CustomerOrder" asp-action="Create"><i class="bi bi-pencil-square"></i> Order Medication</a></li>
-                        <li><a class="nav-link" asp-controller="CustomerOrder" asp-action="Index"><i class="bi bi-diagram-3"></i>Order Line</a></li>
-                    </ul>
-                </div> *@
             </li>
-            <li class="nav-item"><a class="nav-link" asp-controller="CustomerReport" asp-action="Index"><i class="bi bi-people"></i> <span>PDF report</span></a></li>
         </ul>
     </div>
 
