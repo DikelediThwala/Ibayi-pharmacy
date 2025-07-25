@@ -1,8 +1,193 @@
-﻿@model ONT_PROJECT.Models.Repeats
-
-@{
-    ViewData["Title"] = "Manage Repeats";
+﻿ @{
+    ViewData["Title"] = "Order Medication";
     Layout = "_CustomerLayout";
 }
 
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Order Medication</h2>
 
+    <!-- Prescription List -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>Prescription #1</h5>
+            <p><strong>Date:</strong> 2025-07-01</p>
+            <p><a href="/prescriptions/prescription1.pdf" target="_blank">Download Prescription.pdf</a></p>
+            <button class="btn btn-primary view-btn" data-target="#prescription1-table">View</button>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>Prescription #2</h5>
+            <p><strong>Date:</strong> 2025-06-10</p>
+            <p><a href="/prescriptions/prescription2.pdf" target="_blank">Download Prescription.pdf</a></p>
+            <button class="btn btn-primary view-btn" data-target="#prescription2-table">View</button>
+        </div>
+    </div>
+
+    <!-- Prescription 1 Medications -->
+    <div id="prescription1-table" class="medication-table table-responsive" style="display: none;">
+        <h5 class="mt-4">Medications - Prescription #1</h5>
+        <table class="table table-bordered mt-2">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Medication</th>
+                    <th>Quantity</th>
+                    <th>Instructions</th>
+                    <th>Repeats</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="checkbox" class="medication-checkbox" value="Paracetamol" data-price="50"></td>
+                    <td>Paracetamol</td>
+                    <td>10</td>
+                    <td>1 tablet every 6 hours</td>
+                    <td>2</td>
+                    <td>R50</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="medication-checkbox" value="Amoxicillin" data-price="120"></td>
+                    <td>Amoxicillin</td>
+                    <td>20</td>
+                    <td>2 capsules daily</td>
+                    <td>1</td>
+                    <td>R120</td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn btn-success place-order-btn">Place Order</button>
+    </div>
+
+    <!-- Prescription 2 Medications -->
+    <div id="prescription2-table" class="medication-table table-responsive" style="display: none;">
+        <h5 class="mt-4">Medications - Prescription #2</h5>
+        <table class="table table-bordered mt-2">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Medication</th>
+                    <th>Quantity</th>
+                    <th>Instructions</th>
+                    <th>Repeats</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="checkbox" class="medication-checkbox" value="Ibuprofen" data-price="70"></td>
+                    <td>Ibuprofen</td>
+                    <td>15</td>
+                    <td>1 tablet every 8 hours</td>
+                    <td>3</td>
+                    <td>R70</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="medication-checkbox" value="Cough Syrup" data-price="45"></td>
+                    <td>Cough Syrup</td>
+                    <td>1 bottle</td>
+                    <td>10ml 3 times daily</td>
+                    <td>2</td>
+                    <td>R45</td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn btn-success place-order-btn">Place Order</button>
+    </div>
+    <!-- Other Available Medications (Non-Prescription) -->
+    <div class="card mb-5">
+        <div class="card-body">
+            <h5>Other Available Medications</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered mt-2">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Medication</th>
+                            <th>Quantity</th>
+                            <th>Instructions</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" class="medication-checkbox" value="Vitamin C" data-price="30"></td>
+                            <td>Vitamin C</td>
+                            <td>30 tablets</td>
+                            <td>1 tablet daily</td>
+                            <td>R30</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="medication-checkbox" value="Antacid" data-price="25"></td>
+                            <td>Antacid</td>
+                            <td>1 bottle</td>
+                            <td>10ml when needed</td>
+                            <td>R25</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="medication-checkbox" value="Nasal Spray" data-price="60"></td>
+                            <td>Nasal Spray</td>
+                            <td>1 spray bottle</td>
+                            <td>1 spray per nostril 2x daily</td>
+                            <td>R60</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-success place-order-btn">Place Order</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Order Summary -->
+    <div id="order-summary" class="alert alert-info mt-4" style="display: none;"></div>
+</div>
+
+<script>
+    // Toggle prescription tables
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.medication-table').forEach(table => table.style.display = 'none');
+            const targetId = this.getAttribute('data-target');
+            document.querySelector(targetId).style.display = 'block';
+        });
+    });
+
+    // Handle order placement with VAT and total
+    document.querySelectorAll('.place-order-btn').forEach(orderBtn => {
+        orderBtn.addEventListener('click', function () {
+            const selected = this.closest('.medication-table').querySelectorAll('.medication-checkbox:checked');
+            if (selected.length === 0) {
+                alert("Please select at least one medication to order.");
+                return;
+            }
+
+            let summary = "<strong>You have ordered:</strong><ul>";
+            let subtotal = 0;
+
+            selected.forEach(item => {
+                const name = item.value;
+                const price = parseFloat(item.dataset.price);
+                subtotal += price;
+                summary += `<li>${name} - R${price.toFixed(2)}</li>`;
+            });
+
+            const vatRate = 0.15;
+            const vat = subtotal * vatRate;
+            const total = subtotal + vat;
+
+            summary += `</ul>`;
+            summary += `<p><strong>Subtotal:</strong> R${subtotal.toFixed(2)}</p>`;
+            summary += `<p><strong>VAT (15%):</strong> R${vat.toFixed(2)}</p>`;
+            summary += `<p><strong>Total Amount Due:</strong> R${total.toFixed(2)}</p>`;
+
+            const summaryDiv = document.getElementById("order-summary");
+            summaryDiv.innerHTML = summary;
+            summaryDiv.style.display = "block";
+            summaryDiv.scrollIntoView({ behavior: "smooth" });
+        });
+    });
+</script>
+ 

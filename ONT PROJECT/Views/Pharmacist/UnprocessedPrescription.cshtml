@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "View Prescription";
     Layout = "PharmacistLayout";
 }
@@ -294,7 +293,7 @@
                 <div class="table-filter">
                     <div class="row">
                         <div class="col-sm-3">
-                          
+
 
                             <div class="filter-group">
                                 <label>Status</label>
@@ -318,7 +317,7 @@
                             <div class="filter-group">
                                 <label>Medication</label>
                                 <select class="form-control">
-                                    <option>All</option> 
+                                    <option>All</option>
                                     <option>Acetaminophen (Tylenol)</option>
                                     <option>ibuprofen (Advil, Motrin IB)</option>
                                     <option>Loratadine (Claritin)</option>
@@ -326,7 +325,7 @@
                                     <option>Metformin</option>
                                 </select>
                             </div>
-                           
+
                             <span class="filter-icon"><i class="fa fa-filter"></i></span>
                         </div>
                     </div>
@@ -353,7 +352,7 @@
                             <td>Metformin</td>
                             <td>May 15, 2025</td>
                             <td>2</td>
-                            <td><span class="status text-success">&bull;</span> Collected</td>
+                            <td><span class="status text-danger">&bull;</span> Unproccessed</td>
                             <td>1</td>
                             <td>3</td>
                             <td>R254,00</td>
@@ -365,7 +364,7 @@
                             <td>Loratadine (Claritin)</td>
                             <td>May 24, 2025</td>
                             <td>2</td>
-                            <td><span class="status text-info">&bull;</span> Packed</td>
+                            <td><span class="status text-danger">&bull;</span> Unproccessed</td>
                             <td>2</td>
                             <td>3</td>
                             <td>R260,00</td>
@@ -382,31 +381,7 @@
                             <td>2</td>
                             <td>R150,00</td>
                             <td><a asp-action="OrderDetails" asp-controller="Pharmacist" class="view" title="View Details" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a></td>
-                        </tr>
-                        <tr>
-                            <td>0014</td>
-                            <td><a href="#"> Mary Saveley</a></td>
-                            <td>Loratadine (Claritin)k</td>
-                            <td>Jul 16, 2017</td>
-                            <td>3</td>
-                            <td><span class="status text-warning">&bull;</span> Opened</td>
-                            <td>1</td>
-                            <td>3</td>
-                            <td>R450,00</td>
-                            <td><a asp-action="OrderDetails" asp-controller="Pharmacist" class="view" title="View Details" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a></td>
-                        </tr>
-                        <tr>
-                            <td>0015</td>
-                            <td><a href="#"> Martin Sommer</a></td>
-                            <td>Acetaminophen (Tylenol)</td>
-                            <td>Jan 04, 2025</td>
-                            <td>2</td>
-                            <td><span class="status text-success">&bull;</span> Collected</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>R230,00</td>
-                            <td><a asp-action="OrderDetails" asp-controller="Pharmacist" class="view" title="View Details" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a></td>
-                        </tr>
+                        </tr>                      
                     </tbody>
                 </table>
                 <div class="clearfix">

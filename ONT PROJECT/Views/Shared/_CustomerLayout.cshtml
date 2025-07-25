@@ -141,12 +141,29 @@
                         <li><a class="nav-link" asp-controller="Prescription" asp-action="Index"><i class="bi bi-diagram-3"></i>View Prescription</a></li>
                     </ul>
                 </div>
-            </li>
-            <li class="nav-item"><a class="nav-link" asp-controller="Repeats" asp-action="Index"><i class="bi bi-person-badge"></i> <span>Manage repeats </span></a></li>
+               @*  <div class="collapse ps-3" id="medicationSubmenu">
+                    <ul class="nav flex-column">
+                        <li><a class="nav-link" asp-controller="Repeats" asp-action="Create"><i class="bi bi-pencil-square"></i> Order Medication</a></li>
+                        <li><a class="nav-link" asp-controller="Repeats" asp-action="Index"><i class="bi bi-diagram-3"></i>Ordered Medication</a></li>
+                    </ul>
+                </div>
+            </li> *@
+            <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#medicationSubmenu">
+                    <span><i class="bi bi-capsule"></i> <span>Order Medication</span></span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <div class="collapse ps-3" id="medicationSubmenu">
+                    <ul class="nav flex-column">
+                        <li><a class="nav-link" asp-controller="Repeats" asp-action="Create"><i class="bi bi-pencil-square"></i> Order Medication</a></li>
+                        <li><a class="nav-link" asp-controller="Repeats" asp-action="Index"><i class="bi bi-diagram-3"></i>Ordered Medication</a></li>
+                    </ul>
+                </div>
+            <li class="nav-item"><a class="nav-link" asp-controller="Repeats" asp-action="Repeats"><i class="bi bi-person-badge"></i> <span>Repeats </span></a></li>
 
             <li class="nav-item">
                 <a class="nav-link" asp-controller="CustomerReport" asp-action="Index">
-                    <i class="bi bi-gear"></i> <span>Settings</span>
+                    <i class="bi bi-gear"></i> <span>Profile Settings</span>
                 </a>
             </li>
         </ul>

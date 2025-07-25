@@ -1,8 +1,52 @@
 ﻿@model ONT_PROJECT.Models.TblUser
-@{
+@* @{
     ViewData["Title"] = "Customer Registration";
     Layout = "_Layout";
+} *@
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
 }
+
+
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,shrink-to-fit=no" />
+    <title>@ViewData["Title"] - IbayiPharmacy</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/IbayiPharmacy.styles.css" asp-append-version="true" />
+
+
+    <link href="https://fonts.googleapis.com/css?family=Rubik:400,700|Crimson+Text:400,400i" rel="stylesheet">
+    <link rel="stylesheet" href="fonts/icomoon/style.css">
+
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="css/aos.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+
+
+
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/IbayiPharmacy.styles.css" asp-append-version="true" />
+
+
+<link href="https://fonts.googleapis.com/css?family=Rubik:400,700|Crimson+Text:400,400i" rel="stylesheet">
+<link rel="stylesheet" href="fonts/icomoon/style.css">
+
+<link rel="stylesheet" href="css/magnific-popup.css">
+<link rel="stylesheet" href="css/jquery-ui.css">
+<link rel="stylesheet" href="css/owl.carousel.min.css">
+<link rel="stylesheet" href="css/owl.theme.default.min.css">
+<link rel="stylesheet" href="css/aos.css">
+<link rel="stylesheet" href="css/style.css">
+
 
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">
@@ -64,6 +108,18 @@
                         <input type="hidden" asp-for="Allergies" id="Allergies" />
                         <span asp-validation-for="Allergies" class="text-danger"></span>
                     </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Password"></label>
+                        <input asp-for="Password" type="password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="ConfirmPassword">Confirm Password</label>
+                        <input name="ConfirmPassword" id="ConfirmPassword" type="password" class="form-control" />
+                        <span class="text-danger" data-valmsg-for="ConfirmPassword" data-valmsg-replace="true"></span>
+                    </div>
+
 
                     <button type="submit" class="btn btn-success w-100 text-uppercase">Register</button>
                 </form>
@@ -121,4 +177,18 @@
             allergyHiddenInput.value = allergies.join(", ");
         }
     </script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/owl.carousel.min.js"></script>
+<script src="js/jquery.magnific-popup.min.js"></script>
+<script src="js/aos.js"></script>
+
+<script src="js/main.js"></script>
 }

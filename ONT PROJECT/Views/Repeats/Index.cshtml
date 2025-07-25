@@ -1,47 +1,70 @@
-﻿@model ONT_PROJECT.Models.Repeats
-
-@{
-    ViewData["Title"] = "Manage Repeats";
+﻿@{
+    ViewData["Title"] = "Ordered Medication";
     Layout = "_CustomerLayout";
 }
 
+<style>
+    .order-card {
+        background-color: #e6f2ff; /* Light blue background */
+        border-left: 5px solid #007bff;
+    }
 
-<h4 style="color: blue; font-weight: bold;">My Prescriptions</h4>
+    .status-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        font-size: 0.9rem;
+        border-radius: 20px;
+        font-weight: 500;
+    }
 
-<table class="table table-bordered" style="background-color: #e6f2ff; border-radius: 10px; overflow: hidden;">
-    <thead class="thead-light">
-        <tr>
-            <th>Medication</th>
-            <th>Date Issued</th>
-            <th>Repeats Left</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Amoxicillin 500mg</td>
-            <td>2025-05-10</td>
-            <td>2</td>
-            <td>
-                <a href="#" class="btn btn-secondary btn-sm">Request Repeat</a>
-            </td>
-        </tr>
-        <tr>
-            <td>Paracetamol 1g</td>
-            <td>2025-05-10</td>
-            <td>0</td>
-            <td>
-                <button class="btn btn-secondary btn-sm" disabled>Request Repeat</button>
-            </td>
-        </tr>
-        <tr>
-            <td>Ibuprofen 200mg</td>
-            <td>2025-05-10</td>
-            <td>1</td>
-            <td>
-                <a href="#" class="btn btn-secondary btn-sm">Request Repeat</a>
-            </td>
-        </tr>
-    </tbody>
-</table>
+    .status-processing {
+        background-color: #ffcc80;
+        color: #5c4400;
+    }
 
+    .status-ready {
+        background-color: #c8e6c9;
+        color: #2e7d32;
+    }
+
+    .back-btn {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Ordered Medication</h2>
+
+    <!-- Order 1 -->
+    <div class="card mb-3 shadow-sm order-card">
+        <div class="card-body">
+            <h5 class="card-title">Order #1001</h5>
+            <p class="card-text"><strong>Date Placed:</strong> 15 July 2025</p>
+            <p class="card-text"><strong>Total Amount:</strong> R580.00</p>
+            <p class="card-text">
+                <strong>Status:</strong>
+                <span class="status-badge status-ready">Ready for Collection</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Order 2 -->
+    <div class="card mb-3 shadow-sm order-card">
+        <div class="card-body">
+            <h5 class="card-title">Order #1002</h5>
+            <p class="card-text"><strong>Date Placed:</strong> 20 July 2025</p>
+            <p class="card-text"><strong>Total Amount:</strong> R320.00</p>
+            <p class="card-text">
+                <strong>Status:</strong>
+                <span class="status-badge status-processing">Processing</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="back-btn">
+        <a href="~/Customer/Dashboard" class="btn btn-primary px-4">← Back to Dashboard</a>
+    </div>
+</div>

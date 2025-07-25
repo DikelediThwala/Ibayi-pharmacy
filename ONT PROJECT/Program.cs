@@ -1,5 +1,7 @@
+using IBayiLibrary.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
+using IBayiLibrary.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddApplicationInsightsTelemetry();
 
+builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
+builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<IPrescriptionRepository, PrescriptionRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
