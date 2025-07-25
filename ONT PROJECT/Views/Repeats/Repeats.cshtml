@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Request Repeats";
+    Layout = "_CustomerLayout";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Prescription: <a href="/prescriptions/prescription1.pdf" target="_blank">prescription1.pdf</a></h2>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-info">
+            <tr>
+                <th>Medication</th>
+                <th>Repeats Left / Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Medication 1 -->
+            <tr>
+                <td>Panado 500mg</td>
+                <td>2 / 5</td>
+                <td>
+                    <button class="btn btn-success btn-sm" onclick="requestRepeat('Panado')">Request Repeat</button>
+                </td>
+            </tr>
+
+            <!-- Medication 2 -->
+            <tr>
+                <td>Amoxicillin</td>
+                <td>0 / 3</td>
+                <td>
+                    <button class="btn btn-secondary btn-sm" disabled>No Repeats Left</button>
+                </td>
+            </tr>
+
+            <!-- Medication 3 -->
+            <tr>
+                <td>Ibuprofen</td>
+                <td>1 / 4</td>
+                <td>
+                    <button class="btn btn-success btn-sm" onclick="requestRepeat('Ibuprofen')">Request Repeat</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="mt-4">
+        <a href="/Customer/Dashboard" class="btn btn-outline-primary">Back to Dashboard</a>
+    </div>
+</div>
+
+<script>
+    function requestRepeat(medication) {
+        alert("Repeat request sent for: " + medication);
+        // You can call your controller here via AJAX if needed
+    }
+</script>
