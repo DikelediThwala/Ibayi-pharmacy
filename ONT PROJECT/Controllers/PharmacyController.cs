@@ -26,6 +26,7 @@ namespace ONT_PROJECT.Controllers
             Console.WriteLine($"Pharmacy Name: {pharmacy.PharmacyId}, Email: {pharmacy.Email}");
 
             return View(pharmacy);
+
         }
 
 
@@ -44,6 +45,7 @@ namespace ONT_PROJECT.Controllers
             }
 
             ViewBag.Pharmacists = new SelectList(_context.Pharmacists, "PharmacistId", "FullName");
+
             return View(pharmacy);
         }
 
@@ -62,7 +64,7 @@ namespace ONT_PROJECT.Controllers
                 existingPharmacy.ContactNo = pharmacyModel.ContactNo;
                 existingPharmacy.Email = pharmacyModel.Email;
                 existingPharmacy.WebsiteUrl = pharmacyModel.WebsiteUrl;
-                existingPharmacy.PharmacistId = pharmacyModel.PharmacyId;
+                existingPharmacy.PharmacistId = pharmacyModel.PharmacistId;
                 existingPharmacy.Address = pharmacyModel.Address;
                 existingPharmacy.Vatrate = pharmacyModel.Vatrate;
 
@@ -80,6 +82,7 @@ namespace ONT_PROJECT.Controllers
             }
 
             ViewBag.Pharmacists = new SelectList(_context.Pharmacists, "PharmacistID", "FullName");
+
 
             return View(pharmacyModel);
         }
