@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ONT_PROJECT.Models;
 
 namespace ONT_PROJECT.Controllers
 {
