@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ONT_PROJECT.Models;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -13,10 +14,10 @@ namespace ONT_PROJECT.Controllers
                 Idnumber = "1234567890123",
                 PhoneNumber = "0123456789",
                 Email = "john@example.com",
-                Allergies = "Penicillin,Peanuts" // sample default values
+                Allergies = "Penicillin,Peanuts"
             };
 
-            return View(user); // Pass the model to the view
+            return View(user);
         }
     }
 }
