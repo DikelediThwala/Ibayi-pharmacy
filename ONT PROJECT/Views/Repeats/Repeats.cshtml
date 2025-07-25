@@ -1,57 +1,109 @@
 ﻿@{
-    ViewData["Title"] = "Request Repeats";
+    ViewData["Title"] = "Request Medication Repeats";
     Layout = "_CustomerLayout";
 }
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Prescription: <a href="/prescriptions/prescription1.pdf" target="_blank">prescription1.pdf</a></h2>
+    <h2 class="text-center mb-4">
+        Prescription:
+        <a href="/prescriptions/prescription1.pdf" target="_blank">prescription1.pdf</a>
+    </h2>
 
-    <table class="table table-bordered table-striped">
-        <thead class="table-info">
-            <tr>
-                <th>Medication</th>
-                <th>Repeats Left / Total</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Medication 1 -->
-            <tr>
-                <td>Panado 500mg</td>
-                <td>2 / 5</td>
-                <td>
-                    <button class="btn btn-success btn-sm" onclick="requestRepeat('Panado')">Request Repeat</button>
-                </td>
-            </tr>
+    <form id="repeatForm">
+        <table class="table table-bordered table-striped">
+            <thead class="table-info">
+                <tr>
+                    <th>Select</th>
+                    <th>Medication</th>
+                    <th>Repeats Left / Total</th>
+                    <th>Price (R)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Medication 1 -->
+                <tr>
+                    <td>
+                        <input type="checkbox" class="med-check" data-price="40.00" data-name="Panado 500mg" data-repeatsleft="2">
+                    </td>
+                    <td>Panado 500mg</td>
+                    <td>2 / 5</td>
+                    <td>40.00</td>
+                </tr>
 
-            <!-- Medication 2 -->
-            <tr>
-                <td>Amoxicillin</td>
-                <td>0 / 3</td>
-                <td>
-                    <button class="btn btn-secondary btn-sm" disabled>No Repeats Left</button>
-                </td>
-            </tr>
+                <!-- Medication 2 -->
+                <tr>
+                    <td>
+                        <input type="checkbox" class="med-check" data-price="60.00" data-name="Amoxicillin" data-repeatsleft="0" disabled>
+                    </td>
+                    <td>Amoxicillin</td>
+                    <td>0 / 3</td>
+                    <td>60.00</td>
+                </tr>
 
-            <!-- Medication 3 -->
-            <tr>
-                <td>Ibuprofen</td>
-                <td>1 / 4</td>
-                <td>
-                    <button class="btn btn-success btn-sm" onclick="requestRepeat('Ibuprofen')">Request Repeat</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                <!-- Medication 3 -->
+                <tr>
+                    <td>
+                        <input type="checkbox" class="med-check" data-price="55.00" data-name="Ibuprofen" data-repeatsleft="1">
+                    </td>
+                    <td>Ibuprofen</td>
+                    <td>1 / 4</td>
+                    <td>55.00</td>
+                </tr>
+            </tbody>
+        </table>
 
-    <div class="mt-4">
-        <a href="/Customer/Dashboard" class="btn btn-outline-primary">Back to Dashboard</a>
-    </div>
+        <!-- Totals Section -->
+        <div class="card p-3 mb-4">
+            <h5 class="mb-3">Order Summary</h5>
+            <p><strong>Subtotal:</strong> R<span id="subtotal">0.00</span></p>
+            <p><strong>VAT (15%):</strong> R<span id="vat">0.00</span></p>
+            <p><strong>Total Due:</strong> R<span id="total">0.00</span></p>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Place Repeat Order</button>
+        <a href="/Customer/Dashboard" class="btn btn-outline-secondary ms-2">Back to Dashboard</a>
+    </form>
 </div>
 
+<!-- JavaScript for dynamic calculation -->
 <script>
-    function requestRepeat(medication) {
-        alert("Repeat request sent for: " + medication);
-        // You can call your controller here via AJAX if needed
-    }
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkboxes = document.querySelectorAll(".med-check");
+        const subtotalEl = document.getElementById("subtotal");
+        const vatEl = document.getElementById("vat");
+        const totalEl = document.getElementById("total");
+
+        checkboxes.forEach(cb => cb.addEventListener("change", updateTotals));
+
+        function updateTotals() {
+            let subtotal = 0;
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    subtotal += parseFloat(cb.dataset.price);
+                }
+            });
+
+            const vat = subtotal * 0.15;
+            const total = subtotal + vat;
+
+            subtotalEl.innerText = subtotal.toFixed(2);
+            vatEl.innerText = vat.toFixed(2);
+            totalEl.innerText = total.toFixed(2);
+        }
+
+        // Form submission
+        document.getElementById("repeatForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const selected = Array.from(checkboxes).filter(cb => cb.checked);
+
+            if (selected.length === 0) {
+                alert("Please select at least one medication to repeat.");
+                return;
+            }
+
+            const meds = selected.map(cb => cb.dataset.name).join(", ");
+            alert("Repeat order placed for: " + meds);
+            // Add actual submission logic here (AJAX or form post)
+        });
+    });
 </script>
