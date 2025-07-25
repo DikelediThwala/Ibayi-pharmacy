@@ -12,5 +12,9 @@ namespace ONT_PROJECT.Controllers
         {
             return View();
         }
+        public IActionResult Repeats()
+        {
+            return View();
+        }
     }
 }
