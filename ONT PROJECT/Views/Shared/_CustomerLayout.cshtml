@@ -141,8 +141,14 @@
                         <li><a class="nav-link" asp-controller="Prescription" asp-action="Index"><i class="bi bi-diagram-3"></i>View Prescription</a></li>
                     </ul>
                 </div>
+                <div class="collapse ps-3" id="medicationSubmenu">
+                    <ul class="nav flex-column">
+                        <li><a class="nav-link" asp-controller="Repeats" asp-action="Create"><i class="bi bi-pencil-square"></i> Order Medication</a></li>
+                        <li><a class="nav-link" asp-controller="Repeats" asp-action="Index"><i class="bi bi-diagram-3"></i>Ordered Medication</a></li>
+                    </ul>
+                </div>
             </li>
-            <li class="nav-item"><a class="nav-link" asp-controller="Repeats" asp-action="Index"><i class="bi bi-person-badge"></i> <span>Manage repeats </span></a></li>
+            <li class="nav-item"><a class="nav-link" asp-controller="Repeats" asp-action="Crefgg"><i class="bi bi-person-badge"></i> <span>Order Medication </span></a></li>
 
             <li class="nav-item">
                 <a class="nav-link" asp-controller="CustomerReport" asp-action="Index">
