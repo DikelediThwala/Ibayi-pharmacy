@@ -112,20 +112,20 @@
 
         @section Styles
         {
-            /* Add custom styles for this page if needed */
+            
         }
     </style>
     @RenderSection("Styles", false)
 </head>
 <body>
 
-    <!-- Sidebar -->
+    
     <div class="sidebar" id="sidebar">
 
         <div class="profile-header d-flex align-items-center p-3 border-bottom">
-            <img src="~/images/profile.jpg" alt="Profile" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+            <img src="~/images/register/profile picture manager.png" alt="Profile" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;" />
             <div class="profile-text">
-                <div class="fw-bold">Dikeledi Thwala</div>
+                <div class="fw-bold">Carol Due</div>
                 <div style="color:cadetblue;">Manager</div>
             </div>
         </div>
@@ -147,7 +147,7 @@
                     <ul class="nav flex-column">
                         <li><a class="nav-link" asp-controller="DosageForm" asp-action="Index" title="Dosage Forms" data-bs-toggle="tooltip"><i class="bi bi-diagram-3"></i> Dosage Forms</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="ActiveIngredient" asp-action="Create" title="Add Ingredient" data-bs-toggle="tooltip"><i class="bi bi-collection"></i> <span>Ingredient</span></a></li>
-                        <li><a class="nav-link" asp-controller="Medicines" asp-action="Index" title="Medication" data-bs-toggle="tooltip"><i class="bi bi-pencil-square"></i>Medication</a></li>
+                        <li><a class="nav-link" asp-controller="Medicine" asp-action="Index" title="Medication" data-bs-toggle="tooltip"><i class="bi bi-pencil-square"></i>Medication</a></li>
 
                     </ul>
                 </div>
@@ -176,7 +176,7 @@
                 <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-bell me-3 fs-5"></i>
                     <span class="fw-bold me-2">Dikeledi Thwala</span>
-                    <img src="~/images/profile.jpg" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                    <img src="~/images/register/profile picture manager.png" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" />
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li>

@@ -1,21 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ONT_PROJECT.Models;
 
 namespace ONT_PROJECT.Controllers
 {
-    public class CustomerController : Controller
+    public class MedicineController : Controller
     {
-        public IActionResult Dashboard()
-        {
-            return View();
-        }
         public IActionResult Index()
         {
             return View();
         }
+
         public IActionResult Create()
         {
-            return View();
+           return View();
         }
+
     }
 }
-

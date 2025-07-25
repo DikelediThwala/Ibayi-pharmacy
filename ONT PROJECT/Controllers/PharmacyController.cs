@@ -12,7 +12,7 @@ namespace ONT_PROJECT.Controllers
         {
             _context = context;
         }
- public IActionResult Index()
+        public IActionResult Index()
         {
             var pharmacy = _context.Pharmacies.FirstOrDefault();
 
@@ -22,12 +22,12 @@ namespace ONT_PROJECT.Controllers
                 return View();
             }
 
-            // DEBUG: See what's inside pharmacy
+
             Console.WriteLine($"Pharmacy Name: {pharmacy.PharmacyId}, Email: {pharmacy.Email}");
 
             return View(pharmacy);
         }
-       
+
 
         public IActionResult Create()
         {
@@ -36,19 +36,20 @@ namespace ONT_PROJECT.Controllers
         public IActionResult Edit()
         {
             var pharmacy = _context.Pharmacies.FirstOrDefault();
+
             if (pharmacy == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "No pharmacy record found.";
+                return RedirectToAction("Index");
             }
 
-            // Populate ViewBag if Pharmacists exist
-            ViewBag.Pharmacists = new SelectList(_context.Pharmacists, "PharmacistID", "FullName");
-
+            ViewBag.Pharmacists = new SelectList(_context.Pharmacists, "PharmacistId", "FullName");
             return View(pharmacy);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Pharmacy model, IFormFile? logoFile)
+        public IActionResult Edit(Pharmacy pharmacyModel, IFormFile? logoFile)
         {
             if (ModelState.IsValid)
             {
@@ -56,17 +57,15 @@ namespace ONT_PROJECT.Controllers
                 if (existingPharmacy == null)
                     return NotFound();
 
-                // Update properties
-                existingPharmacy.Name = model.Name;
-                existingPharmacy.HealthCounsilRegistrationNo = model.HealthCounsilRegistrationNo;
-                existingPharmacy.ContactNo = model.ContactNo;
-                existingPharmacy.Email = model.Email;
-                existingPharmacy.WebsiteUrl = model.WebsiteUrl;
-                existingPharmacy.PharmacistId = model.PharmacistId;
-                existingPharmacy.Address = model.Address;
-                existingPharmacy.Vatrate = model.Vatrate;
+                existingPharmacy.Name = pharmacyModel.Name;
+                existingPharmacy.HealthCounsilRegistrationNo = pharmacyModel.HealthCounsilRegistrationNo;
+                existingPharmacy.ContactNo = pharmacyModel.ContactNo;
+                existingPharmacy.Email = pharmacyModel.Email;
+                existingPharmacy.WebsiteUrl = pharmacyModel.WebsiteUrl;
+                existingPharmacy.PharmacistId = pharmacyModel.PharmacyId;
+                existingPharmacy.Address = pharmacyModel.Address;
+                existingPharmacy.Vatrate = pharmacyModel.Vatrate;
 
-                // Optional: Update logo if a new one was uploaded
                 if (logoFile != null && logoFile.Length > 0)
                 {
                     using (var ms = new MemoryStream())
@@ -80,11 +79,12 @@ namespace ONT_PROJECT.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Re-populate dropdown if validation fails
             ViewBag.Pharmacists = new SelectList(_context.Pharmacists, "PharmacistID", "FullName");
 
-            return View(model);
+            return View(pharmacyModel);
         }
+
+
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ONT_PROJECT.Models;
 using System.Security.Cryptography;
 using System.Text;
@@ -106,6 +107,69 @@ namespace ONT_PROJECT.Controllers
 
             return RedirectToAction("Index");
         }
+
+        //Edit
+        public IActionResult Edit(int id)
+        {
+            var user = _context.TblUsers.FirstOrDefault(u => u.UserId == id);
+            if (user == null)
+                return NotFound();
+
+            if (user.Role == "Pharmacist")
+            {
+                var pharmacist = _context.Pharmacists.FirstOrDefault(p => p.PharmacistId == id);
+                if (pharmacist != null)
+                {
+                    ViewBag.HealthCouncilRegNo = pharmacist.HealthCounsilRegNo;
+                }
+            }
+
+            return View(user);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(TblUser model)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingUser = _context.TblUsers.FirstOrDefault(u => u.UserId == model.UserId);
+                if (existingUser == null)
+                    return NotFound();
+
+                existingUser.FirstName = model.FirstName;
+                existingUser.LastName = model.LastName;
+                existingUser.Email = model.Email;
+                existingUser.Idnumber = model.Idnumber;
+                existingUser.PhoneNumber = model.PhoneNumber;
+                existingUser.Title = model.Title;
+                existingUser.Role = model.Role;
+
+                
+                if (model.ProfileFile != null && model.ProfileFile.Length > 0)
+                {
+                    using var ms = new MemoryStream();
+                    model.ProfileFile.CopyTo(ms);
+                    existingUser.ProfilePicture = ms.ToArray();
+                }
+
+                if (model.Role == "Pharmacist")
+                {
+                    string regNo = Request.Form["HealthCouncilRegNo"];
+                    var pharmacist = _context.Pharmacists.FirstOrDefault(p => p.PharmacistId == model.UserId);
+                    if (pharmacist != null)
+                    {
+                        pharmacist.HealthCounsilRegNo = regNo;
+                    }
+                }
+
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
+        }
+
 
     }
 }

@@ -5,23 +5,19 @@
     Layout = "_ManagerLayout";
 }
 
-<!-- Page Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-dark">
         <i class="bi bi-hospital me-2 text-primary"></i> Update Pharmacy Details
     </h2>
 </div>
 
-<!-- Separator -->
 <hr style="height: 4px; background-color: #011425; border: none;" />
 
-<!-- Info Card -->
 <div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
     <i class="bi bi-info-circle-fill"></i>
     Please ensure all details are accurate before saving. Fields marked with <span class="text-danger">*</span> are required.
 </div>
 
-<!-- Form Card -->
 <div class="card shadow p-4" style="font:inherit;">
     <div class="card-body">
         <form asp-action="Edit" enctype="multipart/form-data" method="post">
@@ -85,23 +81,10 @@
 
             <div class="mb-4">
                 <label asp-for="Logo" class="form-label">Pharmacy Logo <span class="text-danger">*</span></label>
-
                 <input asp-for="Logo" class="form-control" type="file" name="logoFile" />
-                @if (Model.Logo != null)
-                {
-                    var base64 = Convert.ToBase64String(Model.Logo);
-                    var imgSrc = $"data:image/png;base64,{base64}";
-                    <div class="mt-2">
-                        <label class="form-label">Current Logo</label><br />
-                        <img src="@imgSrc" class="img-thumbnail" style="height: 120px;" alt="Pharmacy Logo" />
-                    </div>
-                }
-
-
                 <span asp-validation-for="Logo" class="text-danger small"></span>
             </div>
 
-            <!-- Action Buttons -->
             <div class="d-flex justify-content-between mt-4">
                 <a href="/Pharmacy/Index" class="btn btn-primary">
                     <i class="bi bi-arrow-left"></i> Back
@@ -115,5 +98,4 @@
     </div>
 </div>
 
-<!-- Bootstrap Icons (if not already included globally) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">

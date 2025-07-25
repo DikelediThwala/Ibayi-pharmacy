@@ -2,83 +2,155 @@
     ViewData["Title"] = "Dashboard";
     Layout = "_ManagerLayout";
 }
-  <style>
+<style>
     .table th, .table td {
         vertical-align: middle;
     }
 
-  </style>
+    th[onclick] {
+        cursor: pointer;
+    }
+
+</style>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<h2 class="text-primary" >Pharmacy Manager Dashboard</h2>
+<h2 class="text-primary">Pharmacy Manager Dashboard</h2>
 <hr style="height: 4px; background-color: #011425; border: none;" />
 <div class="container py-4">
-
     <div class="container mt-4">
-
         <div class="row g-3">
-            <div class="col-md-2" style="margin-left: 100px;">
-                <a href="/Medicine/Index" style="text-decoration: none;">
-                    <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #007bff, #00aaff);">
-                        <div><strong>Total Medications</strong></div>
-                        <div class="fs-4 fw-bold">8</div>
-                    </div>
-                </a>
+
+            <style>
+                .info-card {
+                    background-color: #f8f9fa;
+                    padding: 1.5rem;
+                    border-radius: 12px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                    transition: transform 0.2s;
+                    height: 100%;
+                    text-align: center;
+                }
+
+                    .info-card:hover {
+                        transform: translateY(-4px);
+                    }
+
+                .info-icon {
+                    font-size: 1.8rem;
+                    margin-bottom: 0.5rem;
+                }
+
+                .info-context {
+                    font-size: 0.85rem;
+                    color: #6c757d;
+                }
+
+                .bg-soft-primary {
+                    background-color: #e3f2fd;
+                }
+
+                .bg-soft-success {
+                    background-color: #e6f4ea;
+                }
+
+                .bg-soft-info {
+                    background-color: #e5f6fd;
+                }
+
+                .bg-soft-warning {
+                    background-color: #fff4e5;
+                }
+
+                .bg-soft-secondary {
+                    background-color: #f0f0f0;
+                }
+            </style>
+
+
+            <div class="row gx-3 gy-4">
+                <div class="col-md">
+                    <a asp-controller="Medicine" asp-action="Index" style="text-decoration: none;">
+                        <div class="info-card bg-soft-primary text-dark">
+                            <div class="info-icon text-primary"><i class="bi bi-capsule-pill"></i></div>
+                            <strong>Total Medications</strong>
+                            <div class="fs-4 fw-bold">8</div>
+                            <div class="info-context">Active medicines in stock</div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md">
+                    <a asp-controller="Supplier" asp-action="Index" style="text-decoration: none;">
+                        <div class="info-card bg-soft-success text-dark">
+                            <div class="info-icon text-success"><i class="bi bi-truck"></i></div>
+                            <strong>Suppliers</strong>
+                            <div class="fs-4 fw-bold">7</div>
+                            <div class="info-context">Partners delivering stock</div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md">
+                    <a asp-controller="User" asp-action="Index" style="text-decoration: none;">
+                        <div class="info-card bg-soft-info text-dark">
+                            <div class="info-icon text-info"><i class="bi bi-person-badge"></i></div>
+                            <strong>Pharmacists</strong>
+                            <div class="fs-4 fw-bold">3</div>
+                            <div class="info-context">Registered system pharmacists</div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md">
+                    <a asp-controller="Doctor" asp-action="Index" style="text-decoration: none;">
+                        <div class="info-card bg-soft-warning text-dark">
+                            <div class="info-icon text-warning"><i class="bi bi-stethoscope"></i></div>
+                            <strong>Doctors</strong>
+                            <div class="fs-4 fw-bold">4</div>
+                            <div class="info-context">Doctors with prescription rights</div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md">
+                    <a asp-controller="User" asp-action="Index" style="text-decoration: none;">
+                        <div class="info-card bg-soft-secondary text-dark">
+                            <div class="info-icon text-secondary"><i class="bi bi-people"></i></div>
+                            <strong>Customers</strong>
+                            <div class="fs-4 fw-bold">324</div>
+                            <div class="info-context">Registered pharmacy customers</div>
+                        </div>
+                    </a>
+                </div>
             </div>
-
-
-            <div class="col-md-2">
-                <a href="/Supplier/Index" style="text-decoration: none;">
-                    <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #28a745, #4caf50);">
-                        <div><strong>Suppliers</strong></div>
-                        <div class="fs-4 fw-bold">7</div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-md-2">
-                <a href="/User/Index" style="text-decoration: none;">
-                    <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #17a2b8, #00bcd4);">
-                        <div><strong>Pharmacists</strong></div>
-                        <div class="fs-4 fw-bold">3</div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-md-2">
-                <a href="/Doctor/Index" style="text-decoration: none;">
-                    <div class="card p-3 text-center text-dark shadow rounded-3" style="background: linear-gradient(135deg, #ffc107, #ff9800);">
-                        <div><strong>Doctors</strong></div>
-                        <div class="fs-4 fw-bold">4</div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-md-2">
-                <a href="/User/Index?id=Customers" style="text-decoration: none;">
-                    <div class="card p-3 text-center text-white shadow rounded-3" style="background: linear-gradient(135deg, #6c757d, #495057);">
-                        <div><strong>Customers</strong></div>
-                        <div class="fs-4 fw-bold">324</div>
-                    </div>
-                </a>
-            </div>
-
-
         </div>
+
         <div class="row g-3 mt-4">
             <div class="col-12">
                 <div class="card p-3">
-                    <div class="chart-heading">Latest Orders</div>
+                    <div class="chart-heading fw-semibold fs-5 mb-3">
+                        Latest Orders
+                    </div>
+                    <div class="mb-2">
+                        <label for="statusFilter" class="form-label">Filter by Status:</label>
+                        <select id="statusFilter" class="form-select form-select-sm" onchange="filterByStatus()">
+                            <option value="">All</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
                     <div class="table-responsive">
-                        <table class="table table-hover table-bordered">
-                            <thead class="table-light">
+                        <table class="table table-striped table-hover table-bordered align-middle bg-white" id="ordersTable">
+                            <thead style="background-color: #d9ecf2;" class="text-dark">
                                 <tr>
                                     <th>Order ID</th>
                                     <th>Supplier Name</th>
                                     <th>Medications Ordered</th>
-                                    <th>Date Placed</th>
-                                    <th>Status</th>
+                                    <th onclick="sortTable(3)">Date Placed ⬍</th>
+                                    <th onclick="sortTable(4)">Status ⬍</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -87,28 +159,96 @@
                                     <td>MediCare Ltd</td>
                                     <td>Paracetamol, Ibuprofen</td>
                                     <td>2025-05-10</td>
-                                    <td><span class="badge bg-success">Delivered</span></td>
+                                    <td>
+                                        <select class="form-select form-select-sm status-select fw-semibold">
+                                            <option class="text-primary" selected>Delivered</option>
+                                            <option class="text-warning">Pending</option>
+                                            <option class="text-info">Processing</option>
+                                            <option class="text-danger">Cancelled</option>
+                                        </select>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>#ORD002</td>
                                     <td>PharmaTech</td>
                                     <td>Amoxicillin, Metformin</td>
-                                    <td>2025-05-12</td>
-                                    <td><span class="badge bg-warning text-dark">Pending</span></td>
+                                    <td>2025-05-11</td>
+                                    <td>
+                                        <select class="form-select form-select-sm status-select fw-semibold">
+                                            <option class="text-primary">Delivered</option>
+                                            <option class="text-warning" selected>Pending</option>
+                                            <option class="text-info">Processing</option>
+                                            <option class="text-danger">Cancelled</option>
+                                        </select>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>#ORD003</td>
                                     <td>GlobalDrugs</td>
                                     <td>Aspirin, Vitamin C</td>
-                                    <td>2025-05-14</td>
-                                    <td><span class="badge bg-info text-dark">Processing</span></td>
+                                    <td>2025-05-12</td>
+                                    <td>
+                                        <select class="form-select form-select-sm status-select fw-semibold">
+                                            <option class="text-primary">Delivered</option>
+                                            <option class="text-warning">Pending</option>
+                                            <option class="text-info" selected>Processing</option>
+                                            <option class="text-danger">Cancelled</option>
+                                        </select>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>#ORD004</td>
                                     <td>HealthCorp</td>
                                     <td>Insulin, Cough Syrup</td>
-                                    <td>2025-05-15</td>
-                                    <td><span class="badge bg-danger">Cancelled</span></td>
+                                    <td>2025-05-13</td>
+                                    <td>
+                                        <select class="form-select form-select-sm status-select fw-semibold">
+                                            <option class="text-primary">Delivered</option>
+                                            <option class="text-warning">Pending</option>
+                                            <option class="text-info">Processing</option>
+                                            <option class="text-danger" selected>Cancelled</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+       @*  <div class="row g-3 mt-4">
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <div class="chart-heading fw-semibold fs-5 mb-3">Low Stock Overview</div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered table-hover align-middle">
+                            <thead class="table-warning text-dark text-center">
+                                <tr>
+                                    <th>Medication Name</th>
+                                    <th>Quantity</th>
+                                    <th>Order</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center">
+                                <tr>
+                                    <td>Amoxicillin</td>
+                                    <td><span class="badge bg-danger">10</span></td>
+                                    <td>
+                                        <a href="/B_Order/Create" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-shopping-cart me-1"></i> Order
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Simvastatin</td>
+                                    <td><span class="badge bg-danger">9</span></td>
+                                    <td>
+                                        <a href="/B_Order/Create" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-shopping-cart me-1"></i> Order
+                                        </a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -116,149 +256,193 @@
                 </div>
             </div>
         </div>
+ *@
 
-    </div>
-
-    <div class="row g-3 mt-4" >
-        <div class="col-md-6">
-            <div class="card p-3">
-                <div class="chart-heading">Total Sales Per Year</div>
-                <canvas id="salesPerYearChart"></canvas>
+        <div class="row g-3 mt-4">
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <div class="chart-heading">Total Sales Per Year</div>
+                    <canvas id="salesPerYearChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <div class="chart-heading">Best Sold Medicines</div>
+                    <canvas id="bestSoldMedicineChart"></canvas>
+                </div>
             </div>
         </div>
-        <div class="col-md-6" >
-            <div class="card p-3">
-                <div class="chart-heading">Best Sold Medicines</div>
-                <canvas id="bestSoldMedicineChart"></canvas>
-            </div>
-        </div>
-    </div>
 
-    <div class="row g-3 mt-4">
-        <div class="col-md-6">
-            <div class="card p-3">
-                <div class="chart-heading">Dosage Form Distribution</div>
-                <canvas id="dosageFormChart"></canvas>
+        <div class="row g-3 mt-4">
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <div class="chart-heading">Dosage Form Distribution</div>
+                    <canvas id="dosageFormChart"></canvas>
+                </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card p-3">
-                <div class="chart-heading">Top Suppliers (Stock Supplied)</div>
-                <canvas id="supplierPieChart"></canvas>
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <div class="chart-heading">Top Suppliers (Stock Supplied)</div>
+                    <canvas id="supplierPieChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
 </div>
+    @section Styles {
+        <style>
+            body {
+                background-color: #f5f7fa;
+            }
 
-@section Styles {
-    <style>
-        body {
-            background-color: #f5f7fa;
-        }
+            .card {
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                border-radius: 12px;
+            }
 
-        .card {
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-radius: 12px;
-        }
+            .dashboard-title {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
 
-        .dashboard-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
+            .chart-heading {
+                font-weight: 600;
+                margin-bottom: 10px;
+                text-align: center;
+                font-size: 18px;
+            }
 
-        .chart-heading {
-            font-weight: 600;
-            margin-bottom: 10px;
-            text-align: center;
-            font-size: 18px;
-        }
-    </style>
-}
+            #ordersTable {
+                border-radius: 8px;
+                overflow: hidden;
+            }
 
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
+                #ordersTable thead {
+                    font-size: 0.95rem;
+                    font-weight: 600;
+                }
 
-        new Chart(document.getElementById('salesPerYearChart').getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: ['2020', '2021', '2022', '2023', '2024'],
-                datasets: [{
-                    label: 'Total Sales (in ZAR)',
-                    data: [95000, 110000, 125000, 140000, 167000],
-                    borderColor: '#4e73df',
-                    backgroundColor: 'rgba(78, 115, 223, 0.1)',
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: true }
+                #ordersTable tbody tr:hover {
+                    background-color: #f1faff;
+                }
+
+        </style>
+    }
+
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+
+            new Chart(document.getElementById('salesPerYearChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ['2020', '2021', '2022', '2023', '2024'],
+                    datasets: [{
+                        label: 'Total Sales (in ZAR)',
+                        data: [95000, 110000, 125000, 140000, 167000],
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
                 },
-                scales: {
-                    y: { title: { display: true, text: 'Sales (ZAR)' } },
-                    x: { title: { display: true, text: 'Year' } }
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        y: { title: { display: true, text: 'Sales (ZAR)' } },
+                        x: { title: { display: true, text: 'Year' } }
+                    }
                 }
-            }
-        });
+            });
 
 
-        new Chart(document.getElementById('bestSoldMedicineChart').getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: ['Paracetamol', 'Ibuprofen', 'Amoxicillin', 'Metformin', 'Aspirin'],
-                datasets: [{
-                    label: 'Units Sold',
-                    data: [5800, 4700, 4300, 4000, 3500],
-                    backgroundColor: '#1cc88a'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { title: { display: true, text: 'Units Sold' } },
-                    x: { title: { display: true, text: 'Medicine' } }
+            new Chart(document.getElementById('bestSoldMedicineChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Paracetamol', 'Ibuprofen', 'Amoxicillin', 'Metformin', 'Aspirin'],
+                    datasets: [{
+                        label: 'Units Sold',
+                        data: [5800, 4700, 4300, 4000, 3500],
+                        backgroundColor: '#1cc88a'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { title: { display: true, text: 'Units Sold' } },
+                        x: { title: { display: true, text: 'Medicine' } }
+                    }
                 }
-            }
-        });
+            });
 
-        new Chart(document.getElementById('dosageFormChart').getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: ['Tablets', 'Capsules', 'Syrups', 'Injections', 'Creams'],
-                datasets: [{
-                    label: 'Count',
-                    data: [540, 320, 220, 180, 150],
-                    backgroundColor: '#f6c23e'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { title: { display: true, text: 'Dosage Forms' } },
-                    y: { title: { display: true, text: 'Count' } }
+            new Chart(document.getElementById('dosageFormChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Tablets', 'Capsules', 'Syrups', 'Injections', 'Creams'],
+                    datasets: [{
+                        label: 'Count',
+                        data: [540, 320, 220, 180, 150],
+                        backgroundColor: '#f6c23e'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { title: { display: true, text: 'Dosage Forms' } },
+                        y: { title: { display: true, text: 'Count' } }
+                    }
                 }
-            }
-        });
+            });
 
-        new Chart(document.getElementById('supplierPieChart').getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: ['MediCare Ltd', 'PharmaTech', 'GlobalDrugs', 'HealthCorp', 'Others'],
-                datasets: [{
-                    data: [540, 410, 260, 190, 140],
-                    backgroundColor: ['#1cc88a', '#4e73df', '#f6c23e', '#e74a3b', '#858796']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { position: 'right' } }
+            new Chart(document.getElementById('supplierPieChart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['MediCare Ltd', 'PharmaTech', 'GlobalDrugs', 'HealthCorp', 'Others'],
+                    datasets: [{
+                        data: [540, 410, 260, 190, 140],
+                        backgroundColor: ['#1cc88a', '#4e73df', '#f6c23e', '#e74a3b', '#858796']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'right' } }
+                }
+            });
+        </script>
+
+        <script>
+            function sortTable(columnIndex) {
+                const table = document.getElementById("ordersTable");
+                const rows = Array.from(table.tBodies[0].rows);
+                const isDate = columnIndex === 3;
+
+                let sortedRows = rows.sort((a, b) => {
+                    let aVal = a.cells[columnIndex].innerText.trim();
+                    let bVal = b.cells[columnIndex].innerText.trim();
+                    return isDate ? new Date(aVal) - new Date(bVal) : aVal.localeCompare(bVal);
+                });
+
+                const tbody = table.tBodies[0];
+                tbody.innerHTML = "";
+                sortedRows.forEach(row => tbody.appendChild(row));
             }
-        });
-    </script>
-}
+
+            function filterByStatus() {
+                const selectedStatus = document.getElementById("statusFilter").value.toLowerCase();
+                const rows = document.querySelectorAll("#ordersTable tbody tr");
+
+                rows.forEach(row => {
+                    const statusSelect = row.querySelector(".status-select");
+                    const status = statusSelect ? statusSelect.value.toLowerCase() : "";
+                    row.style.display = !selectedStatus || status === selectedStatus ? "" : "none";
+                });
+            }
+        </script>
+
+    }
