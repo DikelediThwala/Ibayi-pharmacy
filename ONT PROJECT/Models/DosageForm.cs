@@ -1,14 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 
-namespace ONT_PROJECT.Models
+namespace ONT_PROJECT.Models;
+
+public partial class DosageForm
 {
-    public class DosageForm
-    {
-        [Key]
-        public int FormID { get; set; }
+    public int FormId { get; set; }
 
-        [Required(ErrorMessage = "Form name is required.")]
-        [Display(Name = "Form Name")]
-        public string FormName { get; set; }
-    }
+    public string Form { get; set; } = null!;
+
+    public virtual ICollection<Medicine> Medicines { get; set; } = new List<Medicine>();
 }

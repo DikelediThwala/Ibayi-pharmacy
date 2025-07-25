@@ -228,6 +228,31 @@
             <hr />
             <div class="row mb-4 align-items-end">
                 <div class="row mb-4">
+                <div class="col-md-6">
+                    <label asp-for="CustomerId" class="form-label">
+                        Customers <span class="text-danger">*</span>
+                    </label>
+                    <select asp-for="CustomerId" class="form-select">
+                        <option value="">-- Select Customer --</option>
+                        <option value="Asenathi Lubelo">Asenathi Lubelo</option>
+                        <option value="Heken Bayui">Heken Bayui</option>
+                        <option value="Incident Feran">Incident Feran</option>
+                        <option value="Emihle Wetboi">Emihle Wetboi</option>
+                    </select>
+                    <span asp-validation-for="CustomerId" class="text-danger small"></span>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <a asp-controller="Pharmacist" asp-action="CreateUser" type="button" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Add
+                    </a>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <div class="search-container w-100">
+                        <input type="text" placeholder="Search Customer..." class="form-control">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                </div>
+             </div>
                     <div class="col-md-6">
                         <label asp-for="CustomerID" class="form-label">
                             Customers <span class="text-danger">*</span>
@@ -270,14 +295,14 @@
 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <label asp-for="DoctorID" class="form-label">Doctors <span class="text-danger">*</span></label>
-                        <select asp-for="DoctorID" class="form-select">
+                        <label asp-for="DoctorId" class="form-label">Doctors <span class="text-danger">*</span></label>
+                        <select asp-for="DoctorId" class="form-select">
                             <option value="">-- Select Doctor --</option>
                             <option value="Dickson Bejan">Dickson Bejan</option>
                             <option value="Feran Millan">Feran Millan</option>
                             <option value="Evidence Relam">Evidence Relam</option>
                         </select>
-                        <span asp-validation-for="DoctorID" class="text-danger small"></span>
+                        <span asp-validation-for="DoctorId" class="text-danger small"></span>
                     </div>
                      <div class="col-md-3 d-flex align-items-end">
                         <a asp-controller="Pharmacist" asp-action="CreateDoctor" type="button" class="btn btn-primary">

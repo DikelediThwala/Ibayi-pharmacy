@@ -1,0 +1,149 @@
+﻿@model ONT_PROJECT.Models.TblUser
+
+@{
+    ViewData["Title"] = "Edit User";
+    Layout = "_ManagerLayout";
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@Html.Raw(TempData["Error"])</div>
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-dark">
+            <i class="bi bi-pencil-square me-2 text-primary"></i> Edit User Profile
+        </h2>
+    </div>
+
+    <div class="card shadow p-4 rounded-4">
+        <div class="row mb-4">
+            <div class="col-md-3 text-center">
+                <div class="mb-3">
+                    @if (Model.ProfilePicture != null && Model.ProfilePicture.Length > 0)
+                    {
+                        string base64 = Convert.ToBase64String(Model.ProfilePicture);
+                        <img src="data:image/png;base64,@base64" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px;" />
+                    }
+                    else
+                    {
+                        <img src="https://via.placeholder.com/150" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px;" />
+                    }
+                </div>
+                <label class="form-label fw-semibold">Change Profile Picture</label>
+                <input asp-for="ProfileFile" class="form-control" type="file" />
+                <span asp-validation-for="ProfileFile" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-9">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.UserId)
+
+                    <h4>Personal Details</h4>
+                    <hr />
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Title" class="form-label">Title <span class="text-danger">*</span></label>
+                            <select asp-for="Title" class="form-select">
+                                <option value="">-- Select Title --</option>
+                                <option value="Mr.">Mr.</option>
+                                <option value="Mrs.">Mrs.</option>
+                                <option value="Miss">Miss</option>
+                                <option value="Dr.">Dr.</option>
+                            </select>
+
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Idnumber" class="form-label">ID Number <span class="text-danger">*</span></label>
+                            <input asp-for="Idnumber" class="form-control" />
+                            <span asp-validation-for="Idnumber" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="FirstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="LastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <h4>Contact Details</h4>
+                    <hr />
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="PhoneNumber" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <h4>Role</h4>
+                    <hr />
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Role" class="form-label">Role <span class="text-danger">*</span></label>
+                            <select asp-for="Role" class="form-select" id="RoleDropdown">
+                                <option value="">-- Select Role --</option>
+                                <option value="Customer" selected="@("Customer" == Model.Role)">Customer</option>
+                                <option value="Pharmacist" selected="@("Pharmacist" == Model.Role)">Pharmacist</option>
+                                <option value="PharmacyManager" selected="@("PharmacyManager" == Model.Role)">PharmacyManager</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6" id="HealthRegSection" style="display:none;">
+                            <label for="HealthCouncilRegNo" class="form-label">Health Council Reg. No <span class="text-danger">*</span></label>
+                            <input type="text" name="HealthCouncilRegNo" id="HealthCouncilRegNo" class="form-control"
+                                   value="@ViewBag.HealthCouncilRegNo" placeholder="e.g., HPCSA123456" />
+                        </div>
+                    </div>
+
+                    <input asp-for="Password" type="hidden" />
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="/User/Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-save"></i> Update
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        const roleSelect = document.getElementById("RoleDropdown");
+        const healthSection = document.getElementById("HealthRegSection");
+
+        function toggleHealthCouncil() {
+            if (roleSelect.value === "Pharmacist") {
+                healthSection.style.display = "block";
+            } else {
+                healthSection.style.display = "none";
+            }
+        }
+
+        roleSelect.addEventListener("change", toggleHealthCouncil);
+        window.addEventListener("DOMContentLoaded", toggleHealthCouncil);
+    </script>
+}

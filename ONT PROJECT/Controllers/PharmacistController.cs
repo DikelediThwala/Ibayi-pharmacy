@@ -45,16 +45,20 @@ namespace ONT_PROJECT.Controllers
 
             return View();
         }
+      
+        public IActionResult CreateUser()
         public IActionResult ProcessOrder()
         {
 
             return View();
         }
+        public IActionResult CreateDoctor()
         public IActionResult OrderDetails()
         {
 
             return View();
         }
+        public IActionResult LoadPrescription()
         [HttpPost]
         //[ValidateAntiFogeryToken]
         public async Task<IActionResult> CreateUser(tblUser user)
@@ -120,11 +124,13 @@ namespace ONT_PROJECT.Controllers
             return View();
         }
        
+        public IActionResult ViewPrescription()
+       
         public async Task<IActionResult> ViewPrescription()
         {
             return View();
         }
-        public async Task<IActionResult> DispensePrescription()
+        public IActionResult DispensePrescription()
         {
             return View();
         }

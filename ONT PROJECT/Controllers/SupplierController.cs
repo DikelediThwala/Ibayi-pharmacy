@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ONT_PROJECT.Models;
-using Microsoft.EntityFrameworkCore; // Add this
+using Microsoft.EntityFrameworkCore; 
 
 
 namespace ONT_PROJECT.Controllers

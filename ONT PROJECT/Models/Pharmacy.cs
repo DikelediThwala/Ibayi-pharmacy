@@ -1,51 +1,29 @@
-﻿using ONT_PROJECT.Models;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
-namespace ONT_PROJECT.Models
+namespace ONT_PROJECT.Models;
+
+public partial class Pharmacy
 {
-    public class Pharmacy
-    {
-        [Key]
-        public int PharmacyID { get; set; }
+    public int PharmacyId { get; set; }
 
-        [Required]
-        public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
-        [Required]
-        [Display(Name = "Health Council Registration No")]
-        public string HealthCounsilRegistrationNo { get; set; }
+    public string HealthCounsilRegistrationNo { get; set; } = null!;
 
-        [Required]
-        [StringLength(11)]
-        [Display(Name = "Contact Number")]
-        public string ContactNo { get; set; }
+    public string ContactNo { get; set; } = null!;
 
-        [Required]
-        [StringLength(50)]
-        [EmailAddress]
-        public string Email { get; set; }
+    public string Email { get; set; } = null!;
 
-        [StringLength(50)]
-        [Url]
-        [Display(Name = "Website URL")]
-        public string WebsiteUrl { get; set; }
+    public string WebsiteUrl { get; set; } = null!;
 
-        [Required]
-        [ForeignKey("Pharmacist")]
-        public int PharmacistID { get; set; }
+    public int? PharmacistId { get; set; }
 
-        public byte[] Logo { get; set; }
+    public byte[]? Logo { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string Address { get; set; }
+    public string Address { get; set; } = null!;
 
-        [Required]
-        [Display(Name = "VAT Rate")]
-        public float VATRate { get; set; }
+    public double Vatrate { get; set; }
 
-        // Navigation property
-        //public Pharmacist Pharmacist { get; set; }
-    }
+    public virtual Pharmacist? Pharmacist { get; set; }
 }

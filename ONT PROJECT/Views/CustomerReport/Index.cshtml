@@ -3,45 +3,59 @@
     Layout = "_CustomerLayout";
 }
 
-<h2 style="font-weight:bold; color:blue;">Prescription Report</h2>
+@model ONT_PROJECT.Models.TblUser
 
-<div style="margin-top: 20px;">
-    <label><strong>From Date:</strong></label>
-    <input type="date" style="margin-right: 20px;" />
 
-    <label><strong>To Date:</strong></label>
-    <input type="date" />
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="text-center mb-4">Edit Your Profile</h2>
 
-    <button style="margin-left: 20px; padding: 5px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px;">
-        Generate Report (PDF)
-    </button>
+            <form asp-action="Update" asp-controller="Customer" method="post">
+                @* <input type="hidden" asp-for="Id" /> *@
+
+                <div class="form-group mb-3">
+                    <label asp-for="FirstName"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="LastName"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Idnumber"></label>
+                    <input asp-for="Idnumber" class="form-control" />
+                    <span asp-validation-for="Idnumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="PhoneNumber"></label>
+                    <input asp-for="PhoneNumber" class="form-control" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="Allergies"></label>
+                    <select asp-for="Allergies" multiple class="form-control" size="5">
+                        <!-- Add allergy options here, pre-select if applicable -->
+                    </select>
+                    <span asp-validation-for="Allergies" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 text-uppercase">Save Changes</button>
+            </form>
+        </div>
+    </div>
 </div>
 
-<br />
-
-<div style="margin-top: 30px; border-radius: 12px; overflow: hidden; width: 95%; margin-left:auto; margin-right:auto;">
-    <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
-        <thead style="background-color: #e6f0ff; color: black; font-weight: bold;">
-            <tr>
-                <th style="padding: 10px; border: 1px solid #ccc;">Prescription ID</th>
-                <th style="padding: 10px; border: 1px solid #ccc;">Customer</th>
-                <th style="padding: 10px; border: 1px solid #ccc;">Doctor</th>
-                <th style="padding: 10px; border: 1px solid #ccc;">Medication(s)</th>
-                <th style="padding: 10px; border: 1px solid #ccc;">Date Dispensed</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="padding: 10px; border: 1px solid #ccc;">RX12345</td>
-                <td style="padding: 10px; border: 1px solid #ccc;">John Doe</td>
-                <td style="padding: 10px; border: 1px solid #ccc;">Dr. Smith</td>
-                <td style="padding: 10px; border: 1px solid #ccc;">
-                    Paracetamol 500mg<br />
-                    Amoxicillin 250mg
-                </td>
-                <td style="padding: 10px; border: 1px solid #ccc;">2025-05-20</td>
-            </tr>
-            <!-- Add more dummy rows as needed -->
-        </tbody>
-    </table>
-</div>
+<partial name="_ValidationScriptsPartial" />

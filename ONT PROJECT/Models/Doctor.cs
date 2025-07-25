@@ -1,28 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 
-namespace ONT_PROJECT.Models
+namespace ONT_PROJECT.Models;
+
+public partial class Doctor
 {
-    public class Doctor
-    {
-        public int DoctorID { get; set; }
+    public int DoctorId { get; set; }
 
-        [Required]
-        public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
-        [Required]
-        public string Surname { get; set; }
+    public string Surname { get; set; } = null!;
 
-        [Required]
-        public string PracticeNo { get; set; }
+    public string PracticeNo { get; set; } = null!;
 
-        [Required]
-        [Phone]
-        public string ContactNo { get; set; }
+    public string ContactNo { get; set; } = null!;
 
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-        
-     
-    }
+    public string Email { get; set; } = null!;
+
+    public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
 }

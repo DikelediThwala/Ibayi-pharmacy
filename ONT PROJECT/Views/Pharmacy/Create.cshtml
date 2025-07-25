@@ -69,23 +69,24 @@
 
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <label asp-for="PharmacistID" class="form-label">Responsible Pharmacist <span class="text-danger">*</span></label>
-                    <select asp-for="PharmacistID" asp-items="ViewBag.Pharmacists" class="form-select">
+                    <label asp-for="PharmacistId" class="form-label">Responsible Pharmacist <span class="text-danger">*</span></label>
+                    <select asp-for="PharmacistId" asp-items="ViewBag.Pharmacists" class="form-select">
                         <option value="">-- Select Pharmacist --</option>
                     </select>
-                    <span asp-validation-for="PharmacistID" class="text-danger small"></span>
+                    <span asp-validation-for="PharmacistId" class="text-danger small"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <label asp-for="VATRate" class="form-label">VAT Rate (%) <span class="text-danger">*</span></label>
-                    <input asp-for="VATRate" class="form-control" placeholder="e.g., 15" />
-                    <span asp-validation-for="VATRate" class="text-danger small"></span>
+                    <label asp-for="Vatrate" class="form-label">VAT Rate (%) <span class="text-danger">*</span></label>
+                    <input asp-for="Vatrate" class="form-control" placeholder="e.g., 15" />
+                    <span asp-validation-for="Vatrate" class="text-danger small"></span>
                 </div>
             </div>
 
             <div class="mb-4">
                 <label asp-for="Logo" class="form-label">Pharmacy Logo <span class="text-danger">*</span></label>
-                <input asp-for="Logo" class="form-control" type="file" />
+                <input asp-for="Logo" class="form-control" type="file" name="logoFile" />
+
                 <span asp-validation-for="Logo" class="text-danger small"></span>
             </div>
 

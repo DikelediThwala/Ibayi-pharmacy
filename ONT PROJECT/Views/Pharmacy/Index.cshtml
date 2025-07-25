@@ -6,26 +6,48 @@
 }
 
 <div class="container mt-4">
+
     <div class="card">
         <div class="card-header">
-            <h3>Ibayi Pharmacy </h3>
+            <h3>@(Model.Name ?? "Pharmacy")</h3>
         </div>
         <div class="card-body">
-            <div>
-                <img src="~/images/logo_2-removebg-preview.png" alt="Pharmacy Logo" style="width: 160px; height: 120px;" />
-                <br />
-                <br />
-            </div>  
-            <p><strong>Health Council Registration No:</strong> 123456789</p>
-            <p><strong>Contact Number:</strong>+27 83 754 5485</p>
-            <p><strong>Email:</strong>ibayipharm24@ibhayi.com</p>
-            <p><strong>Website URL:</strong> <a href="https://localhost:7033/" target="_blank">https://localhost:7033/</a></p>
-            <p><strong>Address:</strong>415 Fake St. Mountain View, Gqeberha, Summerstrand, SA</p>
-            <p><strong>VAT Rate:</strong> 15%</p>
-            <p><strong>Pharmacist :</strong>Dikeledi Thwala </p>
+             <div>
+                @if (Model.Logo != null)
+                {
+                    var base64Logo = Convert.ToBase64String(Model.Logo);
+                    var imageSrc = $"data:image/png;base64,{base64Logo}";
+                    <img src="@imageSrc" alt="Pharmacy Logo" style="width: 160px; height: 120px;" />
+                }
+                else
+                {
+                    <img src="~/images/logo_2-removebg-preview.png" alt="Default Pharmacy Logo" style="width: 160px; height: 120px;" />
+                }
+                <br /><br />
+            </div>
+            <p><strong>Health Council Registration No:</strong> @(Model.HealthCounsilRegistrationNo ?? "N/A")</p>
+            <p><strong>Contact Number:</strong> @(Model.ContactNo ?? "N/A")</p>
+            <p><strong>Email:</strong> @(Model.Email ?? "N/A")</p>
+            <p>
+                <strong>Website URL:</strong>
+                @if (!string.IsNullOrEmpty(Model.WebsiteUrl))
+                {
+                    <a href="@Model.WebsiteUrl" target="_blank">@Model.WebsiteUrl</a>
+                }
+                else
+                {
+                    <span>N/A</span>
+                }
+            </p>
+            <p><strong>Address:</strong> @(Model.Address ?? "N/A")</p>
+            <p><strong>VAT Rate:</strong> @Model.Vatrate%</p>
+
+
+            <div class="card-footer text-end">
+                <a asp-action="Edit" asp-controller="Pharmacy" class="btn btn-primary">
+                    <i class="bi bi-pencil-square"></i> Edit Pharmacy Details
+                </a>
+            </div>
         </div>
-        <a asp-action="Create" asp-controller="Pharmacy" class="btn btn-primary mb-3">
-            <i class="bi bi-plus-circle"></i> Edit Pharmacy Details
-        </a>
     </div>
 </div>

@@ -1,389 +1,56 @@
-﻿
-@{
-    ViewData["Title"] = "Upload prescription";
+﻿@{
+    ViewData["Title"] = "My Prescriptions";
     Layout = "_CustomerLayout";
 }
-<h2 style="font-weight:bold; color:#007bff; font-size:18px; margin-bottom:15px;">Add New Prescription</h2>
 
-<form class="add-prescription-form" method="post" action="#" enctype="multipart/form-data">
-    <label for="customerId">Customer ID:</label>
-    <input type="text" id="customerId" name="customerId" placeholder="Enter Customer ID" />
-
-    <label for="doctorId">Doctor ID:</label>
-    <input type="text" id="doctorId" name="doctorId" placeholder="Enter Doctor ID" />
-
-    <label for="date">Date:</label>
-    <input type="date" id="date" name="date" />
-
-    <label for="photo">Prescription PDF:</label>
-    <input type="file" id="photo" name="photo" accept="application/pdf" />
-
-    <button type="submit">Add</button>
-</form>
-
-<h2 style="font-weight:bold; color:#007bff; font-size:18px; margin-bottom:20px;">My Prescriptions</h2>
-
-<style>
-    .prescription-table {
-        width: 80%;
-        margin: auto auto 40px auto;
-        background-color: #e6f2ff;
-        border-radius: 10px;
-        overflow: hidden;
-        font-size: 14px;
+@functions {
+    public class PrescriptionFile
+    {
+        public string FileName { get; set; }
+        public string FileUrl { get; set; }
     }
 
-        .prescription-table th, .prescription-table td {
-            padding: 10px;
-            text-align: center;
-            vertical-align: middle;
-        }
+    List<PrescriptionFile> prescriptions = new List<PrescriptionFile>
+    {
+        new PrescriptionFile { FileName = "Prescription_Jan2025.pdf", FileUrl = "/prescriptions/Prescription_Jan2025.pdf" },
+        new PrescriptionFile { FileName = "Prescription_Feb2025.pdf", FileUrl = "/prescriptions/Prescription_Feb2025.pdf" },
+        new PrescriptionFile { FileName = "Prescription_March2025.pdf", FileUrl = "/prescriptions/Prescription_March2025.pdf" }
+    };
+}
 
-        .prescription-table img {
-            width: 80px;
-            border-radius: 6px;
-        }
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Your Prescriptions</h2>
 
-        .prescription-table thead {
-            background-color: #cce6ff;
-        }
-
-    .action-buttons .btn {
-        padding: 4px 8px;
-        font-size: 12px;
-        margin: 2px;
-    }
-
-    .badge {
-        padding: 4px 6px;
-        font-size: 12px;
-        border-radius: 4px;
-        display: inline-block;
-        min-width: 70px;
-    }
-
-    .bg-success {
-        background-color: #28a745;
-        color: white;
-    }
-
-    .bg-secondary {
-        background-color: #6c757d;
-        color: white;
-    }
-
-    .bg-warning {
-        background-color: #ffc107;
-        color: black;
-    }
-
-    .bg-info {
-        background-color: #17a2b8;
-        color: white;
-    }
-
-    /* Form styles */
-    .add-prescription-form {
-        width: 80%;
-        margin: auto;
-        background-color: #f0f8ff;
-        padding: 15px 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 6px #cce6ff;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        align-items: center;
-        font-size: 14px;
-    }
-
-        .add-prescription-form label {
-            font-weight: 600;
-            margin-right: 5px;
-        }
-
-        .add-prescription-form input[type="text"],
-        .add-prescription-form input[type="date"],
-        .add-prescription-form input[type="file"] {
-            padding: 6px 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            flex: 1 1 120px;
-            min-width: 120px;
-        }
-
-        .add-prescription-form button {
-            padding: 8px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            flex: 0 0 auto;
-        }
-
-            .add-prescription-form button:hover {
-                background-color: #0056b3;
+    <table class="table table-bordered table-striped" id="prescriptionTable">
+        <thead class="table-dark">
+            <tr>
+                <th>Prescription Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var prescription in prescriptions)
+            {
+                <tr>
+                    <td>@prescription.FileName</td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="@prescription.FileUrl" target="_blank">View</a>
+                        <a class="btn btn-success btn-sm" href="@prescription.FileUrl" download>Download</a>
+                        <button class="btn btn-danger btn-sm" onclick="deleteRow(this)">Delete</button>
+                    </td>
+                </tr>
             }
-</style>
+        </tbody>
+    </table>
+</div>
 
-<table class="table table-bordered prescription-table">
-    <thead>
-        <tr>
-            <th>Doctor ID</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Prescription Photo</th>
-            <th>Download</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- ACTIVE Prescription -->
-        <tr>
-            <td>2001</td>
-            <td>2025-05-10</td>
-            <td><span class="badge bg-success">Active</span></td>
-            <td>
-                <img src="~/Content/prescriptions/prescription1.jpg" alt="Prescription" />
-            </td>
-            <td>
-                <a href="~/Content/prescriptions/prescription1.pdf" class="btn btn-primary btn-sm" download>Download</a>
-            </td>
-            <td class="action-buttons">
-                <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                <a href="#" class="btn btn-danger btn-sm">Delete</a>
-                <a href="#" class="btn btn-info btn-sm">Request Dispense</a>
-            </td>
-        </tr>
-
-        <!-- REQUESTED Prescription -->
-        <tr>
-            <td>2002</td>
-            <td>2025-04-18</td>
-            <td><span class="badge bg-warning">Pending</span></td>
-            <td>
-                <img src="~/Content/prescriptions/prescription2.jpg" alt="Prescription" />
-            </td>
-            <td>
-                <a href="~/Content/prescriptions/prescription2.pdf" class="btn btn-primary btn-sm" download>Download</a>
-            </td>
-            <td class="action-buttons">
-                <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                <a href="#" class="btn btn-danger btn-sm">Delete</a>
-                <button class="btn btn-secondary btn-sm" disabled>Requested</button>
-            </td>
-        </tr>
-
-        <!-- READY FOR COLLECTION Prescription -->
-        <tr>
-            <td>2004</td>
-            <td>2025-05-15</td>
-            <td><span class="badge bg-info">Ready for Collection</span></td>
-            <td>
-                <img src="~/Content/prescriptions/prescription4.jpg" alt="Prescription" />
-            </td>
-            <td>
-                <a href="~/Content/prescriptions/prescription4.pdf" class="btn btn-primary btn-sm" download>Download</a>
-            </td>
-            <td class="action-buttons">
-                <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                <a href="#" class="btn btn-danger btn-sm">Delete</a>
-                <button class="btn btn-secondary btn-sm" disabled>Dispense Sent</button>
-            </td>
-        </tr>
-
-        <!-- EXPIRED Prescription -->
-        <tr>
-            <td>2003</td>
-            <td>2025-03-20</td>
-            <td><span class="badge bg-secondary">Expired</span></td>
-            <td>
-                <img src="~/Content/prescriptions/prescription3.jpg" alt="Prescription" />
-            </td>
-            <td>
-                <a href="~/Content/prescriptions/prescription3.pdf" class="btn btn-primary btn-sm" download>Download</a>
-            </td>
-            <td class="action-buttons">
-                <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                <a href="#" class="btn btn-danger btn-sm">Delete</a>
-                <a href="#" class="btn btn-info btn-sm">Request Dispense</a>
-            </td>
-        </tr>
-    </tbody>
-</table>
-
-</table>
-@* 
-<h2 style="margin-bottom: 15px;">Add New Prescription</h2>
-
-<style>
-    .prescription-table {
-        width: 80%;
-        margin: 20px auto 40px auto;
-        background-color: #e6f2ff;
-        border-radius: 10px;
-        overflow: hidden;
-        font-size: 14px;
-    }
-
-        .prescription-table th, .prescription-table td {
-            padding: 10px;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        .prescription-table img {
-            width: 80px;
-            border-radius: 6px;
-        }
-
-        .prescription-table thead {
-            background-color: #cce6ff;
-        }
-
-    .action-buttons .btn {
-        padding: 4px 8px;
-        font-size: 12px;
-        margin: 2px;
-    }
-
-    .badge {
-        padding: 4px 6px;
-        font-size: 12px;
-        border-radius: 4px;
-    }
-
-    .bg-success {
-        background-color: #28a745;
-        color: white;
-    }
-
-    .bg-secondary {
-        background-color: #6c757d;
-        color: white;
-    }
-
-    /* Form styles */
-    .add-prescription-form {
-        width: 80%;
-        margin: auto;
-        background-color: #f0f8ff;
-        padding: 15px 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 6px #cce6ff;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        align-items: center;
-        font-size: 14px;
-    }
-
-        .add-prescription-form label {
-            font-weight: 600;
-            margin-right: 5px;
-        }
-
-        .add-prescription-form input[type="text"],
-        .add-prescription-form input[type="date"] {
-            padding: 6px 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            flex: 1 1 120px;
-            min-width: 120px;
-        }
-
-        .add-prescription-form select {
-            padding: 6px 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            flex: 1 1 140px;
-            min-width: 140px;
-        }
-
-        .add-prescription-form button {
-            padding: 8px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            flex: 0 0 auto;
-        }
-
-            .add-prescription-form button:hover {
-                background-color: #0056b3;
+@* @section Scripts { *@
+    <script>
+        function deleteRow(button) {
+            if (confirm("Are you sure you want to delete this prescription?")) {
+                var row = button.closest("tr");
+                row.remove();
             }
-</style>
-
-<form class="add-prescription-form" method="post" action="#">
-    <label for="customerId">Customer ID:</label>
-    <input type="text" id="customerId" name="customerId" placeholder="Enter Customer ID" />
-
-    <label for="doctorId">Doctor ID:</label>
-    <input type="text" id="doctorId" name="doctorId" placeholder="Enter Doctor ID" />
-
-    <label for="date">Date:</label>
-    <input type="date" id="date" name="date" />
-
-
-    <label for="photo">Prescription PDF:</label>
-    <input type="file" id="photo" name="photo" accept="application/pdf" />
-
-    <button type="submit">Add</button>
-</form>
-
-<h2 style="margin-bottom: 20px;">My Prescriptions</h2>
-
-<table class="table table-bordered prescription-table">
-    <thead>
-        <tr>
-            <th>Customer ID</th>
-            <th>Doctor ID</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Prescription Photo</th>
-            <th>Download</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>1001</td>
-            <td>2001</td>
-            <td>2025-05-10</td>
-            <td><span class="badge bg-success">Active</span></td>
-            <td>
-                <img src="~/Content/prescriptions/prescription1.jpg" alt="Prescription" />
-            </td>
-            <td>
-                <a href="~/Content/prescriptions/prescription1.pdf" class="btn btn-primary btn-sm" download>Download</a>
-            </td>
-            <td class="action-buttons">
-                <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                <a href="#" class="btn btn-danger btn-sm">Delete</a>
-            </td>
-        </tr>
-        <tr>
-            <td>1002</td>
-            <td>2002</td>
-            <td>2025-04-18</td>
-            <td><span class="badge bg-secondary">Expired</span></td>
-            <td>
-                <img src="~/Content/prescriptions/prescription2.jpg" alt="Prescription" />
-            </td>
-            <td>
-                <a href="~/Content/prescriptions/prescription2.pdf" class="btn btn-primary btn-sm" download>Download</a>
-            </td>
-            <td class="action-buttons">
-                <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                <a href="#" class="btn btn-danger btn-sm">Delete</a>
-                <a href="#" class="btn btn-info btn-sm">Request Dispense</a>
-            </td>
-        </tr>
-    </tbody>
-</table>
-
-  *@
+        }
+    </script>
+}
