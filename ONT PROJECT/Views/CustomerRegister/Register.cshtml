@@ -1,0 +1,79 @@
+﻿@model ONT_PROJECT.Models.TblUser
+@{
+    ViewData["Title"] = "Customer Registration";
+    Layout = "_Layout"; // Change to _CustomerLayout or your default layout if needed
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Register as a New Customer</h2>
+
+    <form asp-action="Register" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group">
+            <label asp-for="Title"></label>
+            <select asp-for="Title" class="form-control">
+                <option value="">-- Select Title --</option>
+                <option value="Mr">Mr</option>
+                <option value="Ms">Ms</option>
+                <option value="Mrs">Mrs</option>
+                <option value="Dr">Dr</option>
+            </select>
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="FirstName"></label>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="LastName"></label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Idnumber"></label>
+            <input asp-for="Idnumber" class="form-control" />
+            <span asp-validation-for="Idnumber" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="PhoneNumber"></label>
+            <input asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Allergies"></label>
+            <input asp-for="Allergies" class="form-control" />
+            <span asp-validation-for="Allergies" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="Password" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" name="ConfirmPassword" class="form-control" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
+    </form>
+</div>
+
+@* @section Scripts { *@
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
