@@ -17,6 +17,8 @@ public partial class Prescription
 
     public int DoctorId { get; set; }
 
+    public string Status { get; set; } = "Uploaded"; // "Uploaded", "Requested", "Ready"
+
     public virtual Customer Customer { get; set; } = null!;
 
     public virtual Doctor Doctor { get; set; } = null!;
