@@ -58,21 +58,26 @@ namespace ONT_PROJECT.Controllers  // <-- Your real namespace here
         // POST: Login
         [HttpPost]
         [ValidateAntiForgeryToken]
+        
         public IActionResult Login(string Email, string Password)
         {
             var user = _context.TblUsers.SingleOrDefault(u => u.Email == Email);
 
             if (user != null && VerifyPassword(Password, user.Password))
             {
-                // TODO: Add session/authentication here
+                HttpContext.Session.SetInt32("UserId", user.UserId);
+                HttpContext.Session.SetString("UserEmail", user.Email);
+                HttpContext.Session.SetString("UserFirstName", user.FirstName);
+                HttpContext.Session.SetString("UserRole", user.Role);
 
                 TempData["Success"] = "Login successful!";
-                return RedirectToAction("Dashboard", "Customer"); // Change to your landing page
+                return RedirectToAction("Dashboard", "Customer"); // Or your landing page
             }
 
             ModelState.AddModelError("", "Invalid login credentials");
             return View();
         }
+
 
         // Hash password using SHA256
         private string HashPassword(string password)
