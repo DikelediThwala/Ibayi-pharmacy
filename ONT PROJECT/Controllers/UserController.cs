@@ -108,29 +108,31 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("Index");
         }
 
-        //Edit
         public IActionResult Edit(int id)
         {
             var user = _context.TblUsers.FirstOrDefault(u => u.UserId == id);
             if (user == null)
                 return NotFound();
 
+            var titles = new List<string> { "Mr", "Mrs", "Miss", "Dr" };
+            ViewBag.Titles = new SelectList(titles, user.Title);
+
             if (user.Role == "Pharmacist")
             {
                 var pharmacist = _context.Pharmacists.FirstOrDefault(p => p.PharmacistId == id);
                 if (pharmacist != null)
-                {
                     ViewBag.HealthCouncilRegNo = pharmacist.HealthCounsilRegNo;
-                }
             }
 
             return View(user);
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(TblUser model)
         {
+
             if (ModelState.IsValid)
             {
                 var existingUser = _context.TblUsers.FirstOrDefault(u => u.UserId == model.UserId);
@@ -145,12 +147,12 @@ namespace ONT_PROJECT.Controllers
                 existingUser.Title = model.Title;
                 existingUser.Role = model.Role;
 
-                
                 if (model.ProfileFile != null && model.ProfileFile.Length > 0)
                 {
                     using var ms = new MemoryStream();
                     model.ProfileFile.CopyTo(ms);
                     existingUser.ProfilePicture = ms.ToArray();
+
                 }
 
                 if (model.Role == "Pharmacist")
@@ -169,129 +171,5 @@ namespace ONT_PROJECT.Controllers
 
             return View(model);
         }
-
-
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//using Microsoft.AspNetCore.Mvc;
-//using ONT_PROJECT.Models;
-//using System.Security.Cryptography;
-//using System.Text;
-
-//namespace ONT_PROJECT.Controllers
-//{
-//    public class UserController : Controller
-//    {
-//        private readonly ApplicationDbContext _context;
-
-//        public UserController(ApplicationDbContext context)
-//        {
-//            _context = context;
-//        }
-//        public IActionResult Index()
-//        {
-//            var managers = _context.TblUsers.Where(u => u.Role == "Manager").ToList();
-//            var pharmacists = _context.TblUsers.Where(u => u.Role == "Pharmacist").ToList();
-//            var customers = _context.TblUsers.Where(u => u.Role == "Customer").ToList();
-
-//            ViewBag.Managers = managers;
-//            ViewBag.Pharmacists = pharmacists;
-//            ViewBag.Customers = customers;
-
-//            return View();
-//        }
-
-//        public IActionResult Create()
-//        {
-//            return View();
-//        }
-//        public IActionResult Login()
-//        {
-//            return View();
-//        }
-
-//        public IActionResult Register()
-//        {
-//            return View();
-//        }
-
-
-//        [HttpPost]
-//        [ValidateAntiForgeryToken]
-//        public IActionResult SaveUser(TblUser user)
-//        {
-//            if (ModelState.IsValid)
-//            {
-//                user.Password = GenerateRandomPassword(10);
-//                _context.TblUsers.Add(user);
-//                _context.SaveChanges();
-
-//                int newUserId = user.UserId;
-
-//                if (user.Role == "Customer")
-//                {
-//                    var customer = new Customer { CustomerId = newUserId };
-//                    _context.Customers.Add(customer);
-//                }
-//                else if (user.Role == "Pharmacist")
-//                {
-//                    var pharmacist = new Pharmacist { PharmacistId = newUserId };
-//                    _context.Pharmacists.Add(pharmacist);
-//                }
-//                else if (user.Role == "PharmacyManager")
-//                {
-//                    var manager = new PharmacyManager { PharmacyManagerId = newUserId };
-//                    _context.PharmacyManagers.Add(manager);
-//                }
-
-//                _context.SaveChanges();
-
-//                TempData["GeneratedPassword"] = user.Password;
-
-//                return RedirectToAction("Index");
-//            }
-
-//            return View("Create", user);
-//        }
-
-
-
-//        private string GenerateRandomPassword(int length)
-//        {
-//            const string validChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$!";
-//            var password = new StringBuilder();
-//            using (var rng = RandomNumberGenerator.Create())
-//            {
-//                byte[] uintBuffer = new byte[sizeof(uint)];
-
-//                while (password.Length < length)
-//                {
-//                    rng.GetBytes(uintBuffer);
-//                    uint num = BitConverter.ToUInt32(uintBuffer, 0);
-//                    var index = num % (uint)validChars.Length;
-//                    password.Append(validChars[(int)index]);
-//                }
-//            }
-
-//            return password.ToString();
-//        }
-//    }
-//}

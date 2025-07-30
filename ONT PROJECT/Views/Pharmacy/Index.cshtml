@@ -19,10 +19,6 @@
                     var imageSrc = $"data:image/png;base64,{base64Logo}";
                     <img src="@imageSrc" alt="Pharmacy Logo" style="width: 160px; height: 120px;" />
                 }
-                else
-                {
-                    <img src="~/images/logo_2-removebg-preview.png" alt="Default Pharmacy Logo" style="width: 160px; height: 120px;" />
-                }
                 <br /><br />
             </div>
             <p><strong>Health Council Registration No:</strong> @(Model.HealthCounsilRegistrationNo ?? "N/A")</p>

@@ -16,4 +16,14 @@ public partial class Pharmacist
     public virtual TblUser PharmacistNavigation { get; set; } = null!;
 
     public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
+    public string FullName
+    {
+        get
+        {
+            if (PharmacistNavigation != null)
+                return $"{PharmacistNavigation.FirstName} {PharmacistNavigation.LastName}";
+            else
+                return string.Empty;
+        }
+    }
 }
