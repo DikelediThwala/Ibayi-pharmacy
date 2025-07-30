@@ -46,10 +46,10 @@ namespace ONT_PROJECT.Controllers
         [HttpPost]
         public IActionResult Edit(TblUser model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            var email = HttpContext.Session.GetString("UserEmail");
+            if (email == null) return RedirectToAction("Login", "CustomerRegister");
 
-            var user = _context.TblUsers.FirstOrDefault(u => u.UserId == model.UserId);
+            var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
             if (user == null) return NotFound();
 
             user.FirstName = model.FirstName;
@@ -60,8 +60,10 @@ namespace ONT_PROJECT.Controllers
 
             _context.SaveChanges();
 
+            // ✅ Save success message in TempData
+            TempData["SuccessMessage"] = "Your profile was updated successfully.";
+
             return RedirectToAction("Index");
         }
-
     }
 }

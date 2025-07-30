@@ -4,6 +4,13 @@
     Layout = "_CustomerLayout";
 }
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <div class="container mt-5">
     <h2 class="mb-4 text-center">My Profile</h2>
 
