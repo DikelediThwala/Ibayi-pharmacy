@@ -13,15 +13,26 @@ namespace ONT_PROJECT.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _environment;
 
-        // Add this constructor for dependency injection
         public ProfileSettingsController(ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
             _environment = environment;
         }
 
+        // Show list of all customers (report)
+        public IActionResult Index()
+        {
+            var email = HttpContext.Session.GetString("UserEmail");
+            if (email == null) return RedirectToAction("Login", "CustomerRegister");
+
+            var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
+            if (user == null) return NotFound();
+
+            return View(user);
+        }
+
         [HttpGet]
-        public IActionResult UpdateProfile()
+        public IActionResult Edit()
         {
             var email = HttpContext.Session.GetString("UserEmail");
             if (email == null) return RedirectToAction("Login", "CustomerRegister");
@@ -33,14 +44,13 @@ namespace ONT_PROJECT.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateProfile(TblUser model, IFormFile ProfilePicture)
+        public IActionResult Edit(TblUser model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = _context.TblUsers.FirstOrDefault(u => u.Email == model.Email);
-            if (user == null)
-                return NotFound();
+            var user = _context.TblUsers.FirstOrDefault(u => u.UserId == model.UserId);
+            if (user == null) return NotFound();
 
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
@@ -48,23 +58,10 @@ namespace ONT_PROJECT.Controllers
             user.PhoneNumber = model.PhoneNumber;
             user.Allergies = model.Allergies;
 
-            if (ProfilePicture != null && ProfilePicture.Length > 0)
-            {
-                var fileName = Path.GetFileName(ProfilePicture.FileName);
-                var filePath = Path.Combine(_environment.WebRootPath, "uploads", fileName);
+            _context.SaveChanges();
 
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await ProfilePicture.CopyToAsync(stream);
-                }
-
-                // Uncomment and set path if you want to save it
-                // user.ProfilePicturePath = "/uploads/" + fileName;
-            }
-
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("UpdateProfile");
+            return RedirectToAction("Index");
         }
+
     }
 }

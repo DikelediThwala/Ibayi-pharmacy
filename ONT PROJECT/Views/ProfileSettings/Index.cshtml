@@ -1,0 +1,35 @@
+﻿@model ONT_PROJECT.Models.TblUser
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "_CustomerLayout";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">My Profile</h2>
+
+    <div class="card p-4 shadow-sm">
+        <dl class="row">
+            <dt class="col-sm-3">First Name</dt>
+            <dd class="col-sm-9">@Model.FirstName</dd>
+
+            <dt class="col-sm-3">Last Name</dt>
+            <dd class="col-sm-9">@Model.LastName</dd>
+
+            <dt class="col-sm-3">ID Number</dt>
+            <dd class="col-sm-9">@Model.Idnumber</dd>
+
+            <dt class="col-sm-3">Phone Number</dt>
+            <dd class="col-sm-9">@Model.PhoneNumber</dd>
+
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+
+            <dt class="col-sm-3">Allergies</dt>
+            <dd class="col-sm-9">@Model.Allergies</dd>
+        </dl>
+
+        <div class="text-center mt-4">
+            <a class="btn btn-primary" href="@Url.Action("Edit")">Edit Profile</a>
+        </div>
+    </div>
+</div>
