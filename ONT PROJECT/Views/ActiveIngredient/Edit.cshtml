@@ -1,51 +1,60 @@
-﻿@model ONT_PROJECT.Models.DosageForm
+﻿@model ONT_PROJECT.Models.ActiveIngredient
 
 @{
-    ViewData["Title"] = "Manage Dosage Form";
+    ViewData["Title"] = "Edit Active Ingredient";
     Layout = "_ManagerLayout";
 }
 
+<!-- Page Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-dark">
-        <i class="bi bi-clipboard-plus me-2 text-primary"></i> Add Dosage Form
+        <i class="bi bi-hospital me-2 text-primary"></i> Edit Ingredient
     </h2>
 </div>
 
+<!-- Separator -->
 <hr style="height: 4px; background-color: #011425; border: none;" />
 
+<!-- Info Card -->
 <div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
     <i class="bi bi-info-circle-fill"></i>
-    Please ensure all details are accurate before saving. Fields marked with <span class="text-danger">*</span> are required.
+    Update the ingredient details below. Fields marked with <span class="text-danger">*</span> are required.
 </div>
 
+<!-- Form Card -->
 <div class="card shadow p-4">
     <div class="card-body">
-        <form asp-action="Create" method="post">
+        <form asp-action="Edit" method="post">
             @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ActiveIngredientId" />
 
-            <div asp-validation-summary="All" class="text-danger"></div>
-
-            <div class="mb-4">
-                <label asp-for="FormName" class="form-label">Form Name <span class="text-danger">*</span></label>
-                <input asp-for="FormName" class="form-control" placeholder="..." />
-                <span asp-validation-for="FormName" class="text-danger small"></span>
-
+            <h2>Personal Details</h2>
+            <hr />
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Ingredients" class="form-label">Ingredient Name <span class="text-danger">*</span></label>
+                    <input asp-for="Ingredients" class="form-control" />
+                    <span asp-validation-for="Ingredients" class="text-danger small"></span>
+                </div>
             </div>
 
+            <!-- Action Buttons -->
             <div class="d-flex justify-content-between mt-4">
-                <a href="/DosageForm/Index" class="btn btn-primary">
+                <a href="/ActiveIngredient/Index" class="btn btn-primary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
+
                 <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-save me-1"></i> Save
+                    <i class="bi bi-save me-1"></i> Save Changes
                 </button>
             </div>
         </form>
-
     </div>
 </div>
 
+<!-- Bootstrap Icons (if not already included globally) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.12/dist/jquery.validate.unobtrusive.min.js"></script>

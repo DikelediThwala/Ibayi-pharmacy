@@ -6,6 +6,8 @@
     var customers = ViewBag.Customers as List<ONT_PROJECT.Models.TblUser>;
 }
 
+<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
@@ -38,7 +40,7 @@
                 <h5 class="mb-0"><i class="fas fa-user-shield me-2"></i> Manager</h5>
             </div>
             <div class="card-body bg-light">
-                <table class="table table-hover table-bordered text-center align-middle">
+                <table id="managerTable" class="table table-hover table-bordered text-center align-middle">
                     <thead class="table-primary">
                         <tr>
                             <th>Title</th>
@@ -87,7 +89,7 @@
                 <h5 class="mb-0"><i class="fas fa-user-shield me-2"></i> Pharmacists</h5>
             </div>
             <div class="card-body bg-light">
-                <table class="table table-hover table-bordered text-center align-middle">
+                <table id="pharmacistTable" class="table table-hover table-bordered text-center align-middle">
                     <thead class="table-dark">
                         <tr>
                             <th>Title</th>
@@ -136,7 +138,7 @@
                 <h5 class="mb-0"><i class="fas fa-users me-2"></i> Customers</h5>
             </div>
             <div class="card-body bg-light">
-                <table class="table table-hover table-bordered text-center align-middle">
+                <table id="customerTable" class="table table-hover table-bordered text-center align-middle">
                     <thead class="table-primary">
                         <tr>
                             <th>Title</th>
@@ -175,3 +177,23 @@
     </section>
 </div>
 
+<!-- JS SCRIPTS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#managerTable, #pharmacistTable, #customerTable').DataTable({
+            pageLength: 7,
+            lengthChange: false,
+            language: {
+                search: "Search table:",
+                paginate: {
+                    previous: "← Previous",
+                    next: "Next →"
+                }
+            }
+        });
+    });
+</script>

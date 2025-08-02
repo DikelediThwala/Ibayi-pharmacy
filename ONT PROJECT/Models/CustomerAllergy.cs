@@ -9,9 +9,9 @@ public partial class CustomerAllergy
 
     public int CustomeId { get; set; }
 
-    public int ActiveIngredientsId { get; set; }
+    public int ActiveIngredientId { get; set; }
 
-    public virtual ActiveIngredient ActiveIngredients { get; set; } = null!;
+    public virtual ActiveIngredient ActiveIngredient { get; set; } = null!;
 
     public virtual Customer Custome { get; set; } = null!;
 }

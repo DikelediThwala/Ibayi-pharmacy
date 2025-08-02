@@ -5,7 +5,7 @@ namespace ONT_PROJECT.Models;
 
 public partial class ActiveIngredient
 {
-    public int ActiveIngredientsId { get; set; }
+    public int ActiveIngredientId { get; set; }
 
     public string Ingredients { get; set; } = null!;
 

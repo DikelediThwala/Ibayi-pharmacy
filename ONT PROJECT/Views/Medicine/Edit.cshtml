@@ -1,0 +1,169 @@
+﻿@model ONT_PROJECT.Models.Medicine
+
+@{
+    ViewData["Title"] = "Edit Medicine";
+    Layout = "_ManagerLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-dark">
+        <i class="bi bi-pencil-square me-2 text-primary"></i> Edit Medicine Details
+    </h2>
+</div>
+
+<hr style="height: 4px; background-color: #011425; border: none;" />
+
+<div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
+    <i class="bi bi-info-circle-fill"></i>
+    You are editing an existing medicine. Make sure all fields are up to date.
+</div>
+
+<div class="card shadow p-4">
+    <div class="card-body">
+        <form asp-action="UpdateMedicine" enctype="multipart/form-data" method="post">
+            <input type="hidden" asp-for="MedicineId" />
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label asp-for="MedicineName" class="form-label">Medicine Name <span class="text-danger">*</span></label>
+                    <input asp-for="MedicineName" class="form-control" />
+                    <span asp-validation-for="MedicineName" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Schedule" class="form-label">Schedule <span class="text-danger">*</span></label>
+                    <select asp-for="Schedule" class="form-select">
+                        <option value="">-- Select Schedule --</option>
+                        @for (int i = 1; i <= 8; i++)
+                        {
+                            <option value="@i" selected="@(Model.Schedule.ToString() == i.ToString() ? "selected" : null)">Schedule @i</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Schedule" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Ingredients <span class="text-danger">*</span></label>
+                    <table class="table table-bordered" id="ingredientsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ingredient</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ingredientsTableBody">
+                            @if (ViewBag.Ingredients != null)
+                            {
+                                int i = 0;
+                                foreach (var ingredient in ViewBag.Ingredients as List<string>)
+                                {
+                                    <tr>
+                                        <td>
+                                            <select name="Ingredients[@i]" class="form-control">
+                                                <option disabled>Select ingredient</option>
+                                                <option value=" Clavulanic acid" selected="@(ingredient == " Clavulanic acid" ? "selected" : null)"> Clavulanic acid</option>
+                                                <option value="Amoxicillin" selected="@(ingredient == "Amoxicillin" ? "selected" : null)">Amoxicillin</option>
+                                            </select>
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
+                                                <i class="bi bi-x-circle"></i> Remove
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    i++;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn btn-outline-primary" onclick="addIngredientRow()">
+                        <i class="bi bi-plus-circle"></i> Add Ingredient
+                    </button>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="SalesPrice" class="form-label">Sales Price <span class="text-danger">*</span></label>
+                    <input asp-for="SalesPrice" class="form-control" />
+                    <span asp-validation-for="SalesPrice" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label asp-for="SupplierId" class="form-label">Supplier <span class="text-danger">*</span></label>
+                    <select asp-for="SupplierId" asp-items="ViewBag.Suppliers" class="form-select">
+                        <option value="">-- Select Supplier --</option>
+                    </select>
+                    <span asp-validation-for="SupplierId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="ReorderLevel" class="form-label">Reorder Level <span class="text-danger">*</span></label>
+                    <input asp-for="ReorderLevel" class="form-control" />
+                    <span asp-validation-for="ReorderLevel" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Quantity" class="form-label">Quantity</label>
+                    <input asp-for="Quantity" class="form-control" />
+                    <span asp-validation-for="Quantity" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FormId" class="form-label">Form Name <span class="text-danger">*</span></label>
+                    <select asp-for="FormId" asp-items="ViewBag.Forms" class="form-select">
+                        <option value="">-- Select Form --</option>
+                    </select>
+                    <span asp-validation-for="FormId" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="/Medicine/Index" class="btn btn-primary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-save"></i> Update
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let ingredientIndex = @((ViewBag.Ingredients != null ? (ViewBag.Ingredients as List<string>).Count : 1));
+
+        function addIngredientRow() {
+            const tableBody = document.getElementById("ingredientsTableBody");
+            const newRow = document.createElement("tr");
+
+            newRow.innerHTML = `
+                <td>
+                    <select name="Ingredients[${ingredientIndex}]" class="form-select">
+                        <option disabled selected>Select ingredient</option>
+                        <option value=" Clavulanic acid"> Clavulanic acid</option>
+                        <option value="Amoxicillin">Amoxicillin</option>
+                    </select>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
+                        <i class="bi bi-x-circle"></i> Remove
+                    </button>
+                </td>
+            `;
+
+            tableBody.appendChild(newRow);
+            ingredientIndex++;
+        }
+
+        function removeRow(button) {
+            const row = button.closest("tr");
+            row.remove();
+        }
+    </script>
+}

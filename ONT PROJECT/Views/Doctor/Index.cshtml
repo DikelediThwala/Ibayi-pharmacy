@@ -1,104 +1,104 @@
-﻿@{
-    ViewData["Title"] = "Manage Doctors";
+﻿@model IEnumerable<ONT_PROJECT.Models.Doctor>
+
+@{
+    ViewData["Title"] = "Doctors List";
     Layout = "_ManagerLayout";
 }
-
-<div class="container my-4">
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">Manage Doctors</h2>
+        <h2 class="mb-0">Manage Medication</h2>
         <a asp-action="Create" asp-controller="Doctor" class="btn btn-primary">
             <i class="bi bi-plus-circle"></i> Add Doctor
         </a>
     </div>
     <hr style="height: 5px; background-color: #011425; border: none;" />
+    <section id="Doctors" class="reviews-section">
+        <p class="text-muted fs-5 mb-3">
+            <i class="fas fa-info-circle text-primary"></i>
+            <strong> Active Doctors</strong> registered in the system who provide medical care and consultations.
+        </p>
+        <div class="card shadow rounded-4 border-info">
+            <div class="card-header bg-primary text-white rounded-top-4">
+                <h5 class="mb-0"><i class="fas fa-user-md me-2"></i> Doctors</h5>
+            </div>
+            <div class="card-body bg-light">
+                <div class="table-responsive">
+                    <table id="doctorsTable" class="table table-hover table-bordered text-center align-middle">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Name</th>
+                                <th>Surname</th>
+                                <th>Practice No</th>
+                                <th>Contact No</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var doctor in Model)
+                            {
+                                if (doctor != null)
+                                {
+                                    <tr>
+                                        <td>@doctor.Name</td>
+                                        <td>@doctor.Surname</td>
+                                        <td>@doctor.PracticeNo</td>
+                                        <td>@doctor.ContactNo</td>
+                                        <td>@doctor.Email</td>
+                                        <td>
+                                            <a asp-action="Edit" asp-controller="Doctor" asp-route-id="@doctor.DoctorId" class="btn btn-sm btn-outline-primary me-1">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-controller="Doctor" asp-route-id="@doctor.DoctorId" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash3"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 
-<div class="accordion" id="doctorAccordion">
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingOne">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                Mokoena Papi - Cardiologist
-            </button>
-        </h2>
-        <div id="collapseOne" class="accordion-collapse collapse " aria-labelledby="headingOne" data-bs-parent="#doctorAccordion">
-            <div class="accordion-body">
-                <p><strong>Email:</strong> mokoenapapi@gmail.com</p>
-                <p><strong>Phone:</strong> 0721234567</p>
-                <div class="d-flex justify-content-end gap-2">
-                    <a asp-action="Edit" asp-route-id="1" class="btn btn-sm btn-primary">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                    <a asp-action="Delete" asp-route-id="1" class="btn btn-sm btn-danger">
-                        <i class="bi bi-trash"></i> Delete
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- CSS and JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingTwo">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                Mary Tshabalala - Neurologist
-            </button>
-        </h2>
-        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#doctorAccordion">
-            <div class="accordion-body">
-                <p><strong>Email:</strong> mary.tshabalala@gmail.com</p>
-                <p><strong>Phone:</strong> 0734567890</p>
-                <div class="d-flex justify-content-end gap-2">
-                    <a asp-action="Edit" asp-route-id="2" class="btn btn-sm btn-primary">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                    <a asp-action="Delete" asp-route-id="2" class="btn btn-sm btn-danger">
-                        <i class="bi bi-trash"></i> Delete
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingThree">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                Thabo Dlamini - Pediatrician
-            </button>
-        </h2>
-        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#doctorAccordion">
-            <div class="accordion-body">
-                <p><strong>Email:</strong> thabodlamini@gmail.com</p>
-                <p><strong>Phone:</strong> 0719876543</p>
-                <div class="d-flex justify-content-end gap-2">
-                    <a asp-action="Edit" asp-route-id="3" class="btn btn-sm btn-primary">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                    <a asp-action="Delete" asp-route-id="3" class="btn btn-sm btn-danger">
-                        <i class="bi bi-trash"></i> Delete
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingFour">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                Lindiwe Mokoena - General Practitioner
-            </button>
-        </h2>
-        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#doctorAccordion">
-            <div class="accordion-body">
-                <p><strong>Email:</strong> lindiwemokoenam@gmail.com</p>
-                <p><strong>Phone:</strong> 0763210987</p>
-                <div class="d-flex justify-content-end gap-2">
-                    <a asp-action="Edit" asp-route-id="4" class="btn btn-sm btn-primary">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                    <a asp-action="Delete" asp-route-id="4" class="btn btn-sm btn-danger">
-                        <i class="bi bi-trash"></i> Delete
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<script>
+    $(document).ready(function () {
+        $('#doctorsTable').DataTable({
+            pageLength: 7,
+            lengthChange: false,
+            language: {
+                search: "Search table:",
+                paginate: {
+                    previous: "← Previous",
+                    next: "Next →"
+                }
+            }
+        });
+    });
+</script>
+<script>
+    setTimeout(function () {
+        var alert = document.getElementById('successAlert');
+        if (alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }
+    }, 4000); 
+</script>

@@ -1,16 +1,67 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ONT_PROJECT.Models; 
+using System.Linq;
 
 namespace ONT_PROJECT.Controllers
 {
     public class DoctorController : Controller
     {
+        private readonly ApplicationDbContext _context;
+
+        public DoctorController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         public IActionResult Index()
         {
-            return View();
+            var doctors = _context.Doctors.ToList();
+            return View(doctors);
         }
+
         public IActionResult Create()
         {
-            return View();
+            var doctor = new Doctor();
+            return View(doctor);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Doctor doctor)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Doctors.Add(doctor);
+                _context.SaveChanges();
+
+                TempData["SuccessMessage"] = "Doctor added successfully!";
+
+                return RedirectToAction(nameof(Index));
+            }
+            return View(doctor);
+        }
+
+        public IActionResult Edit(int id)
+        {
+            var doctor = _context.Doctors.FirstOrDefault(d => d.DoctorId == id);
+            if (doctor == null)
+            {
+                return NotFound();
+            }
+            return View(doctor);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Doctor doctor)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Doctors.Update(doctor);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(doctor);
+        }
+
+
     }
 }
