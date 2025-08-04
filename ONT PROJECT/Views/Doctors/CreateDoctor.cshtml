@@ -1,4 +1,4 @@
-﻿@model ONT_PROJECT.Models.Doctor
+﻿@model IBayiLibrary.Models.Domain.Doctor;
 
 @{
     ViewData["Title"] = "Manage Doctors";
@@ -25,9 +25,9 @@
 <!-- Form Card -->
 <div class="card shadow p-4">
     <div class="card-body">
-        <form asp-action="SaveUser" enctype="multipart/form-data" method="post">
+        <form asp-action="CreateDoctor" enctype="multipart/form-data" method="post">
             <h2>Personal Details</h2>
-            <hr />          
+            <hr />
             <div class="row mb-4">
                 <div class="col-md-6">
 
@@ -42,11 +42,11 @@
                     <span asp-validation-for="Surname" class="text-danger small"></span>
                 </div>
                 <div class="row mb-4">
-                <div class="col-md-6">
-                    <label asp-for="PracticeNo" class="form-label">PracticeNo <span class="text-danger">*</span></label>
-                    <input asp-for="PracticeNo" class="form-control" placeholder="4734 3434 3434 3493" />
-                    <span asp-validation-for="PracticeNo" class="text-danger small"></span>
-                </div>
+                    <div class="col-md-6">
+                        <label asp-for="PracticeNo" class="form-label">PracticeNo <span class="text-danger">*</span></label>
+                        <input asp-for="PracticeNo" class="form-control" placeholder="4734 3434 3434 3493" />
+                        <span asp-validation-for="PracticeNo" class="text-danger small"></span>
+                    </div>
                 </div>
             </div>
             <h2>Contact Details</h2>
@@ -62,15 +62,15 @@
                     <input asp-for="ContactNo" class="form-control" placeholder="e.g., 012 345 6789" />
                     <span asp-validation-for="ContactNo" class="text-danger small"></span>
                 </div>
-            </div>         
+            </div>
             <!-- Action Buttons -->
             <div class="d-flex justify-content-between mt-4">
                 <a asp-action="Index" asp-controller="Pharmacist" class="btn btn-primary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
-                <a asp-action="LoadPrescription" asp-controller="Pharmacist" class="btn btn-success btn-sm">
-                    <i class="bi bi-save me-1"></i> Save
-                </a>
+                <button type="submit" class="btn btn-success btn-sm">
+                    Submit
+                </button>
             </div>
         </form>
     </div>

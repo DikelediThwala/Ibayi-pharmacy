@@ -17,6 +17,7 @@ builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IPrescriptionRepository, PrescriptionRepository>();
+builder.Services.AddTransient<IDoctorRepository, DoctorRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
