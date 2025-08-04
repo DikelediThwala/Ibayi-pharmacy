@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace ONT_PROJECT.Models;
 
@@ -11,8 +13,6 @@ public partial class Medicine
 
     public int Schedule { get; set; }
 
-    public string Ingredients { get; set; } = null!;
-
     public double SalesPrice { get; set; }
 
     public int SupplierId { get; set; }
@@ -21,11 +21,11 @@ public partial class Medicine
 
     public int Quantity { get; set; }
 
-    public int FormId { get; set; }
-
+    [Required(ErrorMessage = "Please select a Form.")]
+    public int? FormId { get; set; }
     public virtual ICollection<BOrderLine> BOrderLines { get; set; } = new List<BOrderLine>();
 
-    public virtual DosageForm Form { get; set; } = null!;
+    public virtual DosageForm? Form { get; set; }
 
     public virtual ICollection<MedIngredient> MedIngredients { get; set; } = new List<MedIngredient>();
 

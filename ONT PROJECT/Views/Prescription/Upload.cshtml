@@ -1,0 +1,90 @@
+﻿@model List<ONT_PROJECT.Models.Prescription>
+@{
+    ViewData["Title"] = "Upload Prescription";
+    Layout = "_CustomerLayout";
+}
+
+<div class="container mt-5">
+
+    <!-- Upload -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4>Upload Prescription</h4>
+            <form asp-action="Upload" enctype="multipart/form-data" method="post">
+                <div class="mb-3">
+                    <label>Prescription PDF</label>
+                    <input type="file" name="PrescriptionFile" class="form-control" accept="application/pdf" required />
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="RequestDispense" id="RequestDispense" />
+                    <label class="form-check-label" for="RequestDispense">
+                        I want my prescription to be dispensed
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- List of Uploaded Prescriptions -->
+    <div class="card">
+        <div class="card-body">
+            <h4>Your Prescriptions</h4>
+            @if (Model.Any())
+            {
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>PDF</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model)
+                        {
+                            <tr>
+                                <td>@p.Date.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    @if (p.Status == "Requested")
+                                    {
+                                        <span class="badge bg-warning">Requested</span>
+                                    }
+                                    else if (p.Status == "Ready")
+                                    {
+                                        <span class="badge bg-success">Ready</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Uploaded</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-controller="Prescription" asp-action="ViewPdf" asp-route-id="@p.PrescriptionId" target="_blank">View</a>
+                                </td>
+                                <td>
+                                    <form asp-action="Delete" asp-route-id="@p.PrescriptionId" method="post" class="d-inline">
+                                        <button class="btn btn-sm btn-danger">Delete</button>
+                                    </form>
+                                    @if (p.Status == "Uploaded")
+                                    {
+                                        <form asp-action="Request" asp-route-id="@p.PrescriptionId" method="post" class="d-inline">
+                                            <button class="btn btn-sm btn-outline-primary">Request to Dispense</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No prescriptions uploaded yet.</p>
+            }
+        </div>
+    </div>
+</div>

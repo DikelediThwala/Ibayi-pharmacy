@@ -1,244 +1,103 @@
 ﻿@model ONT_PROJECT.Models.BOrder
-
+@using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
-    ViewData["Title"] = "Create Medication Order";
-    Layout = "_ManagerLayout";
+    var medications = ViewBag.Medications as List<SelectListItem> ?? new List<SelectListItem>();
+    var medList = medications.Select(m => new { m.Value, m.Text }).ToList();
 }
 
+<h4>Create Medication Order</h4>
+<hr style="height: 4px; background-color: #011425; border: none;" />
 
 <div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
     <i class="bi bi-info-circle-fill"></i>
     Please ensure all details are accurate before saving. Fields marked with <span class="text-danger">*</span> are required.
 </div>
-<div class="container mt-4">
-    
-    <div class="card shadow p-4">
-        <div class="card-body">
-            <h2>  <i class="bi bi-bag-check-fill me-2 text-primary"></i>Create Medication Order
-            </h2>
 
-            <hr style="height: 5px; background-color: #011425; border: none;" />
-            <form asp-action="Create" method="post">
-                <div class="mb-3">
-                    <label class="form-label">Status</label>
-                    <select class="form-select" asp-for="Status">
-                        <option disabled selected>-- Select Status --</option>
-                        <option value="1">Placed</option>
-                        <option value="2">Pending</option>
-                        <option value="3">Cancelled</option>
-                        <option value="4">Received</option>
+<div class="card shadow p-4">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
 
-
-                    </select>
+            @if (!medications.Any())
+            {
+                <div class="alert alert-warning">
+                    No medications found. Please add medications before creating an order.
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label asp-for="DatePlaced" class="form-label">Date Placed<span class="text-danger">*</span></label>
-                        <input asp-for="DatePlaced" class="form-control" type="date" />
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="DateRecieved" class="form-label">Date Received</label>
-                        <input asp-for="DateRecieved" class="form-control" type="date" />
-                    </div>
-
-                </div>
-
-                <h5 class="mt-4">Items to Order</h5>
+            }
+            else
+            {
+                <h5 class="mt-4">Order Lines</h5>
                 <table class="table table-bordered" id="medicationTable">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
-                            <th>Medication<span class="text-danger">*</span></th>
-                            <th>Quantity <span class="text-danger">*</span></th>
+                            <th>Medication</th>
+                            <th>Quantity</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="medicationTableBody">
                         <tr>
                             <td>
-                                <select class="form-select" name="OrderLines[0].MedicationID">
+                                <select class="form-select" name="BOrderLines[0].MedicineId" required>
                                     <option disabled selected>-- Select Medication --</option>
-                                    <option value="1">Panado</option>
-                                    <option value="2">Brufen</option>
-                                    <option value="3">Augmentin</option>
-                                    <option value="4">Allergex</option>
-                                    <option value="5">Disprin</option>
-                                    <option value="6">Glucophage</option>
-                                    <option value="7">Simvacor</option>
+                                    @foreach (var med in medications)
+                                    {
+                                        <option value="@med.Value">@med.Text</option>
+                                    }
                                 </select>
                             </td>
                             <td>
-                                <input class="form-control" type="number" name="OrderLines[0].Quantity" value="1" />
+                                <input type="number" name="BOrderLines[0].Quantity" class="form-control" value="1" min="1" required />
                             </td>
-                           
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+                            </td>
                         </tr>
                     </tbody>
-
                 </table>
 
-                <!-- Add Medication Button -->
-                <div class="mb-3">
-                    <button type="button" class="btn btn-outline-primary" onclick="addMedicationRow()">
-                        <i class="bi bi-plus-circle"></i> Add Medication
-                    </button>
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-primary" onclick="addMedicationRow()">Add Medication</button>
+                    <button type="submit" class="btn btn-success">Submit Order</button>
                 </div>
-
-
-                <div class="d-flex justify-content-between mt-4">
-                    <a href="/BOrder/Index" class="btn btn-primary">
-                        <i class="bi bi-arrow-left"></i> Back
-                    </a>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-check-circle"></i> Submit Order
-                    </button>
-                </div>
-            </form>
-        </div>
+            }
+        </form>
     </div>
 </div>
 
-
-
-
-
-
 @section Scripts {
     <script>
-        let rowIndex = 1; 
+        let rowIndex = 1;
+        const medicationOptions = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(medList));
 
         function addMedicationRow() {
-            const table = document.getElementById("medicationTableBody");
+            const tableBody = document.getElementById("medicationTableBody");
+            let optionsHtml = '<option disabled selected>-- Select Medication --</option>';
+            medicationOptions.forEach(med => {
+                optionsHtml += `<option value="${med.Value}">${med.Text}</option>`;
+            });
 
             const newRow = document.createElement("tr");
-
             newRow.innerHTML = `
                 <td>
-                    <select class="form-select" name="OrderLines[${rowIndex}].MedicationID">
-                        <option disabled selected>-- Select Medication --</option>
-                        <option value="1">Panado</option>
-                        <option value="2">Brufen</option>
-                        <option value="3">Augmentin</option>
-                        <option value="4">Allergex</option>
-                        <option value="5">Disprin</option>
-                        <option value="6">Glucophage</option>
-                        <option value="7">Simvacor</option>
+                    <select class="form-select" name="BOrderLines[${rowIndex}].MedicineId" required>
+                        ${optionsHtml}
                     </select>
                 </td>
-                <td><input class="form-control" type="number" name="OrderLines[${rowIndex}].Quantity" value="1" /></td>
-                <td class="text-center">
-                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
-                        <i class="bi bi-x-circle"></i> Cancel
-                    </button>
+                <td>
+                    <input type="number" name="BOrderLines[${rowIndex}].Quantity" class="form-control" value="1" min="1" required />
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
                 </td>
             `;
-
-            table.appendChild(newRow);
+            tableBody.appendChild(newRow);
             rowIndex++;
         }
 
         function removeRow(button) {
-            const row = button.closest("tr");
-            row.remove();
+            button.closest('tr').remove();
         }
     </script>
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@* @model ONT_PROJECT.Models.BOrder
-
-@{
-    ViewData["Title"] = "Manage Orders";
-    Layout = "_ManagerLayout";
-}
-
-<!-- Page Header -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-dark">
-        <i class="bi bi-bag-check-fill me-2 text-primary"></i> Create New Order
-    </h2>
-</div>
-
-<hr style="height: 4px; background-color: #011425; border: none;" />
-
-<div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
-    <i class="bi bi-info-circle-fill"></i>
-    Please fill out all required fields marked with <span class="text-danger">*</span>.
-</div>
-
-<div class="card shadow p-4">
-    <div class="card-body">
-        <form asp-action="Create" method="post">
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <label asp-for="DatePlaced" class="form-label">Date Placed <span class="text-danger">*</span></label>
-                    <input asp-for="DatePlaced" type="date" class="form-control" />
-                    <span asp-validation-for="DatePlaced" class="text-danger small"></span>
-                </div>
-
-                <div class="col-md-6">
-                    <label asp-for="DateRecieved" class="form-label">Date Received </label>
-                    <input asp-for="DateRecieved" type="date" class="form-control" />
-                    <span asp-validation-for="DateRecieved" class="text-danger small"></span>
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <label asp-for="Status" class="form-label">Order Status <span class="text-danger">*</span></label>
-                <select asp-for="Status" class="form-select">
-                    <option value="">-- Select Status --</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Delivered">Recieved</option>
-                    <option value="Cancelled">Cancelled</option>
-                </select>
-                <span asp-validation-for="Status" class="text-danger small"></span>
-            </div>
-
-
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <label class="form-label">Pharmacy Manager <span class="text-danger">*</span></label>
-                    <select asp-for="PharmacyManagerID" asp-items="ViewBag.PharmacyManagers" class="form-select">
-                        <option value="">-- Select Pharmacy Manager --</option>
-                    </select>
-                    <span asp-validation-for="PharmacyManagerID" class="text-danger small"></span>
-                </div>
-            
-                <div class="col-md-6">
-                    <label class="form-label">Supplier <span class="text-danger">*</span></label>
-                    <select asp-for="SupplierID" asp-items="ViewBag.Suppliers" class="form-select">
-                        <option value="">-- Select Supplier --</option>
-                    </select>
-                    <span asp-validation-for="SupplierID" class="text-danger small"></span>
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-between mt-4">
-                <a asp-action="Index" class="btn btn-primary">
-                    <i class="bi bi-arrow-left"></i> Back
-                </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-save me-1"></i> Save
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
- *@

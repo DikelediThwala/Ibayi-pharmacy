@@ -1,0 +1,45 @@
+﻿@model ONT_PROJECT.Models.TblUser
+@{
+    ViewData["Title"] = "Edit Profile";
+    Layout = "_CustomerLayout";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Edit Profile</h2>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="UserId" />
+
+        <div class="form-group mb-3">
+            <label asp-for="FirstName"></label>
+            <input asp-for="FirstName" class="form-control" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="LastName"></label>
+            <input asp-for="LastName" class="form-control" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Idnumber"></label>
+            <input asp-for="Idnumber" class="form-control" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="PhoneNumber"></label>
+            <input asp-for="PhoneNumber" class="form-control" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" readonly />
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Allergies"></label>
+            <input asp-for="Allergies" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">Save Changes</button>
+    </form>
+</div>

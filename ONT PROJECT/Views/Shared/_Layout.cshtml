@@ -8,29 +8,26 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1,shrink-to-fit=no" />
     <title>@ViewData["Title"] - IbayiPharmacy</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/IbayiPharmacy.styles.css" asp-append-version="true" />
 
-
     <link href="https://fonts.googleapis.com/css?family=Rubik:400,700|Crimson+Text:400,400i" rel="stylesheet">
     <link rel="stylesheet" href="fonts/icomoon/style.css">
-
-   <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
     <link rel="stylesheet" href="css/jquery-ui.css">
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
     <link rel="stylesheet" href="css/aos.css">
     <link rel="stylesheet" href="css/style.css">
+
     @RenderSection("Styles", required: false)
 </head>
 <body>
     <header>
-
         <div class="site-wrap">
-
-            <div class="site-navbar py-2">
-
+            <div class="site-navbar py-0">
                 <div class="search-wrap">
                     <div class="container">
                         <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
@@ -53,7 +50,7 @@
                                     <li class="active"><a href="#home">Home</a></li>
                                     <li><a href="#about-us">About</a></li>
                                     <li><a href="#services">Services</a></li>
-                                    <li><a href="#testimonials">testimonials</a></li>
+                                    <li><a href="#testimonials">Testimonials</a></li>
                                     <li><a href="#contact">Contact</a></li>
                                     <li><a href="/Home/FAQ">FAQ's</a></li>
                                 </ul>
@@ -64,9 +61,22 @@
                             <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none">
                                 <span class="icon-menu"></span>
                             </a>
-
-
-                        </div>                    
+                        </div>
+                       @*  <div class="d-flex align-items-center" style="margin-left: 200px; gap: 10px;">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle px-4 py-2" type="button" id="loginDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Login As
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="loginDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Manager" asp-action="Dashboard" asp-route-role="Manager">Manager</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Customer" asp-action="Dashboard" asp-route-role="Customer">Customer</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Pharmacist" asp-action="Index" asp-route-role="Pharmacist">Pharmacist</a></li>
+                                </ul>
+                            </div>
+                            <a href="@Url.Action("Register", "Customer")" class="btn btn-outline-success px-4 py-2">
+                                Customer Register
+                            </a>
+                        </div> *@
 
                         <div class="d-flex align-items-center" style="margin-left: 200px; gap: 10px;">
                             <div class="dropdown">
@@ -79,20 +89,17 @@
                                     <li><a class="dropdown-item" asp-controller="Pharmacist" asp-action="Index" asp-route-role="Pharmacist">Pharmacist</a></li>
                                 </ul>
                             </div>
-                            <a href="@Url.Action("CustomerRegister", "Home")" class="btn btn-outline-success px-4 py-2">
+                            <a href="@Url.Action("Register", "CustomerRegister")" class="btn btn-outline-success px-4 py-2">
                                 Customer Register
                             </a>
                         </div>
-
                     </div>
                 </div>
-            </div>
-
-           
+            </div>            
         </div>
     </header>
     <main role="main" class="pb-3">
-        @RenderBody() <!-- This is required -->
+        @RenderBody()
     </main>
     <footer class="site-footer bg-secondary text-white pt-5 pb-3">
         <div class="container">
@@ -130,21 +137,16 @@
             </div>
             <div class="row pt-5 mt-5 text-center">
                 <div class="col-md-12">
-                    <p>
-
-                        Copyright &copy;
-                        <script>document.write(new Date().getFullYear());</script> All rights reserved
-                    </p>
+                    <p>&copy; <script>document.write(new Date().getFullYear());</script> All rights reserved</p>
                 </div>
-
             </div>
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
 
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/jquery-ui.js"></script>
@@ -153,21 +155,6 @@
     <script src="js/owl.carousel.min.js"></script>
     <script src="js/jquery.magnific-popup.min.js"></script>
     <script src="js/aos.js"></script>
-
     <script src="js/main.js"></script>
-
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-

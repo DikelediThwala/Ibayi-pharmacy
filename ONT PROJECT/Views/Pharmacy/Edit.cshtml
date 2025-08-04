@@ -4,7 +4,21 @@
     ViewData["Title"] = "Manage Pharmacy";
     Layout = "_ManagerLayout";
 }
-
+@if (!ViewData.ModelState.IsValid)
+{
+    <div style="color: red;">
+        <strong>Model is invalid</strong>
+        <ul>
+            @foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (var error in modelState.Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-dark">
         <i class="bi bi-hospital me-2 text-primary"></i> Update Pharmacy Details
@@ -20,7 +34,8 @@
 
 <div class="card shadow p-4" style="font:inherit;">
     <div class="card-body">
-        <form asp-action="Edit" enctype="multipart/form-data" method="post">
+        <form asp-action="Edit" asp-controller="Pharmacy" method="post" enctype="multipart/form-data">
+
             <div class="row mb-4">
                 <div class="col-md-6">
                     <label asp-for="Name" class="form-label">Pharmacy Name <span class="text-danger">*</span></label>
@@ -65,11 +80,11 @@
 
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <label asp-for="PharmacistId" class="form-label">Responsible Pharmacist <span class="text-danger">*</span></label>
-                    <select asp-for="PharmacistId" asp-items="ViewBag.Pharmacists" class="form-select">
+                    <label asp-for="PharmacistId" class="control-label"></label>
+                    <select asp-for="PharmacistId" class="form-control" asp-items="ViewBag.PharmacistList">
                         <option value="">-- Select Pharmacist --</option>
                     </select>
-                    <span asp-validation-for="PharmacistId" class="text-danger small"></span>
+                    <span asp-validation-for="PharmacistId" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
@@ -80,10 +95,20 @@
             </div>
 
             <div class="mb-4">
-                <label asp-for="Logo" class="form-label">Pharmacy Logo <span class="text-danger">*</span></label>
-                <input asp-for="Logo" class="form-control" type="file" name="logoFile" />
-                <span asp-validation-for="Logo" class="text-danger small"></span>
+                <label class="form-label">Pharmacy Logo</label>
+
+                @if (Model.Logo != null)
+                {
+                    var base64Logo = Convert.ToBase64String(Model.Logo);
+                    var imageSrc = $"data:image/png;base64,{base64Logo}";
+                    <div class="mb-2">
+                        <img src="@imageSrc" alt="Current Pharmacy Logo" style="width: 160px; height: 120px;" />
+                    </div>
+                }
+
+                <input type="file" name="logoFile" class="form-control" />
             </div>
+
 
             <div class="d-flex justify-content-between mt-4">
                 <a href="/Pharmacy/Index" class="btn btn-primary">
@@ -94,6 +119,9 @@
                     <i class="bi bi-save me-1"></i> Update
                 </button>
             </div>
+
+            <input asp-for="PharmacyId" type="hidden" />
+
         </form>
     </div>
 </div>

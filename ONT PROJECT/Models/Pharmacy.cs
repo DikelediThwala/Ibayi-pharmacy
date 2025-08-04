@@ -17,13 +17,9 @@ public partial class Pharmacy
 
     public string WebsiteUrl { get; set; } = null!;
 
-    public int? PharmacistId { get; set; }
-
     public byte[]? Logo { get; set; }
-
     public string Address { get; set; } = null!;
-
     public double Vatrate { get; set; }
-
+    public int? PharmacistId { get; set; }
     public virtual Pharmacist? Pharmacist { get; set; }
 }

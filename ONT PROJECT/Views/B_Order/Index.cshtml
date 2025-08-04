@@ -1,141 +1,41 @@
-﻿@{
-    ViewData["Title"] = "Manage Medication Stock";
+﻿@model ONT_PROJECT.Models.NewOrderViewModel
+
+@{
+    ViewData["Title"] = "Manage Medication";
     Layout = "_ManagerLayout";
-
-    var medications = new List<dynamic>
-    {
-        new { Id = "001", Name = "Paracetamol", Quantity = 25, Reorder = 15 },
-        new { Id = "002", Name = "Amoxicillin", Quantity = 10, Reorder = 20 },
-        new { Id = "003", Name = "Ibuprofen", Quantity = 21, Reorder = 20 },
-        new { Id = "004", Name = "Cetirizine", Quantity = 45, Reorder = 35 },
-        new { Id = "005", Name = "Aspirin", Quantity = 60, Reorder = 40 },
-        new { Id = "006", Name = "Metformin", Quantity = 40, Reorder = 20 },
-        new { Id = "007", Name = "Simvastatin", Quantity = 9, Reorder = 25 },
-        new { Id = "008", Name = "Salbutamol", Quantity = 50, Reorder = 30 }
-    };
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-dark fw-bold"><i class="fas fa-users-cog"></i> Manage Medication Stock</h2>
-   
-</div>
+<h2 class="text-dark fw-bold mb-4"><i class="fas fa-capsules"></i> Medication Management</h2>
 
-<hr class="mb-5" style="height: 4px; background-color: #011425; border: none;" />
+<ul class="nav nav-tabs" id="medicationTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="stock-tab" data-bs-toggle="tab" data-bs-target="#stock" type="button" role="tab">Current Stock</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">Orders</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="neworder-tab" data-bs-toggle="tab" data-bs-target="#neworder" type="button" role="tab">New Order</button>
+    </li>
+</ul>
 
-<div class="alert alert-info mt-3 mb-4" role="alert">
-    <strong>Note:</strong>
-    <span class="badge text-dark" style="background-color: #ffe5b4;">Light orange rows</span> = Quantity is below or at reorder level. <br />
-    <span class="badge bg-primary text-dark">Primary rows</span> = Quantity is within 5 units of reorder level (approaching low). <br />
-    White rows = Stock is sufficient.
-</div>
-
-<h5>Current Stock Levels</h5>
-
-<form method="post" action="/B_Order/Selected" id="medForm">
-    <div class="mb-3">
-        <button type="submit" class="btn btn-success me-2" onclick="redirectToSelected()">
-            <i class="fas fa-check-square me-1"></i> Order Selected
-        </button>
-        <button type="button" class="btn btn-warning" onclick="redirectToOutOfStock()">
-            <i class="fas fa-exclamation-triangle me-1"></i> Order Low Stock
-        </button>
+<div class="tab-content mt-4" id="medicationTabsContent">
+    <div class="tab-pane fade show active" id="stock" role="tabpanel">
+        @await Html.PartialAsync("_CurrentStock", Model.Medicines)
     </div>
-
-    <table class="table table-bordered text-center">
-        <thead class="table-dark">
-            <tr>
-                <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)" /></th>
-                
-                <th>Name</th>
-                <th>Quantity</th>
-                <th>Reorder Level</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (int i = 0; i < medications.Count; i++)
-            {
-                var med = medications[i];
-                var rowClass = "";
-
-                if (med.Quantity <= med.Reorder)
-                {
-                    rowClass = "table-warning";
-                }
-                else if (med.Quantity <= med.Reorder + 5)
-                {
-                    rowClass = "table-primary";
-                }
-
-                <tr class="@rowClass">
-                    <td>
-                        <input type="checkbox" name="selectedMedIds" value="@med.Id"
-                               class="med-checkbox @(med.Quantity <= med.Reorder ? "low-stock" : "")" />
-                    </td>
-                   
-                    <td>@med.Name</td>
-                    <td>
-                        <input type="number" name="quantities" value="@med.Quantity" min="0" class="form-control mb-1" />
-                        <input type="number" name="increments" placeholder="+ Add stock" min="0" class="form-control" />
-                    </td>
-                    <td><input type="number" class="form-control text-center" value="@med.Reorder" readonly /></td>
-                    <td>
-                        <a class="btn btn-primary shadow-sm" asp-action="Create" asp-controller="B_Order">
-                            <i class="fas fa-shopping-cart me-1"></i> Order
-                        </a>
-                    </td>
-
-                </tr>
-            }
-        </tbody>
-    </table>
-</form>
-
-@section Scripts {
-    <script>
-        function toggleAll(source) {
-            document.querySelectorAll('.med-checkbox').forEach(cb => cb.checked = source.checked);
+    <div class="tab-pane fade" id="orders" role="tabpanel">
+        @await Html.PartialAsync("_Orders", Model.BOrders)
+    </div>
+    <div class="tab-pane fade" id="neworder" role="tabpanel">
+        @await Html.PartialAsync("Create", Model.NewOrder, new ViewDataDictionary(ViewData)
+        {
+        { "Medications", Model.Medicines.Select(m => new SelectListItem
+        {
+        Value = m.MedicineId.ToString(),
+        Text = m.MedicineName
+        }).ToList()
         }
-         function redirectToOutOfStock() {
-            window.location.href = '@Url.Action("OutOfStock", "B_Order")';
-        }
-         function redirectToSelelcted() {
-            window.location.href = '@Url.Action("Selected", "B_Order")';
-        }
-        function selectLowStockAndSubmit() {
-            const checkboxes = document.querySelectorAll('.med-checkbox');
-            checkboxes.forEach(cb => {
-                cb.checked = cb.classList.contains('low-stock');
-            });
-            document.getElementById('medForm').submit();
-        }
+        })
+    </div>
+</div>
 
-
-                document.querySelectorAll('input[name="increments"]').forEach(input => {
-            input.addEventListener('blur', async (e) => {
-                const row = e.target.closest('tr');
-                const medId = row.querySelector('input[type="checkbox"]').value;
-                const increment = parseInt(e.target.value);
-
-                if (increment > 0) {
-                    // Send increment to server via fetch API (POST)
-                    const response = await fetch('/Medication/UpdateStock', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ medId, increment })
-                    });
-
-                    if (response.ok) {
-                        // Optionally update quantity shown on page here
-                        const data = await response.json();
-                        row.querySelector('input[name="quantities"]').value = data.newQuantity;
-                        e.target.value = 0; // reset increment input
-                    }
-                }
-            });
-        });
-
-    </script>
-
-
-}

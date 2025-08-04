@@ -1,78 +1,99 @@
-﻿@model ONT_PROJECT.Models.Pharmacy
+﻿@model IEnumerable<ONT_PROJECT.Models.ActiveIngredient>
 
 @{
-    ViewData["Title"] = "Manage Active Ingredients";
+    ViewData["Title"] = "Active Ingredients";
     Layout = "_ManagerLayout";
 }
 
-<h2 class="mb-4">Manage Ingredients</h2>
-<hr style="height: 5px; background-color: #011425; border: none;" />
-<br />
-<a asp-action="Create" asp-controller="ActiveIngredient" class="btn btn-primary mb-3">
-    <i class="bi bi-plus-circle"></i> Add Ingredient
-</a>
-
-
-<h2>Pharmacy Medications and Their Active Ingredients</h2>
-
-<div class="card mb-3">
-    <div class="card-header bg-primary text-white">
-        <strong>Panado</strong>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <div class="card-body">
-        <ul>
-            <li>Paracetamol</li>
-        </ul>
+}
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Active Ingredient List</h2>
+        <a asp-action="Create" asp-controller="ActiveIngredient" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Ingredient
+        </a>
+    </div>
+
+    <hr style="height: 5px; background-color: #011425; border: none;" />
+
+    <div class="card shadow rounded-4 border-info">
+        <div class="card-header bg-primary text-white rounded-top-4">
+            <h5 class="mb-0"><i class="bi bi-hospital me-2"></i> Active Ingredients</h5>
+        </div>
+        <div class="card-body bg-light">
+            <div class="table-responsive">
+                <table id="activeIngredientTable" class="table table-hover table-bordered text-center align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th></th>
+                            <th>Ingredient Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int count = 1;
+                        }
+                        @foreach (var ingredient in Model)
+                        {
+                            <tr>
+                                <td>@count</td>
+                                <td>@ingredient.Ingredients</td>
+                                <td>
+                                    <a asp-action="Edit" asp-controller="ActiveIngredient" asp-route-id="@ingredient.ActiveIngredientId" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-controller="ActiveIngredient" asp-route-id="@ingredient.ActiveIngredientId" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this ingredient?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            count++;
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="card mb-3">
-    <div class="card-header bg-success text-white">
-        <strong>Augmentin</strong>
-    </div>
-    <div class="card-body">
-        <ul>
-            <li>Amoxicillin</li>
-            <li>Clavulanic Acid</li>
-        </ul>
-    </div>
-</div>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
-<div class="card mb-3">
-    <div class="card-header bg-info text-white">
-        <strong>Myprodol</strong>
-    </div>
-    <div class="card-body">
-        <ul>
-            <li>Ibuprofen</li>
-            <li>Paracetamol</li>
-            <li>Codeine</li>
-        </ul>
-    </div>
-</div>
+<script>
+    $(document).ready(function () {
+        $('#activeIngredientTable').DataTable({
+            pageLength: 7,
+            lengthChange: false,
+            language: {
+                search: "Search table:",
+                paginate: {
+                    previous: "← Previous",
+                    next: "Next →"
+                }
+            }
+        });
 
-
-<h2>Active Ingredients by Medication</h2>
-
-<table class="table table-bordered">
-    <thead class="table-dark">
-        <tr>
-            <th>Medication</th>
-            <th>Active Ingredients</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Panado</td>
-            <td>Paracetamol</td>
-        </tr>
-        <tr>
-            <td>Myprodol</td>
-            <td>Ibuprofen, Paracetamol, Codeine</td>
-        </tr>
-        <tr>
-            <td>Augmentin</td>
-            <td>Amoxicillin, Clavulanic Acid</td>
-        </tr>
-    </tbody>
-</table>
+        setTimeout(function () {
+            var alert = document.getElementById('successAlert');
+            if (alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }
+        }, 4000);
+    });
+</script>

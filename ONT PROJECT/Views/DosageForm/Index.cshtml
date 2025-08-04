@@ -1,86 +1,101 @@
-﻿@model ONT_PROJECT.Models.Pharmacy
+﻿@model IEnumerable<ONT_PROJECT.Models.DosageForm>
 
 @{
-    ViewData["Title"] = "Manage Dosage Forms";
+    ViewData["Title"] = "Dosage Forms";
     Layout = "_ManagerLayout";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-dark fw-bold"><i class="fas fa-pills"></i> Dosage Forms</h2>
-    <a class="btn btn-primary shadow-sm px-4 py-2" asp-action="Create" asp-controller="DosageForm">
-        <i class="bi bi-plus-circle"></i> Add New Dosage Form
-    </a>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Dosage Forms List</h2>
+        <a asp-action="Create" asp-controller="DosageForm" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Dosage Form
+        </a>
+    </div>
+    <hr style="height: 5px; background-color: #011425; border: none;" />
+
+    <div class="card shadow rounded-4 border-info">
+        <div class="card-header bg-primary text-white rounded-top-4">
+            <h5 class="mb-0"><i class="bi bi-ui-checks-grid me-2"></i> Dosage Forms</h5>
+        </div>
+        <div class="card-body bg-light">
+            <div class="table-responsive">
+                <table id="dosageFormsTable" class="table table-hover table-bordered text-center align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th></th>
+                            <th>Form Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            int count = 1;
+                            foreach (var form in Model)
+                            {
+                                <tr>
+                                    <td>@count</td>
+                                    <td>@form.FormName</td>
+                                    <td>
+                                        <a asp-action="Edit" asp-controller="DosageForm" asp-route-id="@form.FormId" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-controller="DosageForm" asp-route-id="@form.FormId" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                count++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center text-muted fst-italic">No dosage forms available.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
-<hr style="height: 5px; background-color: #011425; border: none;" />
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
-<div class="accordion" id="dosageFormAccordion">
+<script>
+    $(document).ready(function () {
+        $('#dosageFormsTable').DataTable({
+            pageLength: 7,
+            lengthChange: false,
+            language: {
+                search: "Search table:",
+                paginate: {
+                    previous: "← Previous",
+                    next: "Next →"
+                }
+            }
+        });
 
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingTablet">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTablet" aria-expanded="true" aria-controls="collapseTablet">
-                1.Tablet
-            </button>
-        </h2>
-        <div id="collapseTablet" class="accordion-collapse collapse" aria-labelledby="headingTablet" data-bs-parent="#dosageFormAccordion">
-            <div class="accordion-body">
-                
-                <div class="d-flex justify-content-end gap-2">
-                    <a asp-action="Edit" asp-controller="DosageForm" asp-route-id="1" class="btn btn-sm btn-primary">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                    <a asp-action="Delete" asp-controller="DosageForm" asp-route-id="1" class="btn btn-sm btn-danger">
-                        <i class="bi bi-trash"></i> Delete
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingCapsule">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCapsule" aria-expanded="false" aria-controls="collapseCapsule">
-                2.Capsule
-            </button>
-        </h2>
-        <div id="collapseCapsule" class="accordion-collapse collapse" aria-labelledby="headingCapsule" data-bs-parent="#dosageFormAccordion">
-            <div class="accordion-body">
-                
-                <div class="d-flex justify-content-end gap-2">
-                    <a asp-action="Edit" asp-controller="DosageForm" asp-route-id="2" class="btn btn-sm btn-primary">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                    <a asp-action="Delete" asp-controller="DosageForm" asp-route-id="2" class="btn btn-sm btn-danger">
-                        <i class="bi bi-trash"></i> Delete
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    
-
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingSyrup">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSyrup" aria-expanded="false" aria-controls="collapseSyrup">
-                3.Syrup
-            </button>
-        </h2>
-        <div id="collapseSyrup" class="accordion-collapse collapse" aria-labelledby="headingSyrup" data-bs-parent="#dosageFormAccordion">
-            <div class="accordion-body">
-                <p><strong>Description:</strong> Liquid oral preparation.</p>
-                <div class="d-flex justify-content-end gap-2">
-                    <a asp-action="Edit" asp-controller="DosageForm" asp-route-id="3" class="btn btn-sm btn-primary">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                    <a asp-action="Delete" asp-controller="DosageForm" asp-route-id="3" class="btn btn-sm btn-danger">
-                        <i class="bi bi-trash"></i> Delete
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add more dosage forms like Injection, Cream, etc. following same format -->
-
-</div>
+        setTimeout(function () {
+            var alert = document.getElementById('successAlert');
+            if (alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }
+        }, 4000);
+    });
+</script>

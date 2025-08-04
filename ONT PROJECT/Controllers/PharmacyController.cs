@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
+using System.IO;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -12,9 +14,13 @@ namespace ONT_PROJECT.Controllers
         {
             _context = context;
         }
+
         public IActionResult Index()
         {
-            var pharmacy = _context.Pharmacies.FirstOrDefault();
+            var pharmacy = _context.Pharmacies
+                .Include(p => p.Pharmacist) // load pharmacist entity
+                    .ThenInclude(ph => ph.PharmacistNavigation) // load TblUser navigation
+                .FirstOrDefault();
 
             if (pharmacy == null)
             {
@@ -22,9 +28,7 @@ namespace ONT_PROJECT.Controllers
                 return View();
             }
 
-
             Console.WriteLine($"Pharmacy Name: {pharmacy.PharmacyId}, Email: {pharmacy.Email}");
-
             return View(pharmacy);
         }
 
@@ -33,9 +37,13 @@ namespace ONT_PROJECT.Controllers
         {
             return View();
         }
+
         public IActionResult Edit()
         {
-            var pharmacy = _context.Pharmacies.FirstOrDefault();
+            // Include Pharmacist to populate navigation property
+            var pharmacy = _context.Pharmacies
+                .Include(p => p.Pharmacist)
+                .FirstOrDefault();
 
             if (pharmacy == null)
             {
@@ -43,13 +51,24 @@ namespace ONT_PROJECT.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Pharmacists = new SelectList(_context.Pharmacists, "PharmacistId", "FullName");
+            ViewBag.PharmacistList = new SelectList(
+                _context.Pharmacists
+                    .Include(p => p.PharmacistNavigation)
+                    .Select(p => new
+                    {
+                        PharmacistId = p.PharmacistId,
+                        FullName = p.PharmacistNavigation.FirstName + " " + p.PharmacistNavigation.LastName
+                    }),
+                "PharmacistId",
+                "FullName",
+                pharmacy.PharmacistId // pre-select current pharmacist
+            );
+
             return View(pharmacy);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Pharmacy pharmacyModel, IFormFile? logoFile)
+        public IActionResult Edit(Pharmacy pharmacyModel, IFormFile? logoFile)  // nullable here
         {
             if (ModelState.IsValid)
             {
@@ -62,7 +81,7 @@ namespace ONT_PROJECT.Controllers
                 existingPharmacy.ContactNo = pharmacyModel.ContactNo;
                 existingPharmacy.Email = pharmacyModel.Email;
                 existingPharmacy.WebsiteUrl = pharmacyModel.WebsiteUrl;
-                existingPharmacy.PharmacistId = pharmacyModel.PharmacyId;
+                existingPharmacy.PharmacistId = pharmacyModel.PharmacistId;
                 existingPharmacy.Address = pharmacyModel.Address;
                 existingPharmacy.Vatrate = pharmacyModel.Vatrate;
 
@@ -79,12 +98,21 @@ namespace ONT_PROJECT.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Pharmacists = new SelectList(_context.Pharmacists, "PharmacistID", "FullName");
+            
+            ViewBag.PharmacistList = new SelectList(
+                _context.Pharmacists.Include(p => p.PharmacistNavigation)
+                    .Select(p => new
+                    {
+                        PharmacistId = p.PharmacistId,
+                        FullName = p.PharmacistNavigation.FirstName + " " + p.PharmacistNavigation.LastName
+                    }),
+                "PharmacistId",
+                "FullName",
+                pharmacyModel.PharmacistId
+            );
 
             return View(pharmacyModel);
         }
-
-
 
     }
 }

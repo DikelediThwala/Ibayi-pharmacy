@@ -15,7 +15,7 @@ public partial class ApplicationDbContext : DbContext
     {
     }
 
-    public virtual DbSet<ActiveIngredient> ActiveIngredients { get; set; }
+    public virtual DbSet<ActiveIngredient> ActiveIngredient { get; set; }
 
     public virtual DbSet<BOrder> BOrders { get; set; }
 
@@ -61,11 +61,11 @@ public partial class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<ActiveIngredient>(entity =>
         {
-            entity.HasKey(e => e.ActiveIngredientsId);
+            entity.HasKey(e => e.ActiveIngredientId);
 
             entity.ToTable("ActiveIngredient");
 
-            entity.Property(e => e.ActiveIngredientsId).HasColumnName("ActiveIngredientsID");
+            entity.Property(e => e.ActiveIngredientId).HasColumnName("ActiveIngredientID");
             entity.Property(e => e.Ingredients).HasMaxLength(50);
         });
 
@@ -126,11 +126,11 @@ public partial class ApplicationDbContext : DbContext
             entity.ToTable("CustomerAllergy");
 
             entity.Property(e => e.CustomerAllergyId).HasColumnName("CustomerAllergyID");
-            entity.Property(e => e.ActiveIngredientsId).HasColumnName("ActiveIngredientsID");
+            entity.Property(e => e.ActiveIngredientId).HasColumnName("ActiveIngredientID");
             entity.Property(e => e.CustomeId).HasColumnName("CustomeID");
 
-            entity.HasOne(d => d.ActiveIngredients).WithMany(p => p.CustomerAllergies)
-                .HasForeignKey(d => d.ActiveIngredientsId)
+            entity.HasOne(d => d.ActiveIngredient).WithMany(p => p.CustomerAllergies)
+                .HasForeignKey(d => d.ActiveIngredientId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CustomerAllergy_ActiveIngredient");
 
@@ -159,7 +159,7 @@ public partial class ApplicationDbContext : DbContext
             entity.ToTable("DosageForm");
 
             entity.Property(e => e.FormId).HasColumnName("FormID");
-            entity.Property(e => e.Form).HasMaxLength(50);
+            entity.Property(e => e.FormName).HasMaxLength(50);
         });
 
         modelBuilder.Entity<MedIngredient>(entity =>
@@ -188,7 +188,6 @@ public partial class ApplicationDbContext : DbContext
 
             entity.Property(e => e.MedicineId).HasColumnName("MedicineID");
             entity.Property(e => e.FormId).HasColumnName("FormID");
-            entity.Property(e => e.Ingredients).HasMaxLength(50);
             entity.Property(e => e.MedicineName).HasMaxLength(50);
             entity.Property(e => e.SupplierId).HasColumnName("SupplierID");
 
