@@ -188,7 +188,6 @@ public partial class ApplicationDbContext : DbContext
 
             entity.Property(e => e.MedicineId).HasColumnName("MedicineID");
             entity.Property(e => e.FormId).HasColumnName("FormID");
-            entity.Property(e => e.Ingredients).HasMaxLength(50);
             entity.Property(e => e.MedicineName).HasMaxLength(50);
             entity.Property(e => e.SupplierId).HasColumnName("SupplierID");
 

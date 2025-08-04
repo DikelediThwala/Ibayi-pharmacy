@@ -17,7 +17,10 @@ namespace ONT_PROJECT.Controllers
 
         public IActionResult Index()
         {
-            var pharmacy = _context.Pharmacies.FirstOrDefault();
+            var pharmacy = _context.Pharmacies
+                .Include(p => p.Pharmacist) // load pharmacist entity
+                    .ThenInclude(ph => ph.PharmacistNavigation) // load TblUser navigation
+                .FirstOrDefault();
 
             if (pharmacy == null)
             {
@@ -28,6 +31,7 @@ namespace ONT_PROJECT.Controllers
             Console.WriteLine($"Pharmacy Name: {pharmacy.PharmacyId}, Email: {pharmacy.Email}");
             return View(pharmacy);
         }
+
 
         public IActionResult Create()
         {

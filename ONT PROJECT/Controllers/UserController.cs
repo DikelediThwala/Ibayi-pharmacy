@@ -9,10 +9,11 @@ namespace ONT_PROJECT.Controllers
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public UserController(ApplicationDbContext context)
+        private readonly EmailService _emailService;
+        public UserController(ApplicationDbContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         public IActionResult Index()
@@ -34,7 +35,6 @@ namespace ONT_PROJECT.Controllers
         }
 
 
-
         private string GenerateRandomPassword(int length)
         {
             const string validChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$!";
@@ -53,6 +53,14 @@ namespace ONT_PROJECT.Controllers
             }
 
             return password.ToString();
+        }
+
+        private string HashPassword(string password)
+        {
+            using var sha = SHA256.Create();
+            var bytes = Encoding.UTF8.GetBytes(password);
+            var hash = sha.ComputeHash(bytes);
+            return Convert.ToBase64String(hash);
         }
 
         [HttpPost]
@@ -79,7 +87,9 @@ namespace ONT_PROJECT.Controllers
                 user.ProfilePicture = ms.ToArray();
             }
 
-            user.Password = GenerateRandomPassword(10);
+            var plainPassword = GenerateRandomPassword(10);
+            user.Password = HashPassword(plainPassword);
+
             _context.TblUsers.Add(user);
             _context.SaveChanges();
 
@@ -103,7 +113,18 @@ namespace ONT_PROJECT.Controllers
                 _context.PharmacyManagers.Add(new PharmacyManager { PharmacyManagerId = newUserId });
 
             _context.SaveChanges();
-            TempData["GeneratedPassword"] = user.Password;
+            TempData["GeneratedPassword"] = plainPassword;
+
+
+            var resetLink = Url.Action("ResetPassword", "User", new { email = user.Email }, protocol: Request.Scheme);
+
+            string emailBody = $@" <p>Hello {user.FirstName},</p>
+            <p>Your account has been created. Here is your temporary password:</p>
+           <p><strong>{plainPassword}</strong></p>
+            <p>Please reset your password by clicking the link below:</p>
+            <p><a href='{resetLink}'>Reset Password</a></p>";
+
+            _emailService.Send(user.Email, "Your Temporary Password", emailBody);
 
             return RedirectToAction("Index");
         }
@@ -170,6 +191,30 @@ namespace ONT_PROJECT.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string email)
+        {
+            var model = new ResetPasswordViewModel { Email = email };
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = _context.TblUsers.FirstOrDefault(u => u.Email == model.Email);
+            if (user == null)
+                return NotFound();
+
+            user.Password = HashPassword(model.NewPassword);
+            _context.SaveChanges();
+
+            TempData["Message"] = "Password reset successful!";
+            return RedirectToAction("Login", "Login"); 
         }
     }
 }

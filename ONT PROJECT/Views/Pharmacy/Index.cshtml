@@ -5,45 +5,157 @@
     Layout = "_ManagerLayout";
 }
 
-<div class="container mt-4">
+<style>
+    .profile-section {
+        background-color: #f8f9fa;
+        padding: 40px 30px;
+        border-radius: 16px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    }
 
-    <div class="card">
-        <div class="card-header">
-            <h3>@(Model.Name ?? "Pharmacy")</h3>
-        </div>
-        <div class="card-body">
-             <div>
+    .profile-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: Black;
+    }
+
+    .profile-logo,
+    .pharmacist-photo {
+        max-height: 350px;
+        max-width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+    }
+
+    .info-label {
+        font-weight: 500;
+        color: #6c757d;
+    }
+
+    .info-value {
+        font-size: 1.05rem;
+        color: #212529;
+    }
+
+    .info-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .edit-btn {
+        margin-top: 30px;
+    }
+
+    .pharmacist-section {
+        background-color: #f8f9fa;
+        padding: 40px 30px;
+        border-radius: 16px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-divider {
+        border: none;
+        height: 2px;
+        background: linear-gradient(to right, transparent, #6c757d, transparent);
+        opacity: 0.3;
+        margin: 1.2rem 0;
+    }
+
+</style>
+<div class="container">
+    <div class="profile-section">
+        <div class="row align-items-center">
+            <div class="col-md-3 text-center">
                 @if (Model.Logo != null)
                 {
                     var base64Logo = Convert.ToBase64String(Model.Logo);
                     var imageSrc = $"data:image/png;base64,{base64Logo}";
-                    <img src="@imageSrc" alt="Pharmacy Logo" style="width: 160px; height: 120px;" />
-                }
-                <br /><br />
-            </div>
-            <p><strong>Health Council Registration No:</strong> @(Model.HealthCounsilRegistrationNo ?? "N/A")</p>
-            <p><strong>Contact Number:</strong> @(Model.ContactNo ?? "N/A")</p>
-            <p><strong>Email:</strong> @(Model.Email ?? "N/A")</p>
-            <p>
-                <strong>Website URL:</strong>
-                @if (!string.IsNullOrEmpty(Model.WebsiteUrl))
-                {
-                    <a href="@Model.WebsiteUrl" target="_blank">@Model.WebsiteUrl</a>
+                    <img src="@imageSrc" alt="Pharmacy Logo" class="profile-logo" />
                 }
                 else
                 {
-                    <span>N/A</span>
+                    <div class="text-muted">No Logo</div>
                 }
-            </p>
-            <p><strong>Address:</strong> @(Model.Address ?? "N/A")</p>
-            <p><strong>VAT Rate:</strong> @Model.Vatrate%</p>
-
-
-            <div class="card-footer text-end">
-                <a asp-action="Edit" asp-controller="Pharmacy" class="btn btn-primary">
-                    <i class="bi bi-pencil-square"></i> Edit Pharmacy Details
-                </a>
             </div>
+
+            <div class="col-md-9">
+                <h1 class="profile-title">Pharmacy Details</h1>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <div class="info-label">Health Council Registration No:</div>
+                            <div class="info-value">@((Model.HealthCounsilRegistrationNo) ?? "N/A")</div>
+                        </div>
+                        <hr class="info-divider" />
+                        <div class="info-group">
+                            <div class="info-label">Contact Number:</div>
+                            <div class="info-value">@((Model.ContactNo) ?? "N/A")</div>
+                        </div>
+                        <hr class="info-divider" />
+                        <div class="info-group">
+                            <div class="info-label">Email:</div>
+                            <div class="info-value">@((Model.Email) ?? "N/A")</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <div class="info-label">Website:</div>
+                            <div class="info-value">
+                                @if (!string.IsNullOrWhiteSpace(Model.WebsiteUrl))
+                                {
+                                    <a href="@Model.WebsiteUrl" target="_blank">@Model.WebsiteUrl</a>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </div>
+                        </div>
+                        <hr class="info-divider" />
+                        <div class="info-group">
+                            <div class="info-label">Address:</div>
+                            <div class="info-value">@((Model.Address) ?? "N/A")</div>
+                        </div>
+                        <hr class="info-divider" />
+                        <div class="info-group">
+                            <div class="info-label">VAT Rate:</div>
+                            <div class="info-value">@Model.Vatrate%</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-5">
+                        <h1 class="profile-title">Responsible Pharmacist</h1>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <div class="info-label">Name:</div>
+                            <div class="info-value">@($"{Model.Pharmacist?.PharmacistNavigation?.Title} {Model.Pharmacist?.PharmacistNavigation?.FirstName} {Model.Pharmacist?.PharmacistNavigation?.LastName}" ?? "N/A")</div>
+                        </div>
+                        <hr class="info-divider" />
+                        <div class="info-label">Email:</div>
+                        <div class="info-value">
+                            @(string.IsNullOrWhiteSpace(Model.Pharmacist?.PharmacistNavigation?.Email) ? "N/A" : Model.Pharmacist.PharmacistNavigation.Email)
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <div class="info-label">Contact Number:</div>
+                            <div class="info-value">
+                                @(string.IsNullOrWhiteSpace(Model.Pharmacist?.PharmacistNavigation?.PhoneNumber) ? "N/A" : Model.Pharmacist.PharmacistNavigation.PhoneNumber)
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- row -->
+            </div> <!-- col-md-9 -->
+        </div> <!-- row align-items-center -->
+
+        <div class="card-footer text-end">
+            <a asp-action="Edit" asp-controller="Pharmacy" class="btn btn-primary">
+                <i class="bi bi-pencil-square"></i> Edit Pharmacy Details
+            </a>
         </div>
-    </div>
-</div>
+    </div> <!-- profile-section -->
+</div> <!-- container -->

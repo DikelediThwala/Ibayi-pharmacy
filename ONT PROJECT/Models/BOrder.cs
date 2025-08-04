@@ -17,7 +17,7 @@ public partial class BOrder
 
     public int SupplierId { get; set; }
 
-    public virtual ICollection<BOrderLine> BOrderLines { get; set; } = new List<BOrderLine>();
+    public List<BOrderLine> BOrderLines { get; set; } = new List<BOrderLine>();
 
     public virtual PharmacyManager PharmacyManager { get; set; } = null!;
 

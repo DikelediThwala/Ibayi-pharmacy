@@ -16,3 +16,16 @@ html {
   position: relative;
   min-height: 100%;
 }
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+main {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.navbar {
+    margin-bottom: 0 !important;
+}

@@ -1,0 +1,37 @@
+﻿@model List<ONT_PROJECT.Models.BOrder>
+
+<h5 class="mb-4">Previous Orders</h5>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Order ID</th>
+            <th>Date Ordered</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.BOrderId</td>
+                <td>@order.DatePlaced.ToShortDateString()</td>
+                <td>@order.Status</td>
+                <td>
+                    @if (order.Status != "Received")
+                    {
+                        <form asp-action="MarkAsReceived" asp-controller="B_Order" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@order.BOrderId" />
+                            <button type="submit" class="btn btn-sm btn-success">Mark as Received</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Received</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

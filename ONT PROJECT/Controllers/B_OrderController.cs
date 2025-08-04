@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -12,38 +14,91 @@ namespace ONT_PROJECT.Controllers
         public B_OrderController(ApplicationDbContext context)
         {
             _context = context;
+            SeedMedicines();  // Ensure medicines exist
         }
 
-        //public async Task<IActionResult> Index()
-        //{
-        //    var orders = await _context.B_Orders
-        //        .Include(o => o.Supplier)
-        //        .Include(o => o.OrderLines)
-        //            .ThenInclude(ol => ol.Medication)
-        //        .ToListAsync();
+        // Seed medicines if none exist in DB
+        private void SeedMedicines()
+        {
+            if (!_context.Medicines.Any())
+            {
+                _context.Medicines.AddRange(new List<Medicine>
+                {
+                    new Medicine { MedicineName = "Paracetamol" },
+                    new Medicine { MedicineName = "Ibuprofen" }
+                });
+                _context.SaveChanges();
+            }
+        }
 
-        //    return View(orders);
-        //}
-
+        public IActionResult TestMedicines()
+        {
+            int count = _context.Medicines.Count();
+            return Content($"Medicines count: {count}");
+        }
 
         public IActionResult Index()
         {
-            return View();
+            var vm = new NewOrderViewModel
+            {
+                Medicines = _context.Medicines.ToList(),
+                BOrders = _context.BOrders.ToList(),
+                NewOrder = new BOrder()
+            };
+            return View(vm);
         }
 
+        // GET: Create order form - populate medications dropdown
         public IActionResult Create()
         {
-            
-            return View();
-        }
-        public IActionResult OutOfStock()
-        {
-            return View();
-        }
-        public IActionResult Selected()
-        {
-            return View();
+            ViewBag.Medications = _context.Medicines
+                .Select(m => new SelectListItem
+                {
+                    Value = m.MedicineId.ToString(),
+                    Text = m.MedicineName
+                })
+                .ToList();
+
+            return View(new BOrder());
         }
 
+        // POST: Create order submit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(BOrder order)
+        {
+            if (order == null || order.BOrderLines == null || !order.BOrderLines.Any())
+            {
+                ModelState.AddModelError("", "Please add at least one medication.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                order.DatePlaced = System.DateOnly.FromDateTime(System.DateTime.Today);
+                order.Status = "Pending";
+                order.PharmacyManagerId = 1; // Set your actual manager id
+
+                var firstMed = _context.Medicines.FirstOrDefault(m => m.MedicineId == order.BOrderLines[0].MedicineId);
+                if (firstMed != null)
+                {
+                    order.SupplierId = firstMed.SupplierId;
+                }
+
+                _context.BOrders.Add(order);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.Medications = _context.Medicines
+                .Select(m => new SelectListItem
+                {
+                    Value = m.MedicineId.ToString(),
+                    Text = m.MedicineName
+                })
+                .ToList();
+
+            return View(order);
+        }
     }
 }

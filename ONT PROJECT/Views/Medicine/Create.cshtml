@@ -7,7 +7,7 @@
 
 <h2>Create Medicine</h2>
 
-<form asp-action="Create" method="post" >
+<form asp-action="Create" method="post">
     @Html.AntiForgeryToken()
 
     <div asp-validation-summary="All" class="text-danger mb-3"></div>
@@ -43,19 +43,23 @@
                 <thead class="table-light">
                     <tr>
                         <th>Ingredient <span class="text-danger">*</span></th>
+                        <th>Strength <span class="text-danger">*</span></th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="ingredientsTableBody">
                     <tr>
                         <td>
-                            <select name="Ingredients[0]" class="form-select">
-                                <option disabled selected>Select ingredient</option>
-                                @foreach (var ingredient in ViewBag.Ingredients as List<SelectListItem>)
+                            <select name="selectedIngredients[]" class="form-select" required>
+                                <option value="">-- Select Ingredient --</option>
+                                @foreach (var ingredient in (List<SelectListItem>)ViewBag.Ingredients)
                                 {
                                     <option value="@ingredient.Value">@ingredient.Text</option>
                                 }
                             </select>
+                        </td>
+                        <td>
+                            <input type="text" name="strengths[]" class="form-control" required />
                         </td>
                         <td class="text-center"></td>
                     </tr>
@@ -113,23 +117,25 @@
 
 @section Scripts {
     <script>
-        let ingredientIndex = 1;
         const ingredients = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Ingredients));
 
         function addIngredientRow() {
             const tableBody = document.getElementById("ingredientsTableBody");
             const newRow = document.createElement("tr");
 
-            let options = `<option disabled selected>Select ingredient</option>`;
+            let options = `<option value="">-- Select Ingredient --</option>`;
             ingredients.forEach(i => {
                 options += `<option value="${i.value}">${i.text}</option>`;
             });
 
             newRow.innerHTML = `
                 <td>
-                    <select name="Ingredients[${ingredientIndex}]" class="form-select">
+                    <select name="selectedIngredients[]" class="form-select" required>
                         ${options}
                     </select>
+                </td>
+                <td>
+                    <input type="text" name="strengths[]" class="form-control" required />
                 </td>
                 <td class="text-center">
                     <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
@@ -139,12 +145,10 @@
             `;
 
             tableBody.appendChild(newRow);
-            ingredientIndex++;
         }
 
         function removeRow(button) {
-            const row = button.closest("tr");
-            row.remove();
+            button.closest('tr').remove();
         }
     </script>
 }

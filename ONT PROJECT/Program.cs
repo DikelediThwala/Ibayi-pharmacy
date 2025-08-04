@@ -12,6 +12,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Add services to the container
 builder.Services.AddControllersWithViews();
 builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddTransient<EmailService>();
 
 // ?? Add session services
 builder.Services.AddDistributedMemoryCache();
@@ -48,6 +49,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Pharmacy}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

@@ -13,9 +13,6 @@ public partial class Medicine
 
     public int Schedule { get; set; }
 
-    [NotMapped]
-    public List<int> Ingredients { get; set; } = new List<int>();
-
     public double SalesPrice { get; set; }
 
     public int SupplierId { get; set; }
@@ -25,13 +22,10 @@ public partial class Medicine
     public int Quantity { get; set; }
 
     [Required(ErrorMessage = "Please select a Form.")]
-    [Range(1, int.MaxValue, ErrorMessage = "Please select a valid Form.")]
     public int? FormId { get; set; }
-
-
     public virtual ICollection<BOrderLine> BOrderLines { get; set; } = new List<BOrderLine>();
 
-    public virtual DosageForm Form { get; set; } = null!;
+    public virtual DosageForm? Form { get; set; }
 
     public virtual ICollection<MedIngredient> MedIngredients { get; set; } = new List<MedIngredient>();
 

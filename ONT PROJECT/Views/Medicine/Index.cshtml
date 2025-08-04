@@ -89,7 +89,7 @@
                             <th>Form</th>
                             <th>Price</th>
                             <th>Quantity</th>
-                            <th>Reorder Level</th>
+                            <th>Strength</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -99,11 +99,15 @@
                             <tr>
                                 <td>@med.MedicineName</td>
                                 <td class="text-center">Schedule @med.Schedule</td>
-                                <td>@med.Ingredients</td>
+                                <td>
+                                    @string.Join(", ", med.MedIngredients.Select(i => i.ActiveIngredient.Ingredients))
+                                </td>
                                 <td>@med.Form?.FormName</td>
-                                <td>R@med.SalesPrice.ToString("0.00")</td>
+                                <td>R@($"{med.SalesPrice:0.00}")</td>
                                 <td class="text-center">@med.Quantity</td>
-                                <td class="text-center">@med.ReorderLevel</td>
+                                <td>
+                                    @string.Join(", ", med.MedIngredients.Select(i => i.Strength))
+                                </td>
                                 <td class="text-center">
                                     <a asp-action="Edit" asp-route-id="@med.MedicineId" class="btn btn-sm btn-outline-primary me-1">
                                         <i class="bi bi-pencil-square"></i>
