@@ -6,27 +6,30 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace IBayiLibrary.Models.Domain
 {
-    public class Prescription
+    public class Prescriptions
     {
-      
+
         public int PrescriptionID { get; set; }
-        public DateOnly Date { get; set; }
+        public DateTime Date { get; set; }
 
-       
 
-        //[ForeignKey("CustomerID")]
+
+        [ForeignKey("CustomerID")]
         public int CustomerID { get; set; }
 
-        //[ForeignKey("PharmacistID")]
+        [ForeignKey("PharmacistID")]
         public int PharmacistID { get; set; }
 
         public byte[] PrescriptionPhoto { get; set; }
-        //public string Status { get; internal set; }
-
-        //[ForeignKey("DoctorID")]
+        public string Status { get; set; }
+        [NotMapped]
+        public IFormFile? PescriptionFile { get; set; }
+        [ForeignKey("DoctorID")]
         public int DoctorID { get; set; }
+       
     }
 }

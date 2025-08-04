@@ -9,9 +9,14 @@ namespace IBayiLibrary.Repository
 {
     public interface IPrescriptionRepository
     {
-        Task<bool> AddAsync(Prescription prescription);
+        Task<bool> AddAsync(Prescriptions prescription);
         
-        Task<IEnumerable<Customer>> GetCustomerName();
+        Task<IEnumerable<tblUser>> GetCustomerName();
+        Task<IEnumerable<Doctor>> GetDoctorName();
+        Task<IEnumerable<tblUser>> GetCutomerIDNo();
+        Task<IEnumerable<Prescriptions>> GetUnproccessedPrescriptions();
+        Task<tblUser> GetCustomerByIDs(int UserID);
+        Task<Prescriptions> FindPrescription(int PrescriptionID);
 
     }
 }
