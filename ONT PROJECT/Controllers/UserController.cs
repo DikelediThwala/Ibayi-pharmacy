@@ -216,5 +216,13 @@ namespace ONT_PROJECT.Controllers
             TempData["Message"] = "Password reset successful!";
             return RedirectToAction("Login", "Login"); 
         }
+        public IActionResult Register()
+        {
+            return View();
+        }
+        public IActionResult Login()
+        {
+            return View();
+        }
     }
 }

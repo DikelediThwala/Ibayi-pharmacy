@@ -30,9 +30,9 @@
         font-family: 'Montserrat', sans-serif;
         height: 100vh;
         margin: -20px 0 50px;
-        background: #3498db;
-        background: -webkit-linear-gradient(to right, #FF4B2B, #3498db);
-        background: linear-gradient(to right, #FF4B2B, #3498db);
+        background: darkcyan;
+        background: -webkit-linear-gradient(to right, darkcyan, white);
+        background: linear-gradient(to right, darkcyan, white);
     }
 
     h1 {
@@ -65,8 +65,8 @@
 
     button {
         border-radius: 20px;
-        border: 1px solid #FF4B2B;
-        background-color: #FF4B2B;
+        border: 1px solid darkcyan;
+        background-color: darkcyan;
         color: #FFFFFF;
         font-size: 12px;
         font-weight: bold;
@@ -181,9 +181,9 @@
     }
 
     .overlay {
-        background: #3498db;
-        background: -webkit-linear-gradient(to right, #FF4B2B, #3498db);
-        background: linear-gradient(to right, #FF4B2B, #3498db);
+        background: darkcyan;
+        background: -webkit-linear-gradient(to right, white, darkcyan);
+        background: linear-gradient(to right, White, darkcyan);
         background-repeat: no-repeat;
         background-size: cover;
         background-position: 0 0;
@@ -298,28 +298,33 @@
                     <input asp-for="Email" type="email" class="form-control bg-light" placeholder="Email" />
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
-
                 <div class="col-md-6">
-                    <input asp-for="Password" type="password" class="form-control bg-light" placeholder="Password" />
-                    <span asp-validation-for="Password" class="text-danger small"></span>
+                    <input asp-for="PhoneNumber" class="form-control bg-light" placeholder="Phone Number" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
                 </div>
 
+               
                 <div class="col-md-6">
                     <input asp-for="Idnumber" class="form-control bg-light" placeholder="ID Number" />
                     <span asp-validation-forAllergies="IDNumber" class="text-danger small"></span>
                 </div>
 
-                @* <div class="col-md-6">
+                <div class="col-md-12">
                     <input asp-for="Role" class="form-control bg-light" placeholder="Allergies" />
                     <span asp-validation-for="Allergies" class="text-danger small"></span>
-                </div> *@
+                </div>
 
                 <div class="col-md-6">
-                    <input asp-for="PhoneNumber" class="form-control bg-light" placeholder="Phone Number" />
-                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    <input asp-for="Password" type="password" class="form-control bg-light" placeholder="Password" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <input for="ConfirmPassword" type="password" class="form-control bg-light" placeholder="Confirm Password" />
+                    <span for="ConfirmPassword" class="text-danger small"></span>
                 </div>
             </div>
 
+           
 
             <br />
 
