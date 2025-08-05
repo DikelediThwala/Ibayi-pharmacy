@@ -9,17 +9,18 @@ public partial class BOrder
 
     public DateOnly DatePlaced { get; set; }
 
-    public DateOnly? DateRecieved { get; set; }
+    public DateOnly? DateRecieved { get; set; } // Nullable now
 
     public string Status { get; set; } = null!;
 
-    public int PharmacyManagerId { get; set; }
+    public int? PharmacyManagerId { get; set; } // Nullable
 
-    public int SupplierId { get; set; }
+    public int? SupplierId { get; set; } // Nullable
 
     public List<BOrderLine> BOrderLines { get; set; } = new List<BOrderLine>();
 
-    public virtual PharmacyManager PharmacyManager { get; set; } = null!;
+    public virtual PharmacyManager? PharmacyManager { get; set; }
 
-    public virtual Supplier Supplier { get; set; } = null!;
+    public virtual Supplier? Supplier { get; set; }
 }
+
