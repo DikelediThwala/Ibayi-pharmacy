@@ -4,6 +4,13 @@
     ViewData["Title"] = "Manage Medication";
     Layout = "_ManagerLayout";
 }
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
 <h2 class="text-dark fw-bold mb-4"><i class="fas fa-capsules"></i> Medication Management</h2>
 
