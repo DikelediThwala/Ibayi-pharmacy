@@ -85,18 +85,16 @@ namespace ONT_PROJECT.Controllers
 
             await _context.SaveChangesAsync();
 
-            // ✅ Build the full view model
             var viewModel = new NewOrderViewModel
             {
                 Medicines = _context.Medicines.ToList(),
                 BOrders = _context.BOrders
-    .Include(o => o.BOrderLines)
-    .ThenInclude(ol => ol.Medicine)
-    .ToList(),
+                  .Include(o => o.BOrderLines)
+                  .ThenInclude(ol => ol.Medicine)
+                  .ToList(),
                 NewOrder = new BOrder()
             };
 
-            // ✅ Pass tab=orders so the correct tab is active
             ViewData["ActiveTab"] = "orders";
 
             return View("Index", viewModel);
@@ -121,6 +119,34 @@ namespace ONT_PROJECT.Controllers
             int count = _context.Medicines.Count();
             return Content($"Medicines count: {count}");
         }
+
+        public IActionResult AdjustStock(int id)
+        {
+            var medicine = _context.Medicines.FirstOrDefault(m => m.MedicineId == id);
+            if (medicine == null)
+                return NotFound();
+
+            return PartialView("_AdjustStock", medicine);
+        }
+        [HttpPost]
+        public IActionResult AdjustStock(int medicineId, int addQuantity, int removeQuantity, int reorderLevel)
+        {
+            var medicine = _context.Medicines.FirstOrDefault(m => m.MedicineId == medicineId);
+            if (medicine == null)
+                return NotFound();
+
+            medicine.Quantity += addQuantity;
+            medicine.Quantity -= removeQuantity;
+            if (medicine.Quantity < 0)
+                medicine.Quantity = 0;
+
+            medicine.ReorderLevel = reorderLevel;
+
+            _context.SaveChanges();
+
+            return Json(new { success = true, newQuantity = medicine.Quantity, newReorderLevel = medicine.ReorderLevel });
+        }
+
 
     }
 }

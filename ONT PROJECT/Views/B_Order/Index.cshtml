@@ -2,7 +2,10 @@
 
 @{
     ViewData["Title"] = "Manage Medication";
-    Layout = "_ManagerLayout";
+    
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+
+
 }
 @if (TempData["SuccessMessage"] != null)
 {
@@ -11,7 +14,6 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-
 
 @{
     var activeTab = ViewData["ActiveTab"]?.ToString() ?? Context.Request.Query["tab"].ToString() ?? "stock";
@@ -28,7 +30,7 @@
         <button class="nav-link @(activeTab == "orders" ? "active" : "")" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">Orders</button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link @(activeTab == "neworder" ? "active" : "")" id="neworder-tab" data-bs-toggle="tab" data-bs-target="#neworder" type="button" role="tab">New Order</button>
+        <button class="nav-link @(activeTab == "neworder" ? "active" : "")" id="neworder-tab" data-bs-toggle="tab" data-bs-target="#neworder" type="button" role="tab">Order Medication</button>
     </li>
 </ul>
 <div class="tab-content mt-4" id="medicationTabsContent">

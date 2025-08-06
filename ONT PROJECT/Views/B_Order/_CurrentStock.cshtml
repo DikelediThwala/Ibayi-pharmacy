@@ -88,6 +88,8 @@
                 <span class="badge bg-primary text-dark">Primary rows</span> = Quantity is within 5 units of reorder level.<br />
                 White rows = Stock is sufficient.
             </div>
+            <br />
+            <br />
             <div class="table-title">
                 <div class="row">
                     <div class="col-sm-6">
@@ -136,8 +138,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex">
-                                        <input type="number" name="increments" placeholder="+ Add" min="0" class="form-control me-2" />
-                                        <button type="button" class="btn btn-sm btn-success" onclick="updateStock(@med.MedicineId, this)">Update</button>
+                                        <button type="button" class="btn btn-sm btn-success" onclick="updateStock(@med.MedicineId, this)">Modify</button>
                                     </div>
                                 </td>
                             </tr>
@@ -149,43 +150,50 @@
     </div>
 </body>
 
-@section Scripts {
-    <script>
-        function toggleAll(source) {
-            const checkboxes = document.querySelectorAll(".med-checkbox");
-            checkboxes.forEach(chk => chk.checked = source.checked);
-        }
+<div class="modal fade" id="adjustStockModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" id="adjustStockContent">
+        </div>
+    </div>
+</div>
 
-        function selectLowStockAndSubmit() {
-            const lowStockCheckboxes = document.querySelectorAll(".low-stock");
-            lowStockCheckboxes.forEach(chk => chk.checked = true);
-            document.getElementById("medForm").submit();
-        }
 
-        async function updateStock(medicineId, btn) {
-            const row = btn.closest("tr");
-            const incrementInput = row.querySelector('input[name="increments"]');
-            const quantityInput = row.querySelector('input[name="quantities"]');
 
-            const increment = parseInt(incrementInput.value);
-            if (isNaN(increment) || increment <= 0) {
-                alert("Please enter a valid increment amount.");
-                return;
-            }
+<!-- Leave the table, modal, and form markup as-is -->
+<!-- Move these scripts out -->
+<script>
+    function toggleAll(source) {
+        const checkboxes = document.querySelectorAll(".med-checkbox");
+        checkboxes.forEach(chk => chk.checked = source.checked);
+    }
 
-            const response = await fetch('/Medicine/UpdateStock', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ medicineId: medicineId, increment: increment })
-            });
+    function selectLowStockAndSubmit() {
+        const lowStockCheckboxes = document.querySelectorAll(".low-stock");
+        lowStockCheckboxes.forEach(chk => chk.checked = true);
+        document.getElementById("medForm").submit();
+    }
 
-            if (response.ok) {
-                const data = await response.json();
-                quantityInput.value = data.newQuantity;
-                incrementInput.value = '';
+    function updateStock(medicineId, btn) {
+        console.log("updateStock called with medicineId:", medicineId);
+        $.get("/B_Order/AdjustStock", { id: medicineId }, function (html) {
+            $('#adjustStockContent').html(html);
+            var modal = new bootstrap.Modal(document.getElementById('adjustStockModal'));
+            modal.show();
+        });
+    }
+
+    $(document).on('submit', '#adjustStockForm', function (e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+
+        $.post("/B_Order/AdjustStock", formData, function (response) {
+            if (response.success) {
+                alert("Stock updated successfully!");
+                location.reload();
             } else {
-                alert("Failed to update stock.");
+                alert("Error occurred while updating stock.");
             }
-        }
-    </script>
-}
+        });
+    });
+
+</script>

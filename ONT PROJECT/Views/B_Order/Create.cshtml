@@ -1,6 +1,7 @@
 ﻿@model ONT_PROJECT.Models.BOrder
 @using Microsoft.AspNetCore.Mvc.Rendering
 
+
 @{
     var medications = ViewBag.Medications as List<SelectListItem> ?? new List<SelectListItem>();
     var medList = medications.Select(m => new { m.Value, m.Text }).ToList();

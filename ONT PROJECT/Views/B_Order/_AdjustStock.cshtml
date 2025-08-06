@@ -1,0 +1,34 @@
+﻿@model ONT_PROJECT.Models.Medicine
+
+
+<!-- Font Awesome 6 CDN -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<form id="adjustStockForm" class="p-3">
+    <input type="hidden" name="medicineId" value="@Model.MedicineId" />
+
+    <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="fas fa-pills me-2"></i>Adjust Stock for <b>@Model.MedicineName</b></h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body bg-light">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Add Quantity</label>
+            <input type="number" name="addQuantity" class="form-control border-primary" value="0" min="0" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Remove Quantity</label>
+            <input type="number" name="removeQuantity" class="form-control border-danger" value="0" min="0" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Reorder Level</label>
+            <input type="number" name="reorderLevel" class="form-control border-warning" value="@Model.ReorderLevel" min="0" />
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fas fa-check-circle me-1"></i>Update Stock</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times-circle me-1"></i>Cancel</button>
+    </div>
+</form>
