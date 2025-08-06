@@ -73,6 +73,17 @@ public class PrescriptionController : Controller
 
         return RedirectToAction("Upload");
     }
+    public async Task<IActionResult> ViewPdf(int id)
+    {
+        var prescription = await _context.Prescriptions.FindAsync(id);
+        if (prescription == null || prescription.PrescriptionPhoto == null)
+        {
+            return NotFound();
+        }
+
+        return File(prescription.PrescriptionPhoto, "application/pdf");
+    }
+
 
     [HttpPost]
     public async Task<IActionResult> Request(int id)
@@ -94,4 +105,5 @@ public class PrescriptionController : Controller
         int? userId = HttpContext.Session.GetInt32("UserId");
         return userId ?? 0;
     }
+
 }
