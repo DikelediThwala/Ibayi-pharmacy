@@ -4,11 +4,11 @@ namespace ONT_PROJECT.Controllers
 {
     public class CustomerOrderController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Order()
         {
             return View();
         }
-        public IActionResult Create()
+        public IActionResult OrderedMedication()
         {
             return View();
         }
