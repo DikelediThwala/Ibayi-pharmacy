@@ -246,9 +246,9 @@
                 </div>
                 <div class="col-md-3 d-flex align-items-end">
                     <div class="search-container w-100">
-                        /* class="fas fa-search search-icon" */
-                   
-                    <input type="text" placeholder="Search Customer..." class="form-control">
+                            <i>class="fas fa-search search-icon"</i>
+
+                            <input type="text" placeholder="Search Customer..." class="form-control">
                     <button type="submit" class="btn-btn-dark"></button>
                    
                         
@@ -292,7 +292,40 @@
                 <span asp-validation-for="Date" class="text-danger small"></span>
             </div>
         </div>
-       
+        
+
+
+         <div id="medicationContainer">
+            <div class="row mb-3 medication-row align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Medication <span class="text-danger">*</span></label>
+                    <select class="form-select" name="Medication[]">
+                        <option value="">-- Select Medication --</option>
+                        <option value="Panado">Panado</option>
+                        <option value="Allergex">Allergex</option>
+                        <option value="Anadon">Anadon</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Quantity <span class="text-danger">*</span></label>
+                    <input type="number" name="Quantity[]" value="0" min="0" max="100" step="1" class="form-control">
+                </div>
+
+                <div class="col-md-5">
+                    <label class="form-label">Instructions</label>
+                    <textarea name="Instructions[]" rows="1" class="form-control"></textarea>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="button" class="btn btn-outline-primary add-btn">+</button>
+                    <button type="button" class="btn btn-outline-danger remove-btn">–</button>
+                </div>
+            </div>
+        </div> 
+
+
+
+
         <div class="input-group mb-3">
             <input asp-for="PescriptionFile" type="file" class="form-control" id="inputGroupFile02" accept="application/pdf">
             <label asp-for="PrescriptionPhoto" class="input-group-text" for="inputGroupFile02">Upload Prescription</label>
@@ -339,4 +372,31 @@
        });
 
 </script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+           const container = document.getElementById('medicationContainer');
+
+           container.addEventListener('click', function (e) {
+
+               if (e.target.classList.contains('add-btn')) {
+                   const row = e.target.closest('.medication-row');
+                   const newRow = row.cloneNode(true);
+
+
+                   newRow.querySelectorAll('select, input, textarea').forEach(el => el.value = '');
+                   container.appendChild(newRow);
+               }
+
+
+               if (e.target.classList.contains('remove-btn')) {
+                   const rows = container.querySelectorAll('.medication-row');
+                   if (rows.length > 1) {
+                       e.target.closest('.medication-row').remove();
+                   }
+               }
+           });
+       });
+</script>
