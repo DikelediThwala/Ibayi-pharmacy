@@ -17,8 +17,13 @@ public class PrescriptionController : Controller
     [HttpGet]
     public IActionResult Upload()
     {
-        // Get logged-in customer ID from session or identity
         int customerId = GetLoggedInCustomerId();
+        if (customerId == 0)
+        {
+            // Not logged in or invalid user, redirect to login or error
+            return RedirectToAction("Login", "CustomerRegister");
+        }
+
         var prescriptions = _context.Prescriptions
             .Where(p => p.CustomerId == customerId)
             .ToList();
@@ -28,6 +33,12 @@ public class PrescriptionController : Controller
     [HttpPost]
     public async Task<IActionResult> Upload(IFormFile PrescriptionFile, bool RequestDispense)
     {
+        int customerId = GetLoggedInCustomerId();
+        if (customerId == 0)
+        {
+            return RedirectToAction("Login", "CustomerRegister");
+        }
+
         if (PrescriptionFile != null && PrescriptionFile.Length > 0)
         {
             using var memoryStream = new MemoryStream();
@@ -36,9 +47,9 @@ public class PrescriptionController : Controller
             var prescription = new Prescription
             {
                 Date = DateOnly.FromDateTime(DateTime.Now),
-                CustomerId = GetLoggedInCustomerId(),
-                DoctorId = 1, // Set default or get from session
-                PharmacistId = 1, // Set default or assign later
+                CustomerId = customerId,
+                DoctorId = 1, // TODO: get real doctor ID if applicable
+                PharmacistId = 1, // TODO: get real pharmacist ID if applicable
                 PrescriptionPhoto = memoryStream.ToArray(),
                 Status = RequestDispense ? "Requested" : "Uploaded"
             };
@@ -79,7 +90,8 @@ public class PrescriptionController : Controller
 
     private int GetLoggedInCustomerId()
     {
-        // Replace with actual logic to get logged-in customer's ID
-        return int.Parse(HttpContext.User.Identity?.Name ?? "0");
+        // Safely get UserId from session, return 0 if not found
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        return userId ?? 0;
     }
 }

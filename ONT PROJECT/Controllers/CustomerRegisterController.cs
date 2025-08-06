@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ONT_PROJECT.Models;  // <-- Replace with your actual namespace here
+using ONT_PROJECT.Models;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ONT_PROJECT.Controllers  // <-- Your real namespace here
+namespace ONT_PROJECT.Controllers
 {
     public class CustomerRegisterController : Controller
     {
@@ -39,15 +39,25 @@ namespace ONT_PROJECT.Controllers  // <-- Your real namespace here
             }
 
             model.Password = HashPassword(Password);
-            model.Role = "Customer"; // ✅ This sets the default role for customer registrations
+            model.Role = "Customer";
 
+            // Add TblUser first to generate UserId
             _context.TblUsers.Add(model);
-            _context.SaveChanges();
+            _context.SaveChanges(); // Save to get UserId
+
+            // Create Customer with CustomerId set to the generated UserId
+            var customer = new Customer
+            {
+                CustomerId = model.UserId,        // **Important: Set FK explicitly here**
+                CustomerNavigation = model        // Optional: set navigation property
+            };
+
+            _context.Customers.Add(customer);
+            _context.SaveChanges(); // Save the Customer record
 
             TempData["Success"] = "Registration successful. Please login.";
             return RedirectToAction("Login");
         }
-
 
         // GET: Login
         public IActionResult Login()
@@ -58,7 +68,6 @@ namespace ONT_PROJECT.Controllers  // <-- Your real namespace here
         // POST: Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
         public IActionResult Login(string Email, string Password)
         {
             var user = _context.TblUsers.SingleOrDefault(u => u.Email == Email);
@@ -77,7 +86,6 @@ namespace ONT_PROJECT.Controllers  // <-- Your real namespace here
             ModelState.AddModelError("", "Invalid login credentials");
             return View();
         }
-
 
         // Hash password using SHA256
         private string HashPassword(string password)
