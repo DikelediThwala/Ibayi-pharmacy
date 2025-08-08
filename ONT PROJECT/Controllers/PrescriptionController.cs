@@ -132,25 +132,84 @@ public class PrescriptionController : Controller
 
 
     [HttpPost]
-    public IActionResult AddLine(PrescriptionLine line)
+    //public IActionResult AddLine(PrescriptionLine line)
+    //{
+    //    if (ModelState.IsValid)
+    //    {
+    //        _context.PrescriptionLines.Add(line);
+    //        _context.SaveChanges();
+    //    }
+    //    return RedirectToAction("Manage", new { prescriptionId = line.PrescriptionId });
+    //}
+    [HttpPost]
+    public IActionResult AddLine(int PrescriptionId, string MedicineName, int Quantity, string Instructions, int Repeats, int RepeatsLeft)
     {
-        if (ModelState.IsValid)
+        if (string.IsNullOrWhiteSpace(MedicineName))
         {
-            _context.PrescriptionLines.Add(line);
+            ModelState.AddModelError("MedicineName", "Medicine Name is required");
+            // Reload view with errors - you might want to do this differently
+        }
+
+        // Find existing medicine by name or create new
+        var medicine = _context.Medicines.FirstOrDefault(m => m.MedicineName.ToLower() == MedicineName.ToLower());
+        if (medicine == null)
+        {
+            medicine = new Medicine { MedicineName = MedicineName };
+            _context.Medicines.Add(medicine);
             _context.SaveChanges();
         }
-        return RedirectToAction("Manage", new { prescriptionId = line.PrescriptionId });
+
+        var newLine = new PrescriptionLine
+        {
+            PrescriptionId = PrescriptionId,
+            MedicineId = medicine.MedicineId,
+            Quantity = Quantity,
+            Instructions = Instructions,
+            Repeats = Repeats,
+            RepeatsLeft = RepeatsLeft
+        };
+
+        _context.PrescriptionLines.Add(newLine);
+        _context.SaveChanges();
+
+        return RedirectToAction("Manage", new { prescriptionId = PrescriptionId });
     }
 
     [HttpPost]
-    public IActionResult EditLine(PrescriptionLine line)
+    //public IActionResult EditLine(PrescriptionLine line)
+    //{
+    //    if (ModelState.IsValid)
+    //    {
+    //        _context.PrescriptionLines.Update(line);
+    //        _context.SaveChanges();
+    //    }
+    //    return RedirectToAction("Manage", new { prescriptionId = line.PrescriptionId });
+    //}
+    [HttpPost]
+    public IActionResult EditLine(int PrescriptionLineId, int PrescriptionId, string MedicineName, int Quantity, string Instructions, int Repeats, int RepeatsLeft)
     {
-        if (ModelState.IsValid)
+        var line = _context.PrescriptionLines.Find(PrescriptionLineId);
+        if (line == null)
+            return NotFound();
+
+        var medicine = _context.Medicines.FirstOrDefault(m => m.MedicineName.ToLower() == MedicineName.ToLower());
+        if (medicine == null)
         {
-            _context.PrescriptionLines.Update(line);
+            medicine = new Medicine { MedicineName = MedicineName };
+            _context.Medicines.Add(medicine);
             _context.SaveChanges();
         }
-        return RedirectToAction("Manage", new { prescriptionId = line.PrescriptionId });
+
+        line.MedicineId = medicine.MedicineId;
+        line.Quantity = Quantity;
+        line.Instructions = Instructions;
+        line.Repeats = Repeats;
+        line.RepeatsLeft = RepeatsLeft;
+
+        _context.PrescriptionLines.Update(line);
+        _context.SaveChanges();
+
+        return RedirectToAction("Manage", new { prescriptionId = PrescriptionId });
     }
 
     [HttpPost]

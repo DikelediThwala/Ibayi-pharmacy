@@ -1,6 +1,6 @@
-﻿@model ONT_PROJECT.Models.Prescription
+﻿@* @model ONT_PROJECT.Models.Prescription
 @{
-    ViewData["Title"] = "Upload Prescription";
+    ViewData["Title"] = "Manage Prescription";
     Layout = "_CustomerLayout";
 }
 
@@ -21,26 +21,35 @@
         @foreach (var line in Model.PrescriptionLines)
         {
             <tr>
+                <!-- Show data in separate cells -->
                 <td>@line.Medicine.MedicineName</td>
                 <td>@line.Quantity</td>
                 <td>@line.Instructions</td>
                 <td>@line.Repeats</td>
                 <td>@line.RepeatsLeft</td>
-                <td>
-                    <!-- Edit Form -->
-                    <form asp-action="EditLine" method="post" style="display:inline;">
+
+                <!-- Actions cell: contains two forms: Edit and Delete -->
+                <td style="white-space: nowrap;">
+                    <!-- Edit button triggers modal or inline form (optional), here we show a simple edit form -->
+                    <form asp-action="EditLine" method="post" style="display:inline-block; margin-right:5px;">
                         <input type="hidden" name="PrescriptionLineId" value="@line.PrescriptionLineId" />
                         <input type="hidden" name="PrescriptionId" value="@Model.PrescriptionId" />
-                        <input type="hidden" name="MedicineId" value="@line.MedicineId" />
-                        <input type="number" name="Quantity" value="@line.Quantity" required />
-                        <input type="text" name="Instructions" value="@line.Instructions" required />
-                        <input type="number" name="Repeats" value="@line.Repeats" required />
-                        <input type="number" name="RepeatsLeft" value="@line.RepeatsLeft" required />
-                        <button type="submit" class="btn btn-sm btn-warning">Edit</button>
+
+                        <!-- For inline editing, you can show inputs here instead of plain data -->
+                        <input type="text" name="MedicineName" value="@line.Medicine.MedicineName" class="form-control form-control-sm mb-1" placeholder="Medicine Name" required />
+
+                        <input type="number" name="Quantity" value="@line.Quantity" class="form-control form-control-sm mb-1" placeholder="Quantity" required />
+
+                        <input type="text" name="Instructions" value="@line.Instructions" class="form-control form-control-sm mb-1" placeholder="Instructions" required />
+
+                        <input type="number" name="Repeats" value="@line.Repeats" class="form-control form-control-sm mb-1" placeholder="Repeats" required />
+
+                        <input type="number" name="RepeatsLeft" value="@line.RepeatsLeft" class="form-control form-control-sm mb-1" placeholder="Repeats Left" required />
+
+                        <button type="submit" class="btn btn-sm btn-warning">Save</button>
                     </form>
 
-                    <!-- Delete Form -->
-                    <form asp-action="DeleteLine" method="post" style="display:inline;">
+                    <form asp-action="DeleteLine" method="post" style="display:inline-block;">
                         <input type="hidden" name="id" value="@line.PrescriptionLineId" />
                         <input type="hidden" name="prescriptionId" value="@Model.PrescriptionId" />
                         <button type="submit" class="btn btn-sm btn-danger">Delete</button>
@@ -59,9 +68,98 @@
 
     <div class="form-group">
         <label>Medicine</label>
-        <select name="MedicineId" class="form-control" required>
-            @* Load this dropdown from ViewBag.Medicines *@
-        </select>
+        <input type="text" name="MedicineName" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Quantity</label>
+        <input type="number" name="Quantity" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Instructions</label>
+        <input type="text" name="Instructions" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Repeats</label>
+        <input type="number" name="Repeats" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Repeats Left</label>
+        <input type="number" name="RepeatsLeft" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Line</button>
+</form>
+ *@
+@model ONT_PROJECT.Models.Prescription
+@{
+    ViewData["Title"] = "Manage Prescription";
+    Layout = "_CustomerLayout";
+}
+
+<h2>Manage Prescription Lines for Prescription #@Model.PrescriptionId</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Medicine</th>
+            <th>Quantity</th>
+            <th>Instructions</th>
+            <th>Repeats</th>
+            <th>Repeats Left</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var line in Model.PrescriptionLines)
+        {
+            <tr>
+                <!-- Display current values as plain text -->
+                <td>@line.Medicine.MedicineName</td>
+                <td>@line.Quantity</td>
+                <td>@line.Instructions</td>
+                <td>@line.Repeats</td>
+                <td>@line.RepeatsLeft</td>
+
+                <td style="white-space: nowrap;">
+                    <!-- Edit form -->
+                    <form asp-action="EditLine" method="post" style="display:inline-block; margin-right:5px;">
+                        <input type="hidden" name="PrescriptionLineId" value="@line.PrescriptionLineId" />
+                        <input type="hidden" name="PrescriptionId" value="@Model.PrescriptionId" />
+
+                        <input type="text" name="MedicineName" value="@line.Medicine.MedicineName" class="form-control form-control-sm mb-1" placeholder="Medicine Name" required />
+                        <input type="number" name="Quantity" value="@line.Quantity" class="form-control form-control-sm mb-1" placeholder="Quantity" required />
+                        <input type="text" name="Instructions" value="@line.Instructions" class="form-control form-control-sm mb-1" placeholder="Instructions" required />
+                        <input type="number" name="Repeats" value="@line.Repeats" class="form-control form-control-sm mb-1" placeholder="Repeats" required />
+                        <input type="number" name="RepeatsLeft" value="@line.RepeatsLeft" class="form-control form-control-sm mb-1" placeholder="Repeats Left" required />
+
+                        <button type="submit" class="btn btn-sm btn-warning">Save</button>
+                    </form>
+
+                    <!-- Delete form -->
+                    <form asp-action="DeleteLine" method="post" style="display:inline-block;">
+                        <input type="hidden" name="id" value="@line.PrescriptionLineId" />
+                        <input type="hidden" name="prescriptionId" value="@Model.PrescriptionId" />
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<hr />
+
+<h3>Add New Prescription Line</h3>
+<form asp-action="AddLine" method="post">
+    <input type="hidden" name="PrescriptionId" value="@Model.PrescriptionId" />
+
+    <div class="form-group">
+        <label>Medicine</label>
+        <input type="text" name="MedicineName" class="form-control" required />
     </div>
 
     <div class="form-group">
