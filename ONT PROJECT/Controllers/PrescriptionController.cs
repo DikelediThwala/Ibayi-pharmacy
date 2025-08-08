@@ -106,4 +106,63 @@ public class PrescriptionController : Controller
         return userId ?? 0;
     }
 
+
+
+
+    // =======================
+    // PRESCRIPTION LINE ACTIONS
+    // =======================
+
+    // GET: Prescription/Lines/5
+    public IActionResult Manage(int prescriptionId)
+    {
+        var prescription = _context.Prescriptions
+            .Include(p => p.PrescriptionLines)
+            .ThenInclude(pl => pl.Medicine)
+            .FirstOrDefault(p => p.PrescriptionId == prescriptionId);
+
+        if (prescription == null)
+            return NotFound();
+
+        ViewBag.PrescriptionId = prescriptionId;
+        ViewBag.Medicines = _context.Medicines.ToList(); // <-- Add this
+
+        return View(prescription);
+    }
+
+
+    [HttpPost]
+    public IActionResult AddLine(PrescriptionLine line)
+    {
+        if (ModelState.IsValid)
+        {
+            _context.PrescriptionLines.Add(line);
+            _context.SaveChanges();
+        }
+        return RedirectToAction("Manage", new { prescriptionId = line.PrescriptionId });
+    }
+
+    [HttpPost]
+    public IActionResult EditLine(PrescriptionLine line)
+    {
+        if (ModelState.IsValid)
+        {
+            _context.PrescriptionLines.Update(line);
+            _context.SaveChanges();
+        }
+        return RedirectToAction("Manage", new { prescriptionId = line.PrescriptionId });
+    }
+
+    [HttpPost]
+    public IActionResult DeleteLine(int id, int prescriptionId)
+    {
+        var line = _context.PrescriptionLines.Find(id);
+        if (line != null)
+        {
+            _context.PrescriptionLines.Remove(line);
+            _context.SaveChanges();
+        }
+        return RedirectToAction("Manage", new { prescriptionId });
+    }
+
 }
