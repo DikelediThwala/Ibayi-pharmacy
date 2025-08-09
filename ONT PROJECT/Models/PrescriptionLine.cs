@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 
 namespace ONT_PROJECT.Models;
 
 public partial class PrescriptionLine
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int PrescriptionLineId { get; set; }
+
 
     public int PrescriptionId { get; set; }
 

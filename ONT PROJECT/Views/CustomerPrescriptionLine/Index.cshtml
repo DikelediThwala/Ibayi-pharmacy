@@ -1,0 +1,123 @@
+﻿@model IEnumerable<ONT_PROJECT.Models.PrescriptionLine>
+
+@{
+    ViewData["Title"] = "Prescription Lines List";
+    Layout = "_CustomerLayout";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+<style>
+    /* your existing styles here, unchanged */
+    body {
+        color: #566787;
+        background: #f5f5f5;
+        font-family: 'Varela Round', sans-serif;
+        font-size: 13px;
+    }
+    /* ... (rest of styles unchanged) ... */
+</style>
+
+<div class="container">
+    <div class="mb-4 p-4 rounded shadow-sm bg-light border-start border-4 border-primary">
+        <p class="lead text-muted mb-0">
+            <i class="bi bi-info-circle-fill me-2 text-primary"></i>
+            List of all prescription lines currently recorded in the system.
+        </p>
+    </div>
+</div>
+
+<body>
+    <div class="container-xl">
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <div class="table-title d-flex justify-content-between align-items-center">
+                    <h2><i class="material-icons">&#xE7EF;</i> Prescription <b>Lines</b> List</h2>
+                    <a asp-action="Create" asp-controller="CustomerPrescriptionLine" class="btn btn-primary">
+                        <i class="material-icons">&#xE147;</i> <span>Add Prescription Line</span>
+                    </a>
+                </div>
+
+                <table class="table table-striped table-hover">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Prescription Line ID</th>
+                            <th>Prescription ID</th>
+                            <th>Medicine ID</th>
+                            <th>Quantity</th>
+                            <th>Instructions</th>
+                            <th>Repeats</th>
+                            <th>Repeats Left</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var line in Model)
+                        {
+                            if (line != null)
+                            {
+                                <tr>
+                                    <td>@line.PrescriptionLineId</td>
+                                    <td>@line.PrescriptionId</td>
+                                    <td>@line.MedicineId</td>
+                                    <td>@line.Quantity</td>
+                                    <td>@line.Instructions</td>
+                                    <td>@line.Repeats</td>
+                                    <td>@line.RepeatsLeft</td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@line.PrescriptionLineId" class="btn btn-outline-primary btn-sm" title="Edit">
+                                            <i class="material-icons">&#xE254;</i>
+                                        </a>
+
+                                        <form asp-action="Delete" asp-route-id="@line.PrescriptionLineId" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this prescription line?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">
+                                                <i class="material-icons">&#xE872;</i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+                <div class="clearfix">
+                    <div class="hint-text">Showing <b>@Model.Count()</b> entries</div>
+                    <ul class="pagination">
+                        <li class="page-item disabled"><a href="#">Previous</a></li>
+                        <li class="page-item active"><a href="#" class="page-link">1</a></li>
+                        <li class="page-item"><a href="#" class="page-link">2</a></li>
+                        <li class="page-item"><a href="#" class="page-link">3</a></li>
+                        <li class="page-item"><a href="#" class="page-link">Next</a></li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    setTimeout(function () {
+        var alert = document.getElementById('successAlert');
+        if (alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }
+    }, 4000);
+</script>
