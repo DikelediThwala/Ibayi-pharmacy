@@ -1,88 +1,82 @@
 ﻿@model ONT_PROJECT.Models.PrescriptionLine
 
 @{
-    ViewData["Title"] = "Add Prescription Line";
+    ViewData["Title"] = "Edit Doctor";
     Layout = "_CustomerLayout";
 }
 
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-dark">
-        <i class="bi bi-capsule me-2 text-primary"></i> Add Prescription Line
+        <i class="bi bi-hospital me-2 text-primary"></i> Edit Doctor
     </h2>
 </div>
 
+
 <hr style="height: 4px; background-color: #011425; border: none;" />
+
 
 <div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
     <i class="bi bi-info-circle-fill"></i>
-    Please fill in the details below. Fields marked with <span class="text-danger">*</span> are required.
+    Please update the details below. Fields marked with <span class="text-danger">*</span> are required.
 </div>
+
 
 <div class="card shadow p-4">
     <div class="card-body">
-        <!-- Important: Don't send PrescriptionLineId so EF will auto-generate it -->
-        <form asp-action="Create" method="post">
-            <input type="hidden" asp-for="PrescriptionLineId" value="" /> <!-- Will be ignored if null/0 -->
+        <form asp-action="Edit" enctype="multipart/form-data" method="post">
+
+          
 
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <label asp-for="PrescriptionId" class="form-label">Prescription <span class="text-danger">*</span></label>
-                    <select asp-for="PrescriptionId" class="form-control" asp-items="ViewBag.Prescriptions">
-                        <option value="">-- Select Prescription --</option>
-                    </select>
-                    <span asp-validation-for="PrescriptionId" class="text-danger small"></span>
+                    <label asp-for="Medicine" class="form-label">Name <span class="text-danger">*</span></label>
+                    <input asp-for="Medicine" class="form-control" placeholder="e.g., Dikeledi" />
+                    <span asp-validation-for="Medicine" class="text-danger small"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <label asp-for="MedicineId" class="form-label">Medicine <span class="text-danger">*</span></label>
-                    <select asp-for="MedicineId" class="form-control" asp-items="ViewBag.Medicines">
-                        <option value="">-- Select Medicine --</option>
-                    </select>
-                    <span asp-validation-for="MedicineId" class="text-danger small"></span>
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <label asp-for="Quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
-                    <input asp-for="Quantity" class="form-control" type="number" min="1" />
+                    <label asp-for="Quantity" class="form-label">Surname <span class="text-danger">*</span></label>
+                    <input asp-for="Quantity" class="form-control" placeholder="e.g., Thwala" />
                     <span asp-validation-for="Quantity" class="text-danger small"></span>
                 </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Instructions" class="form-label">Practice Number <span class="text-danger">*</span></label>
+                    <input asp-for="Instructions" class="form-control" placeholder="G13454" />
+                    <span asp-validation-for="Instructions" class="text-danger small"></span>
+                </div>
 
                 <div class="col-md-6">
-                    <label asp-for="Instructions" class="form-label">Instructions <span class="text-danger">*</span></label>
-                    <input asp-for="Instructions" class="form-control" placeholder="e.g., Take one tablet daily" />
-                    <span asp-validation-for="Instructions" class="text-danger small"></span>
+                    <label asp-for="Repeats" class="form-label">Contact Number <span class="text-danger">*</span></label>
+                    <input asp-for="Repeats" class="form-control" placeholder="e.g., 012 345 6789" />
+                    <span asp-validation-for="Repeats" class="text-danger small"></span>
                 </div>
             </div>
 
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <label asp-for="Repeats" class="form-label">Repeats</label>
-                    <input asp-for="Repeats" class="form-control" type="number" min="0" />
-                    <span asp-validation-for="Repeats" class="text-danger small"></span>
-                </div>
-
-                <div class="col-md-6">
-                    <label asp-for="RepeatsLeft" class="form-label">Repeats Left</label>
-                    <input asp-for="RepeatsLeft" class="form-control" type="number" min="0" />
+                    <label asp-for="RepeatsLeft" class="form-label">Email <span class="text-danger">*</span></label>
+                    <input asp-for="RepeatsLeft" class="form-control" placeholder="e.g., doctor@example.com" />
                     <span asp-validation-for="RepeatsLeft" class="text-danger small"></span>
                 </div>
             </div>
 
+
             <div class="d-flex justify-content-between mt-4">
-                <a href="/PrescriptionLine/Index" class="btn btn-secondary">
+                <a href="/Doctor/Index" class="btn btn-primary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
+
                 <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Add
+                    <i class="bi bi-save me-1"></i> Update
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
