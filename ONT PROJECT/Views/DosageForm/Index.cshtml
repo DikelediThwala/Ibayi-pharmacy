@@ -14,6 +14,243 @@
 }
 
 <!-- External CSS/JS dependencies -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round" />
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<style>
+    body {
+        color: #566787;
+        background: #f5f5f5;
+        font-family: 'Varela Round', sans-serif;
+        font-size: 13px;
+    }
+
+    .table-responsive {
+        margin: 30px 0;
+    }
+
+    .table-wrapper {
+        min-width: 700px;
+        background: #fff;
+        padding: 20px 25px;
+        border-radius: 3px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    }
+
+    .table-title {
+        color: #fff;
+        background: #4b5366;
+        padding: 16px 25px;
+        margin: -20px -25px 10px;
+        border-radius: 3px 3px 0 0;
+    }
+
+        .table-title h2 {
+            margin: 5px 0 0;
+            font-size: 24px;
+        }
+
+        .table-title .btn {
+            float: right;
+            color: #fff;
+            background: #03A9F4;
+            border: none;
+            min-width: 100px;
+            border-radius: 2px;
+            margin-left: 10px;
+        }
+
+            .table-title .btn i {
+                margin-right: 4px;
+            }
+
+    table.table tr th,
+    table.table tr td {
+        border-color: #e9e9e9;
+        padding: 12px 15px;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    table.table-hover tbody tr:hover {
+        background: #f5f5f5;
+    }
+
+    table.table td a {
+        font-weight: bold;
+        color: #566787;
+        text-decoration: none;
+    }
+
+        table.table td a:hover {
+            color: #2196F3;
+        }
+
+    .btn-outline-primary i.material-icons {
+        color: #0d6efd;
+    }
+
+    .btn-outline-primary:hover i.material-icons {
+        color: #fff;
+    }
+
+    .btn-outline-danger i.material-icons {
+        color: #dc3545;
+    }
+
+    .btn-outline-danger:hover i.material-icons {
+        color: #fff;
+    }
+</style>
+
+<div class="container">
+    <div class="mb-4 p-4 rounded shadow-sm bg-light border-start border-4 border-primary">
+        <p class="lead text-muted mb-0">
+            <i class="bi bi-info-circle-fill me-2 text-primary"></i>
+            List of available dosage forms used for medications.
+        </p>
+    </div>
+</div>
+
+<div class="container-xl my-4">
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title d-flex justify-content-between align-items-center">
+                <h2><i class="material-icons">&#xe06c;</i> Dosage <b>Forms List</b></h2>
+                <a asp-action="Create" asp-controller="DosageForm" class="btn btn-primary">
+                    <i class="material-icons">&#xE147;</i> <span>Add Dosage Form</span>
+                </a>
+            </div>
+
+            <table id="dosageFormsTable" class="table table-striped table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th></th>
+                        <th>Form Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        int count = 1;
+                        foreach (var form in Model)
+                        {
+                            <tr>
+                                <td>@count</td>
+                                <td>@form.FormName</td>
+                                <td>
+                                    <a asp-action="Edit" asp-controller="DosageForm" asp-route-id="@form.FormId" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                        <i class="material-icons">&#xE254;</i>
+                                    </a>
+                                    <a asp-action="Delete" asp-controller="DosageForm" asp-route-id="@form.FormId" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="material-icons">&#xE872;</i>
+                                    </a>
+                                </td>
+                            </tr>
+                            count++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-muted fst-italic">No dosage forms available.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    setTimeout(function () {
+        var alert = document.getElementById('successAlert');
+        if (alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }
+    }, 4000);
+
+    $(document).ready(function () {
+        $('#dosageFormsTable').DataTable({
+            pageLength: 5,
+            lengthChange: false,
+            searching: true,
+            ordering: true,
+            language: {
+                paginate: {
+                    previous: "← Previous",
+                    next: "Next →"
+                },
+                search: "Search:"
+            }
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* 
+
+@model IEnumerable<ONT_PROJECT.Models.DosageForm>
+
+@{
+    ViewData["Title"] = "Dosage Forms";
+    Layout = "_ManagerLayout";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- External CSS/JS dependencies -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -89,8 +326,32 @@
         table.table td a:hover {
             color: #2196F3;
         }
-</style>
 
+    .btn-outline-primary i.material-icons {
+        color: #0d6efd; /* Bootstrap primary blue */
+    }
+
+    .btn-outline-primary:hover i.material-icons {
+        color: #fff; /* White on hover */
+    }
+
+    .btn-outline-danger i.material-icons {
+        color: #dc3545; /* Bootstrap danger red */
+    }
+
+    .btn-outline-danger:hover i.material-icons {
+        color: #fff; /* White on hover */
+    }
+
+</style>
+<div class="container">
+    <div class="mb-4 p-4 rounded shadow-sm bg-light border-start border-4 border-primary">
+        <p class="lead text-muted mb-0">
+            <i class="bi bi-info-circle-fill me-2 text-primary"></i>
+            List of available dosage forms used for medications.
+        </p>
+    </div>
+</div>
 <div class="container-xl my-4">
     <div class="table-responsive">
         <div class="table-wrapper">
@@ -104,7 +365,7 @@
             <table class="table table-striped table-hover">
                 <thead class="table-primary">
                     <tr>
-                        <th>#</th>
+                        <th></th>
                         <th>Form Name</th>
                         <th>Actions</th>
                     </tr>
@@ -150,162 +411,4 @@
             bsAlert.close();
         }
     }, 4000);
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@* @model IEnumerable<ONT_PROJECT.Models.DosageForm>
-
-@{
-    ViewData["Title"] = "Dosage Forms";
-    Layout = "_ManagerLayout";
-}
-
-@if (TempData["SuccessMessage"] != null)
-{
-    <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-
-<style>
-
-    .table-title {
-        color: #fff;
-        background: #4b5366;
-        padding: 16px 25px;
-        margin: -20px -25px 10px;
-        border-radius: 3px 3px 0 0;
-    }
-
-        .table-title h2 {
-            margin: 5px 0 0;
-            font-size: 24px;
-        }
-
-</style>
-<div class="container my-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">Dosage Forms List</h2>
-        <a asp-action="Create" asp-controller="DosageForm" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Add Dosage Form
-        </a>
-    </div>
-    <hr style="height: 5px; background-color: #011425; border: none;" />
-
-    <div class="card shadow rounded-4 border-info">
-        <div class="card-body bg-light">
-            <div class="table-title">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h2><i class="fas fa-pills"></i> Dosage <b>Form's List</b></h2>
-                    </div>
-
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table id="dosageFormsTable" class="table table-hover table-bordered text-center align-middle">
-                    <thead class="table-primary">
-                        <tr>
-                            <th></th>
-                            <th>Form Name</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Any())
-                        {
-                            int count = 1;
-                            foreach (var form in Model)
-                            {
-                                <tr>
-                                    <td>@count</td>
-                                    <td>@form.FormName</td>
-                                    <td>
-                                        <a asp-action="Edit" asp-controller="DosageForm" asp-route-id="@form.FormId" class="btn btn-sm btn-outline-primary me-1" title="Edit">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <a asp-action="Delete" asp-controller="DosageForm" asp-route-id="@form.FormId" class="btn btn-sm btn-outline-danger" title="Delete">
-                                            <i class="bi bi-trash3"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                count++;
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="3" class="text-center text-muted fst-italic">No dosage forms available.</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        $('#dosageFormsTable').DataTable({
-            pageLength: 7,
-            lengthChange: false,
-            language: {
-                search: "Search table:",
-                paginate: {
-                    previous: "← Previous",
-                    next: "Next →"
-                }
-            }
-        });
-
-        setTimeout(function () {
-            var alert = document.getElementById('successAlert');
-            if (alert) {
-                var bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            }
-        }, 4000);
-    });
-</script>
- *@
+</script> *@

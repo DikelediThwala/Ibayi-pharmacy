@@ -9,13 +9,13 @@ public partial class BOrder
 
     public DateOnly DatePlaced { get; set; }
 
-    public DateOnly? DateRecieved { get; set; } // Nullable now
+    public DateOnly? DateRecieved { get; set; } 
 
     public string Status { get; set; } = null!;
 
-    public int? PharmacyManagerId { get; set; } // Nullable
+    public int? PharmacyManagerId { get; set; } 
 
-    public int? SupplierId { get; set; } // Nullable
+    public int? SupplierId { get; set; } 
 
     public List<BOrderLine> BOrderLines { get; set; } = new List<BOrderLine>();
 

@@ -14,9 +14,9 @@
 }
 
 <!-- External Styles -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round" />
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
 
@@ -83,6 +83,15 @@
     }
 </style>
 
+<div class="container">
+    <div class="mb-4 p-4 rounded shadow-sm bg-light border-start border-4 border-primary">
+        <p class="lead text-muted mb-0">
+            <i class="bi bi-info-circle-fill me-2 text-primary"></i>
+            List of registered suppliers who provide medications to our pharmacy.
+        </p>
+    </div>
+</div>
+
 <!-- Page Content -->
 <div class="container-xl my-4">
     <div class="table-responsive">
@@ -94,9 +103,10 @@
                 </a>
             </div>
 
-            <table class="table table-striped table-hover">
+            <table id="suppliersTable" class="table table-striped table-hover">
                 <thead class="table-primary">
                     <tr>
+                        <th></th>
                         <th>Supplier Name</th>
                         <th>Contact Number</th>
                         <th>Email</th>
@@ -104,21 +114,27 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var supplier in Model)
+                    @if (Model != null && Model.Any())
                     {
-                        <tr>
-                            <td>@supplier.Name</td>
-                            <td>@supplier.ContactNo</td>
-                            <td>@supplier.Email</td>
-                            <td>
-                                <a asp-action="Edit" asp-controller="Supplier" asp-route-id="@supplier.SupplierId" class="btn btn-sm btn-outline-primary me-1" title="Edit">
-                                    <i class="material-icons">&#xE254;</i>
-                                </a>
-                                <a asp-action="Delete" asp-controller="Supplier" asp-route-id="@supplier.SupplierId" class="btn btn-sm btn-outline-danger" title="Delete">
-                                    <i class="material-icons">&#xE872;</i>
-                                </a>
-                            </td>
-                        </tr>
+                        int count = 1;
+                        foreach (var supplier in Model)
+                        {
+                            <tr>
+                                <td>@count</td>
+                                <td>@supplier.Name</td>
+                                <td>@supplier.ContactNo</td>
+                                <td>@supplier.Email</td>
+                                <td>
+                                    <a asp-action="Edit" asp-controller="Supplier" asp-route-id="@supplier.SupplierId" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                        <i class="material-icons">&#xE254;</i>
+                                    </a>
+                                    <a asp-action="Delete" asp-controller="Supplier" asp-route-id="@supplier.SupplierId" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="material-icons">&#xE872;</i>
+                                    </a>
+                                </td>
+                            </tr>
+                            count++;
+                        }
                     }
                 </tbody>
             </table>
@@ -133,8 +149,10 @@
 <script>
     $(document).ready(function () {
         $('#suppliersTable').DataTable({
-            pageLength: 7,
+            pageLength: 8,
             lengthChange: false,
+            searching: true,
+            ordering: true,
             language: {
                 search: "Search table:",
                 paginate: {
@@ -153,149 +171,3 @@
         }, 4000);
     });
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@* @model IEnumerable<ONT_PROJECT.Models.Supplier>
-
-@{
-    ViewData["Title"] = "Suppliers";
-    Layout = "_ManagerLayout";
-}
-
-@if (TempData["SuccessMessage"] != null)
-{
-    <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-<style>
-
-    .table-title {
-        color: #fff;
-        background: #4b5366;
-        padding: 16px 25px;
-        margin: -20px -25px 10px;
-        border-radius: 3px 3px 0 0;
-    }
-
-        .table-title h2 {
-            margin: 5px 0 0;
-            font-size: 24px;
-        }
-
-</style>
-<div class="container my-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-dark fw-bold"><i class="bi bi-truck me-2"></i> Supplier List</h2>
-
-        <a asp-action="Create" asp-controller="Supplier" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Add Supplier
-        </a>
-    </div>
-    <hr style="height: 5px; background-color: #011425; border: none;" />
-
-    <div class="card shadow rounded-4 border-info">
-       
-        <div class="card-body bg-light">
-            <div class="table-title">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h2><i class="fas fa-pills"></i> Supplier's<b> List</b></h2>
-                    </div>
-
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table id="suppliersTable" class="table table-hover table-bordered text-center align-middle">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>Supplier Name</th>
-                            <th>Contact Number</th>
-                            <th>Email</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var supplier in Model)
-                        {
-                            <tr>
-                                <td>@supplier.Name</td>
-                                <td>@supplier.ContactNo</td>
-                                <td>@supplier.Email</td>
-                                <td>
-                                    <a asp-action="Edit" asp-controller="Supplier" asp-route-id="@supplier.SupplierId" class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="bi bi-pencil-square"></i> 
-                                    </a>
-                                    <a asp-action="Delete" asp-controller="Supplier" asp-route-id="@supplier.SupplierId" class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-trash3"></i> 
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        $('#suppliersTable').DataTable({
-            pageLength: 7,
-            lengthChange: false,
-            language: {
-                search: "Search table:",
-                paginate: {
-                    previous: "← Previous",
-                    next: "Next →"
-                }
-            }
-        });
-
-        setTimeout(function () {
-            var alert = document.getElementById('successAlert');
-            if (alert) {
-                var bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            }
-        }, 4000);
-    });
-</script>
- *@

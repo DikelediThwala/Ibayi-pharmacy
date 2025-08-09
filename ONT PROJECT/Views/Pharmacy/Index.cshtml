@@ -63,23 +63,22 @@
 
 </style>
 <div class="container">
+    <div class="mb-4 p-4 rounded shadow-sm bg-light border-start border-4 border-primary">
+        <p class="lead text-muted mb-0">
+            <i class="bi bi-info-circle-fill me-2 text-primary"></i>
+            Here's everything you need to know about the pharmacy and the pharmacist in charge.
+        </p>
+    </div>
+</div>
+
+<div class="container">
     <div class="profile-section">
-        <div class="row align-items-center">
-            <div class="col-md-3 text-center">
-                @if (Model.Logo != null)
-                {
-                    var base64Logo = Convert.ToBase64String(Model.Logo);
-                    var imageSrc = $"data:image/png;base64,{base64Logo}";
-                    <img src="@imageSrc" alt="Pharmacy Logo" class="profile-logo" />
-                }
-                else
-                {
-                    <div class="text-muted">No Logo</div>
-                }
+        <div class="row">
+
+            <div class="col-12 mt-5">
+                <h1 class="profile-title">Pharmacy Details</h1>
             </div>
 
-            <div class="col-md-9">
-                <h1 class="profile-title">Pharmacy Details</h1>
                 <div class="row mt-4">
                     <div class="col-md-6">
                         <div class="info-group">
@@ -148,14 +147,14 @@
                             </div>
                         </div>
                     </div>
-                </div> <!-- row -->
-            </div> <!-- col-md-9 -->
-        </div> <!-- row align-items-center -->
+                </div> 
+        </div> 
+      
 
         <div class="card-footer text-end">
             <a asp-action="Edit" asp-controller="Pharmacy" class="btn btn-primary">
                 <i class="bi bi-pencil-square"></i> Edit Pharmacy Details
             </a>
         </div>
-    </div> <!-- profile-section -->
-</div> <!-- container -->
+    </div>
+</div>

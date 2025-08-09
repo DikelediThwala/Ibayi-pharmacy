@@ -53,7 +53,7 @@
     </div>
 
     <table class="table table-hover" id="ordersTable">
-        <!-- ✅ Added id -->
+        
         <thead>
             <tr>
                 <th>Order ID</th>
@@ -117,7 +117,22 @@
         </tbody>
     </table>
 </div>
+<script>
+    $('#ordersTable').DataTable({
+            pageLength: 8,        // Show 8 rows per page
+        lengthChange: false,  // Disable changing page length by user
+        searching: true,      // Enable search box
+        ordering: true,       // Enable column sorting
+        language: {
+            search: "Search table:",
+            paginate: {
+                previous: "← Previous",
+                next: "Next →"
+            }
+        }
+    });
 
+</script>
 <script>
     function filterOrdersByStatus() {
         const filterValue = document.getElementById('statusFilter').value;

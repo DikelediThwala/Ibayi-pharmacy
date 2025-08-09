@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
 
 <style>
     body {
@@ -109,7 +111,8 @@
            
 
             <form method="post" action="/B_Order/Selected" id="medForm">
-                <table class="table table-hover">
+                <table id="medicationTable" class="table table-hover">
+
                     <thead>
                         <tr>
                             <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)" /></th>
@@ -157,10 +160,8 @@
     </div>
 </div>
 
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-
-<!-- Leave the table, modal, and form markup as-is -->
-<!-- Move these scripts out -->
 <script>
     function toggleAll(source) {
         const checkboxes = document.querySelectorAll(".med-checkbox");
@@ -193,6 +194,22 @@
             } else {
                 alert("Error occurred while updating stock.");
             }
+        });
+    });
+
+
+        $(document).ready(function () {
+      $('#medicationTable').DataTable({
+            "pageLength": 8,
+            "lengthChange": false, 
+            "ordering": true,
+            "info": false,
+            "language": {
+                "search": "Filter records:"
+            },
+            "columnDefs": [
+                { "orderable": false, "targets": 0 } 
+            ]
         });
     });
 
