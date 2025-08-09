@@ -94,38 +94,7 @@ namespace ONT_PROJECT.Controllers
                 TempData["msg"] = " Something went wrong!!!";
             }
             return RedirectToAction("Index");          
-        }
-
-        //public IActionResult LoadPrescription()
-        //{
-        //    var CustomerName = await _prescriptionRepository.GetCustomerName();
-        //    ViewBag.CustomerID = new SelectList(CustomerName, "CustomerID", "FirstName");
-        //    return View();
-        //}
-        //[HttpPost]
-        //public async Task<IActionResult> LoadPresciption(Prescription prescriptions)
-        //{
-        //    try
-        //    {
-        //        bool addPerson = await _prescriptionRepository.AddAsync(prescriptions);
-        //        if (addPerson)
-        //        {
-        //            TempData["msg"] = "Sucessfully Added";
-        //        }
-        //        else
-        //        {
-        //            TempData["msg"] = "Could not add";
-        //        }
-        //        var CustomerName = await _prescriptionRepository.GetCustomerName();
-        //        ViewBag.CustomerID = new SelectList(CustomerName, "CustomerID", "FirstName");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        TempData["msg"] = " Something went wrong!!!";
-        //    }
-        //    return RedirectToAction("Index");
-        //}
-        
+        }      
         public async Task<IActionResult> ViewPrescription()
         {
             return View();

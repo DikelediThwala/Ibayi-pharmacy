@@ -114,16 +114,6 @@
 </head>
 <body>
 
-    @if (Context.Session.GetString("UserEmail") != null)
-    {
-        <p>Welcome, @Context.Session.GetString("UserFirstName")!</p>
-        <a href="@Url.Action("Logout", "CustomerRegister")">Logout</a>
-    }
-    else
-    {
-        <a href="@Url.Action("Login", "CustomerRegister")">Login</a>
-    }
-
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar"> 
         <div class="profile-header d-flex align-items-center p-3 border-bottom">
@@ -131,7 +121,7 @@
             <div class="profile-text">
                 @Context.Session.GetString("UserFirstName") @Context.Session.GetString("UserLastName")
 
-                <div style="color:cadetblue;">Client</div>
+                <div style="color:cadetblue;">Customer</div>
             </div>
         </div>
 
@@ -149,7 +139,9 @@
                 <div class="collapse ps-3" id="medicationSubmenu">
                     <ul class="nav flex-column">
                         <li><a class="nav-link" asp-controller="Prescription" asp-action="Upload"><i class="bi bi-pencil-square"></i> Upload Prescription</a></li>
-                        <li><a class="nav-link" asp-controller="Prescription" asp-action="Index"><i class="bi bi-diagram-3"></i>View Prescription</a></li>
+                        <a class="nav-link" asp-controller="Prescription" asp-action="Manage" asp-route-prescriptionId="1">
+                            <i class="bi bi-diagram-3"></i>PrescriptionLine
+                        </a>
                     </ul>
                 </div>
             <li class="nav-item">
@@ -169,7 +161,7 @@
                 <a class="nav-link" asp-controller="ProfileSettings" asp-action="Index">
                     <i class="bi bi-gear"></i> <span>Profile Settings</span>
                 </a>
-            </li>
+            </li> *
         </ul>
     </div>
 
@@ -190,7 +182,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li>
-                        <a class="dropdown-item" asp-controller="Client" asp-action="Index">
+                        <a class="dropdown-item" asp-controller="ProfileSettings" asp-action="Index">
                             <i class="bi bi-gear me-2"></i> Settings
                         </a>
                     </li>

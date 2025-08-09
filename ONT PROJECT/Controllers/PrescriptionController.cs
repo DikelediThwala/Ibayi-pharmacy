@@ -17,8 +17,13 @@ public class PrescriptionController : Controller
     [HttpGet]
     public IActionResult Upload()
     {
-        // Get logged-in customer ID from session or identity
         int customerId = GetLoggedInCustomerId();
+        if (customerId == 0)
+        {
+            // Not logged in or invalid user, redirect to login or error
+            return RedirectToAction("Login", "CustomerRegister");
+        }
+
         var prescriptions = _context.Prescriptions
             .Where(p => p.CustomerId == customerId)
             .ToList();
@@ -28,6 +33,12 @@ public class PrescriptionController : Controller
     [HttpPost]
     public async Task<IActionResult> Upload(IFormFile PrescriptionFile, bool RequestDispense)
     {
+        int customerId = GetLoggedInCustomerId();
+        if (customerId == 0)
+        {
+            return RedirectToAction("Login", "CustomerRegister");
+        }
+
         if (PrescriptionFile != null && PrescriptionFile.Length > 0)
         {
             using var memoryStream = new MemoryStream();
@@ -36,9 +47,9 @@ public class PrescriptionController : Controller
             var prescription = new Prescription
             {
                 Date = DateOnly.FromDateTime(DateTime.Now),
-                CustomerId = GetLoggedInCustomerId(),
-                DoctorId = 1, // Set default or get from session
-                PharmacistId = 1, // Set default or assign later
+                CustomerId = customerId,
+                DoctorId = 1, // TODO: get real doctor ID if applicable
+                PharmacistId = 1, // TODO: get real pharmacist ID if applicable
                 PrescriptionPhoto = memoryStream.ToArray(),
                 Status = RequestDispense ? "Requested" : "Uploaded"
             };
@@ -62,6 +73,17 @@ public class PrescriptionController : Controller
 
         return RedirectToAction("Upload");
     }
+    public async Task<IActionResult> ViewPdf(int id)
+    {
+        var prescription = await _context.Prescriptions.FindAsync(id);
+        if (prescription == null || prescription.PrescriptionPhoto == null)
+        {
+            return NotFound();
+        }
+
+        return File(prescription.PrescriptionPhoto, "application/pdf");
+    }
+
 
     [HttpPost]
     public async Task<IActionResult> Request(int id)
@@ -79,7 +101,127 @@ public class PrescriptionController : Controller
 
     private int GetLoggedInCustomerId()
     {
-        // Replace with actual logic to get logged-in customer's ID
-        return int.Parse(HttpContext.User.Identity?.Name ?? "0");
+        // Safely get UserId from session, return 0 if not found
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        return userId ?? 0;
     }
+
+
+
+
+    // =======================
+    // PRESCRIPTION LINE ACTIONS
+    // =======================
+
+    // GET: Prescription/Lines/5
+    public IActionResult Manage(int prescriptionId)
+    {
+        var prescription = _context.Prescriptions
+            .Include(p => p.PrescriptionLines)
+            .ThenInclude(pl => pl.Medicine)
+            .FirstOrDefault(p => p.PrescriptionId == prescriptionId);
+
+        if (prescription == null)
+            return NotFound();
+
+        ViewBag.PrescriptionId = prescriptionId;
+        ViewBag.Medicines = _context.Medicines.ToList(); // <-- Add this
+
+        return View(prescription);
+    }
+
+
+    [HttpPost]
+    //public IActionResult AddLine(PrescriptionLine line)
+    //{
+    //    if (ModelState.IsValid)
+    //    {
+    //        _context.PrescriptionLines.Add(line);
+    //        _context.SaveChanges();
+    //    }
+    //    return RedirectToAction("Manage", new { prescriptionId = line.PrescriptionId });
+    //}
+    [HttpPost]
+    public IActionResult AddLine(int PrescriptionId, string MedicineName, int Quantity, string Instructions, int Repeats, int RepeatsLeft)
+    {
+        if (string.IsNullOrWhiteSpace(MedicineName))
+        {
+            ModelState.AddModelError("MedicineName", "Medicine Name is required");
+            // Reload view with errors - you might want to do this differently
+        }
+
+        // Find existing medicine by name or create new
+        var medicine = _context.Medicines.FirstOrDefault(m => m.MedicineName.ToLower() == MedicineName.ToLower());
+        if (medicine == null)
+        {
+            medicine = new Medicine { MedicineName = MedicineName };
+            _context.Medicines.Add(medicine);
+            _context.SaveChanges();
+        }
+
+        var newLine = new PrescriptionLine
+        {
+            PrescriptionId = PrescriptionId,
+            MedicineId = medicine.MedicineId,
+            Quantity = Quantity,
+            Instructions = Instructions,
+            Repeats = Repeats,
+            RepeatsLeft = RepeatsLeft
+        };
+
+        _context.PrescriptionLines.Add(newLine);
+        _context.SaveChanges();
+
+        return RedirectToAction("Manage", new { prescriptionId = PrescriptionId });
+    }
+
+    [HttpPost]
+    //public IActionResult EditLine(PrescriptionLine line)
+    //{
+    //    if (ModelState.IsValid)
+    //    {
+    //        _context.PrescriptionLines.Update(line);
+    //        _context.SaveChanges();
+    //    }
+    //    return RedirectToAction("Manage", new { prescriptionId = line.PrescriptionId });
+    //}
+    [HttpPost]
+    public IActionResult EditLine(int PrescriptionLineId, int PrescriptionId, string MedicineName, int Quantity, string Instructions, int Repeats, int RepeatsLeft)
+    {
+        var line = _context.PrescriptionLines.Find(PrescriptionLineId);
+        if (line == null)
+            return NotFound();
+
+        var medicine = _context.Medicines.FirstOrDefault(m => m.MedicineName.ToLower() == MedicineName.ToLower());
+        if (medicine == null)
+        {
+            medicine = new Medicine { MedicineName = MedicineName };
+            _context.Medicines.Add(medicine);
+            _context.SaveChanges();
+        }
+
+        line.MedicineId = medicine.MedicineId;
+        line.Quantity = Quantity;
+        line.Instructions = Instructions;
+        line.Repeats = Repeats;
+        line.RepeatsLeft = RepeatsLeft;
+
+        _context.PrescriptionLines.Update(line);
+        _context.SaveChanges();
+
+        return RedirectToAction("Manage", new { prescriptionId = PrescriptionId });
+    }
+
+    [HttpPost]
+    public IActionResult DeleteLine(int id, int prescriptionId)
+    {
+        var line = _context.PrescriptionLines.Find(id);
+        if (line != null)
+        {
+            _context.PrescriptionLines.Remove(line);
+            _context.SaveChanges();
+        }
+        return RedirectToAction("Manage", new { prescriptionId });
+    }
+
 }
