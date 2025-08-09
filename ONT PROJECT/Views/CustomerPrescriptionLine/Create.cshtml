@@ -8,7 +8,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-dark">
-        <i class="bi bi-hospital me-2 text-primary"></i> Add Doctor
+        <i class="bi bi-hospital me-2 text-primary"></i> Add Prescription
     </h2>
 </div>
 
@@ -26,11 +26,9 @@
             <div id="medicationContainer">
                 <div class="row mb-3 medication-row align-items-end">
                     <!-- Medication -->
-                    <div class="col-md-3">
-                        <label asp-for="Medicine" class="form-label">Medication <span class="text-danger">*</span></label>
-                        <select asp-for="Medicine" class="form-select" asp-items="@ViewBag.MedicineID">
-                            <option value="">-- Select Medication --</option>
-                        </select>
+                    <div class="col-md-5">
+                        <label class="form-label">Medidcine</label>
+                        <input type="text" name="Medicine[]" class="form-control" />
                     </div>
 
                     <!-- Quantity -->
@@ -68,7 +66,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between mt-4">
-                <a href="/Pharmacist/Index" class="btn btn-primary">
+                <a href="/CustomerPrescriptionLine/Index" class="btn btn-primary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
 
