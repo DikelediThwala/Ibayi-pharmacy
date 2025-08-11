@@ -1,10 +1,10 @@
-﻿@model ONT_PROJECT.Models.PrescriptionLine
+﻿
+@model ONT_PROJECT.Models.PrescriptionLine
 
 @{
     ViewData["Title"] = "Create Prescription Line";
-    Layout = "~/Views/Shared/_CustomerLayout.cshtml";  // or just "_CustomerLayout" if it's in Shared folder
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
 }
-
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-dark">
@@ -23,60 +23,59 @@
     <div class="card-body">
         <form asp-action="Create" method="post" enctype="multipart/form-data">
 
-            <div id="medicationContainer">
-                <div class="row mb-3 medication-row align-items-end">
-                    <!-- Medication -->
-                    <div class="col-md-5">
-                        <label class="form-label">Medidcine</label>
-                        <input type="text" name="Medicine[]" class="form-control" />
-                    </div>
-
-                    <!-- Quantity -->
-                    <div class="col-md-2">
-                        <label asp-for="Quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
-                        <input asp-for="Quantity" type="number" name="Quantity[]" value="0" min="0" max="100" step="1" class="form-control">
-                    </div>
-
-                    <!-- Instructions -->
-                    <div class="col-md-5">
-                        <label class="form-label">Instructions</label>
-                        <input type="text" name="Instructions[]" class="form-control" />
-                    </div>
-
-                    <!-- Buttons -->
-                    <div class="col-md-2 d-flex gap-2">
-                        <button type="button" class="btn btn-outline-primary add-btn">+</button>
-                        <button type="button" class="btn btn-outline-danger remove-btn">–</button>
-                    </div>
-                </div>
+            <!-- Hidden PrescriptionId -->
+            <input type="hidden" asp-for="PrescriptionId" />
+        
+            <!-- Medication -->
+            <div class="mb-3">
+                <label asp-for="MedicineId" class="form-label">Medication <span class="text-danger">*</span></label>
+                <select asp-for="MedicineId" asp-items="ViewBag.Medicines" class="form-select">
+                    <option value="">-- Select Medication --</option>
+                </select>
+                <span asp-validation-for="MedicineId" class="text-danger"></span>
             </div>
 
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <label asp-for="Repeats" class="form-label">Repeats</label>
-                    <input asp-for="Repeats" type="number" value="0" min="0" max="100" step="1" class="form-control" />
-                    <span asp-validation-for="Repeats" class="text-danger small"></span>
-                </div>
+            <!-- Quantity -->
+            <div class="mb-3">
+                <label asp-for="Quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
+                <input asp-for="Quantity" type="number" value="0" min="0" max="100" step="1" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <label asp-for="RepeatsLeft" class="form-label">Repeats Left</label>
-                    <input asp-for="RepeatsLeft" type="number" value="0" min="0" max="100" step="1" class="form-control" />
-                    <span asp-validation-for="RepeatsLeft" class="text-danger small"></span>
-                </div>
+
+            <!-- Instructions -->
+            <div class="mb-3">
+                <label asp-for="Instructions" class="form-label">Instructions</label>
+                <input asp-for="Instructions" class="form-control" />
+                <span asp-validation-for="Instructions" class="text-danger"></span>
             </div>
+
+            <!-- Repeats -->
+            <div class="mb-3">
+                <label asp-for="Repeats" class="form-label">Repeats</label>
+                <input asp-for="Repeats" type="number" value="0" min="0" max="100" step="1" class="form-control" />
+                <span asp-validation-for="Repeats" class="text-danger"></span>
+            </div>
+
+            <!-- Repeats Left -->
+            <div class="mb-3">
+                <label asp-for="RepeatsLeft" class="form-label">Repeats Left</label>
+                <input asp-for="RepeatsLeft" type="number" value="0" min="0" max="100" step="1" class="form-control" />
+                <span asp-validation-for="RepeatsLeft" class="text-danger"></span>
+            </div>
+
             <div class="d-flex justify-content-between mt-4">
                 <a href="/CustomerPrescriptionLine/Index" class="btn btn-primary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
 
                 <button type="submit" class="btn btn-success btn-sm">
-                    <i class="bi bi-save me-1"></i>Save
+                    <i class="bi bi-save me-1"></i> Save
                 </button>
             </div>
 
         </form>
+
     </div>
 </div>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />

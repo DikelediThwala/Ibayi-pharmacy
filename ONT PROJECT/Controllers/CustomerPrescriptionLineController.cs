@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
 using System.Linq;
 
@@ -21,51 +23,106 @@ namespace ONT_PROJECT.Controllers
         }
 
         // GET: Create view
-        public IActionResult Create()
+
+
+        public IActionResult Create(int prescriptionId)
         {
-            var prescriptionLine = new PrescriptionLine(); // ✅ Correct type
-            return View(prescriptionLine);
+            ViewBag.Medicines = new SelectList(_context.Medicines, "MedicineId", "MedicineName");
+            var model = new PrescriptionLine { PrescriptionId = prescriptionId };
+            return View(model);
         }
 
-        // POST: Create new prescription line
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(PrescriptionLine prescriptionLine)
         {
-            if (ModelState.IsValid)
+            if (prescriptionLine.PrescriptionId == 0)
             {
-                _context.PrescriptionLines.Add(prescriptionLine); // ✅ Correct DbSet
-                _context.SaveChanges();
-
-                TempData["SuccessMessage"] = "Prescription line added successfully!";
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("PrescriptionId", "Prescription ID is required.");
             }
-            return View(prescriptionLine);
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Medicines = new SelectList(_context.Medicines, "MedicineId", "MedicineName", prescriptionLine.MedicineId);
+                return View(prescriptionLine);
+            }
+
+            _context.PrescriptionLines.Add(prescriptionLine);
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = "Prescription line added successfully!";
+            return RedirectToAction(nameof(Index));
         }
+
+
 
         // GET: Edit view
         public IActionResult Edit(int id)
         {
-            var prescriptionLine = _context.PrescriptionLines.FirstOrDefault(pl => pl.PrescriptionLineId == id); // ✅ Correct find
+            var prescriptionLine = _context.PrescriptionLines.FirstOrDefault(pl => pl.PrescriptionLineId == id);
             if (prescriptionLine == null)
             {
                 return NotFound();
             }
+
+            ViewBag.Medicines = new SelectList(_context.Medicines, "MedicineId", "MedicineName", prescriptionLine.MedicineId);
+
             return View(prescriptionLine);
         }
 
-        // POST: Save edited prescription line
+        // POST Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(PrescriptionLine prescriptionLine)
         {
             if (ModelState.IsValid)
             {
-                _context.PrescriptionLines.Update(prescriptionLine); // ✅ Correct DbSet
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _context.PrescriptionLines.Update(prescriptionLine);
+                    _context.SaveChanges();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException ex)
+                {
+                    ModelState.AddModelError("", "Unable to save changes. Try again.");
+                    // optionally log ex
+                }
+            }
+
+            // repopulate dropdown on failure
+            ViewBag.Medicines = new SelectList(_context.Medicines, "MedicineId", "MedicineName", prescriptionLine.MedicineId);
+
+            return View(prescriptionLine);
+        }
+        // GET: Delete confirmation page
+        public IActionResult Delete(int id)
+        {
+            var prescriptionLine = _context.PrescriptionLines.FirstOrDefault(pl => pl.PrescriptionLineId == id);
+            if (prescriptionLine == null)
+            {
+                return NotFound();
             }
             return View(prescriptionLine);
         }
+        // POST: Delete the prescription line
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var prescriptionLine = _context.PrescriptionLines.Find(id);
+            if (prescriptionLine == null)
+            {
+                return NotFound();
+            }
+
+            _context.PrescriptionLines.Remove(prescriptionLine);
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Prescription line deleted successfully!";
+            return RedirectToAction(nameof(Index));
+        }
+
+
     }
 }
+

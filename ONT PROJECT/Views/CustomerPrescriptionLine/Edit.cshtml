@@ -29,10 +29,12 @@
           
 
             <div class="row mb-4">
-                <div class="col-md-6">
-                    <label class="form-label">Medicine <span class="text-danger">*</span></label>
-                    <input name="PrescriptionLines[0].Medicine" class="form-control" placeholder="e.g., Brufen" />
-                    <span asp-validation-for="Medicine" class="text-danger small"></span>
+                <div class="mb-3">
+                    <label asp-for="MedicineId" class="form-label">Medication <span class="text-danger">*</span></label>
+                    <select asp-for="MedicineId" asp-items="ViewBag.Medicines" class="form-select">
+                        <option value="">-- Select Medication --</option>
+                    </select>
+                    <span asp-validation-for="MedicineId" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">

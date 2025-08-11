@@ -13,21 +13,22 @@ public partial class PrescriptionLine
     public int PrescriptionLineId { get; set; }
 
 
+    //[Required(ErrorMessage = "Prescription is required.")]
     public int PrescriptionId { get; set; }
 
 
-    public int MedicineId { get; set; }
 
-    //public int Quantity { get; set; }
+    [Required(ErrorMessage = "Medicine is required.")]
+    public int MedicineId { get; set; }
 
     public string Instructions { get; set; } = null!;
 
-    //public int Repeats { get; set; }
-
-    //public int RepeatsLeft { get; set; }
     public int? RepeatsLeft { get; set; }
     public int? Repeats { get; set; }
-    public int? Quantity { get; set; }
+
+    [Required(ErrorMessage = "Quantity is required.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Quantity must be at least 1.")]
+    public int Quantity { get; set; }
 
     public virtual Medicine Medicine { get; set; } = null!;
 
