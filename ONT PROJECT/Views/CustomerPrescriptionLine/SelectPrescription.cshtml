@@ -1,0 +1,29 @@
+﻿@model IEnumerable<ONT_PROJECT.Models.Prescription>
+
+<h3>Select Prescription to Add Line</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Prescription ID</th>
+            <th>Date</th>
+          @*   <th>Patient Name</th> *@
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var prescription in Model)
+        {
+            <tr>
+                <td>@prescription.PrescriptionId</td>
+                <td>@prescription.Date.ToShortDateString()</td>
+                <td>@prescription.Customer</td>
+                <td>
+                    <a asp-action="Create" asp-route-prescriptionId="@prescription.PrescriptionId" class="btn btn-primary">
+                        Add Line
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

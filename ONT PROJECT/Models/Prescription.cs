@@ -13,7 +13,6 @@ public partial class Prescription
 
     public int PharmacistId { get; set; }
 
-    //public byte[] PrescriptionPhoto { get; set; } = null!;
     public byte[]? PrescriptionPhoto { get; set; }
 
 

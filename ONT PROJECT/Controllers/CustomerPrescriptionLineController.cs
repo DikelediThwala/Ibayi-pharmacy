@@ -16,11 +16,18 @@ namespace ONT_PROJECT.Controllers
         }
 
         // GET: List all prescription lines
-        public IActionResult Index()
+        // GET: List all prescription lines for a specific prescription
+        public IActionResult Index(int prescriptionId)
         {
-            var prescriptionLines = _context.PrescriptionLines.ToList(); // ✅ Correct DbSet name
+            var prescriptionLines = _context.PrescriptionLines
+                .Where(pl => pl.PrescriptionId == prescriptionId)
+                .ToList();
+
+            ViewBag.PrescriptionId = prescriptionId;
+
             return View(prescriptionLines);
         }
+
 
         // GET: Create view
 
@@ -121,6 +128,13 @@ namespace ONT_PROJECT.Controllers
             TempData["SuccessMessage"] = "Prescription line deleted successfully!";
             return RedirectToAction(nameof(Index));
         }
+        public IActionResult SelectPrescription()
+        {
+            // Get all prescriptions to list for user to choose
+            var prescriptions = _context.Prescriptions.ToList();  // Adjust your db context accordingly
+            return View(prescriptions);
+        }
+
 
 
     }
