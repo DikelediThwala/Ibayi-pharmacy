@@ -68,7 +68,7 @@ namespace ONT_PROJECT.Controllers
 
         public IActionResult Create()
         {
-            ViewBag.Medications = _context.Medicines
+            var meds = _context.Medicines
                 .Select(m => new SelectListItem
                 {
                     Value = m.MedicineId.ToString(),
@@ -76,8 +76,17 @@ namespace ONT_PROJECT.Controllers
                 })
                 .ToList();
 
+            ViewBag.Medications = meds;
+
+            var prices = _context.Medicines
+                .ToDictionary(m => m.MedicineId, m => m.SalesPrice);
+            Console.WriteLine($"Prices count: {prices.Count}");  
+
+            ViewBag.MedicationPrices = prices;
+
             return View(new BOrder());
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
