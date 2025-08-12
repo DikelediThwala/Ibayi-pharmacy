@@ -17,16 +17,23 @@ namespace ONT_PROJECT.Controllers
 
         // GET: List all prescription lines
         // GET: List all prescription lines for a specific prescription
-        public IActionResult Index(int prescriptionId)
+        public IActionResult Index(int? prescriptionId)
         {
-            var prescriptionLines = _context.PrescriptionLines
-                .Where(pl => pl.PrescriptionId == prescriptionId)
-                .ToList();
+            List<PrescriptionLine> prescriptionLines = new List<PrescriptionLine>();
 
-            ViewBag.PrescriptionId = prescriptionId;
+            if (prescriptionId.HasValue && prescriptionId.Value > 0)
+            {
+                prescriptionLines = _context.PrescriptionLines
+                    .Where(pl => pl.PrescriptionId == prescriptionId.Value)
+                    .ToList();
+            }
+
+            ViewBag.PrescriptionId = prescriptionId ?? 0; // 0 or null means no selection
 
             return View(prescriptionLines);
         }
+
+
 
 
         // GET: Create view
@@ -58,9 +65,8 @@ namespace ONT_PROJECT.Controllers
             _context.SaveChanges();
 
             TempData["SuccessMessage"] = "Prescription line added successfully!";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { prescriptionId = prescriptionLine.PrescriptionId });
         }
-
 
 
         // GET: Edit view
