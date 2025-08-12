@@ -26,11 +26,12 @@ namespace ONT_PROJECT.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePrescriptionLine(PrescriptionLines prescriptionLi)
-        {
+         {
             var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
             var lastRow = result.FirstOrDefault();
 
-            int prescriptionID = lastRow?.PrescriptionID ?? 0; 
+            int prescriptionID = lastRow?.PrescriptionID ?? 0;
+            prescriptionLi.PrescriptionID = prescriptionID;
 
             bool addPerson = await _prescriptionLineRepository.AddAsync(prescriptionLi);
             if (addPerson)
@@ -41,6 +42,12 @@ namespace ONT_PROJECT.Controllers
             {
                 TempData["msg"] = "Could not add";
             }
+            var prescrLine = prescriptionLi;
+            // Auto-generate password
+
+            //prescrLine.PrescriptionID = await _prescriptionLineRepository.GetLastPrescriptioRow();
+
+           
             var prescLine = await _prescriptionLineRepository.GetMedicineName();
             ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
             return RedirectToAction("CreateDoctor", "Doctors");

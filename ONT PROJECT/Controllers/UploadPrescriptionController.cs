@@ -72,6 +72,8 @@ namespace ONT_PROJECT.Controllers
 
                 var role = prescription;
                 role.PharmacistID = 1009;
+                var status = prescription;
+                status.Status = "Proccessed";
 
                 bool addPerson = await _prescriptionRepository.AddAsync(prescription);
                 if (addPerson)
@@ -104,10 +106,10 @@ namespace ONT_PROJECT.Controllers
             {
                 TempData["msg"] = " Something went wrong!!!";
             }
-            return RedirectToAction("CreateDoctor", "Doctors");          
+            return RedirectToAction("CreatePrescriptionLine", "PrescriptionLine");          
         }
        
-        public async Task<IActionResult> UnprocessedPrescription(int PrescriptionI)
+        public async Task<IActionResult> UnprocessedPrescription()
         {
             var fridge = await _prescriptionRepository.GetUnproccessedPrescriptions();          
             return View(fridge);
@@ -149,6 +151,31 @@ namespace ONT_PROJECT.Controllers
 
            }
 
-   
+        public async Task<IActionResult> EditPrescription(int id)
+        {
+            var person = await _prescriptionRepository.GetPrescriptionByID(id);
+            return View(person);
+        }
+
+        //public async Task<IActionResult> EditPrescription(Prescriptions prescriptions)
+        //{
+        //    try
+        //    {
+
+        //        bool updateRecord = await _prescriptionRepository.UpdatePrescription(prescriptions);
+
+        //        if (updateRecord)
+        //            TempData["msg"] = "Successfully Updated";
+        //        else
+        //            TempData["msg"] = "Could not update";
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        TempData["msg"] = "error";
+        //    }
+        //    return View(prescriptions);
+        //}
+
     }
 }

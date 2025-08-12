@@ -1,4 +1,4 @@
-﻿@model IEnumerable<IBayiLibrary.Models.Domain.Prescriptions>
+﻿@model IEnumerable<IBayiLibrary.Models.Domain.PrescriptionModel>
 
 @{
     ViewData["Title"] = "Unproccessed Prescription";
@@ -282,7 +282,7 @@
                 <div class="table-title">
                     <div class="row">
                         <div class="col-sm-4">
-                            <h2>Order <b>Details</b></h2>
+                            <h2>Unproccessed <b>Prescriptions</b></h2>
                         </div>
                         <div class="col-sm-8">
                             <a href="#" class="btn btn-primary"><i class="material-icons">&#xE863;</i> <span>Refresh List</span></a>
@@ -333,57 +333,47 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>
-                                @Html.DisplayNameFor(model => model.PrescriptionID)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.CustomerID)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Date)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.PrescriptionPhoto)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Status)
-                            </th>
+                            <th>Customer</th>
+                            <th>Doctor</th>
+                            <th>Medicine Name</th>
+                            <th>Date</th>                          
+                            <th>Photo</th>                                       
+                            <th>Repeats</th>
+                            <th>Repeats Left</th>
+                            <th>Status</th>
                             <th></th>
                         </tr>
                     </thead>
+                    
+
                     <tbody>
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.PrescriptionID)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.CustomerID)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Date)
-                                </td>
+                                <td>@item.FirstName</td>
+                                <td>@item.Name</td>
+                                <td>@item.MedicineName</td>
+                                <td>@item.Date.ToString("yyyy-MM-dd")</td>                          
                                 <td>
                                     @if (item.PrescriptionPhoto != null)
                                     {
                                         <a asp-action="DownloadPrescription" asp-route-id="@item.PrescriptionID">
-                                            Download Photo
+                                            Download Prescrption
                                         </a>
                                     }
                                     else
                                     {
                                         <span>No File</span>
                                     }
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Status)
-                                </td>
-                                <td><a asp-action="OrderDetails" asp-controller="Pharmacist" class="view" title="View Details" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a></td>
+                                </td>                           
+                                <td>@item.Repeats</td>
+                                <td>@item.RepeatsLeft</td>
+                                <td>@item.Status</td>                            
+                                <td><a asp-action="EditPrescription" class="btn btn-success" asp-route-id="@item.PrescriptionID" class="view" title="View Details" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a></td>                            
                             </tr>
                         }
                     </tbody>
-                </table>
+                </table>                                
                 <div class="clearfix">
                     <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
                     <ul class="pagination">

@@ -44,11 +44,11 @@ namespace IBayiLibrary.Repository
             string query = "spGetCustomerIDNo";
             return await _db.GetData<tblUser, dynamic>(query, new { });
         }
-        public async Task<IEnumerable<Prescriptions>> GetUnproccessedPrescriptions()
+        public async Task<IEnumerable<PrescriptionModel>> GetUnproccessedPrescriptions()
         {
             string query = "spGetUnproccessedPrescription";
-            return await _db.GetData<Prescriptions, dynamic>(query, new { });
-        }
+            return await _db.GetData<PrescriptionModel, dynamic>(query, new { });
+        }     
         public async Task<tblUser> GetCustomerByIDs(int UserID)
         {
             IEnumerable<tblUser> result = await _db.GetData<tblUser, dynamic>("GetCustomerByID", new { ID = UserID });
@@ -61,5 +61,37 @@ namespace IBayiLibrary.Repository
             return result.FirstOrDefault();
 
         }
+        //public async Task<PrescriptionModel> GetPrescriptionByID(int id)
+        //{
+        //    IEnumerable<Prescriptions> result = await _db.GetData<Prescriptions, dynamic>("spGetPrescriptionByID", new { PrescriptionID = id });
+        //    return result.FirstOrDefault();
+
+
+        public async Task<PrescriptionModel> GetPrescriptionByID(int id)
+        {
+            var result = await _db.GetData<PrescriptionModel, dynamic>(
+                "spGetPrescriptionByID",
+                new { PrescriptionID = id }
+            );
+            
+            return result.FirstOrDefault();
+        }
+
+
+
+        public async Task<bool> UpdatePrescription(Prescriptions prescriptions)
+        {
+            try
+            {
+
+                await _db.SaveData("spUpdatePrescription", prescriptions);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
     }
 }
