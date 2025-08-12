@@ -127,7 +127,7 @@ public partial class ApplicationDbContext : DbContext
 
             entity.Property(e => e.CustomerAllergyId).HasColumnName("CustomerAllergyID");
             entity.Property(e => e.ActiveIngredientId).HasColumnName("ActiveIngredientID");
-            entity.Property(e => e.CustomerId).HasColumnName("CustomeID");
+            entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
 
             entity.HasOne(d => d.ActiveIngredient).WithMany(p => p.CustomerAllergies)
                 .HasForeignKey(d => d.ActiveIngredientId)

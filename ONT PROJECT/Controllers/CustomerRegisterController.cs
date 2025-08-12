@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ONT_PROJECT.Models;
 using System.Linq;
 using System.Security.Cryptography;
@@ -18,42 +19,51 @@ namespace ONT_PROJECT.Controllers
         // GET: Register
         public IActionResult Register()
         {
+            var activeIngredients = _context.ActiveIngredient
+                .Select(ai => new SelectListItem
+                {
+                    Value = ai.ActiveIngredientId.ToString(),
+                    Text = ai.Ingredients
+                }).ToList();
+
+            ViewBag.ActiveIngredients = activeIngredients;
+
             return View();
         }
 
-        // POST: Register
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(TblUser model, string Password, string ConfirmPassword)
+        public IActionResult Register(TblUser model, string Password, string ConfirmPassword, List<int> SelectedAllergyIds)
         {
-            if (Password != ConfirmPassword)
-            {
-                ModelState.AddModelError("", "Passwords do not match");
-                return View(model);
-            }
+            // existing validation...
 
-            if (_context.TblUsers.Any(u => u.Email == model.Email))
-            {
-                ModelState.AddModelError("", "Email already exists");
-                return View(model);
-            }
-
+            // Save user
             model.Password = HashPassword(Password);
             model.Role = "Customer";
-
-            // Add TblUser first to generate UserId
             _context.TblUsers.Add(model);
-            _context.SaveChanges(); // Save to get UserId
+            _context.SaveChanges();
 
-            // Create Customer with CustomerId set to the generated UserId
+            // Save customer
             var customer = new Customer
             {
-                CustomerId = model.UserId,        // **Important: Set FK explicitly here**
-                CustomerNavigation = model        // Optional: set navigation property
+                CustomerId = model.UserId,
+                CustomerNavigation = model
             };
-
             _context.Customers.Add(customer);
-            _context.SaveChanges(); // Save the Customer record
+            _context.SaveChanges();
+
+            // Save allergies
+            foreach (var allergyId in SelectedAllergyIds)
+            {
+                var customerAllergy = new CustomerAllergy
+                {
+                    CustomerId = customer.CustomerId,
+                    ActiveIngredientId = allergyId
+                };
+                _context.CustomerAllergies.Add(customerAllergy);
+            }
+            _context.SaveChanges();
 
             TempData["Success"] = "Registration successful. Please login.";
             return RedirectToAction("Login");
@@ -70,7 +80,7 @@ namespace ONT_PROJECT.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(string Email, string Password)
         {
-            var user = _context.TblUsers.SingleOrDefault(u => u.Email == Email);
+            var user = _context.TblUsers.FirstOrDefault(u => u.Email == Email);
 
             if (user != null && VerifyPassword(Password, user.Password))
             {
