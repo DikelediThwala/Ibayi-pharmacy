@@ -6,6 +6,44 @@
     var medications = ViewBag.Medications as List<SelectListItem> ?? new List<SelectListItem>();
     var medList = medications.Select(m => new { m.Value, m.Text }).ToList();
 }
+
+<!-- Order Summary Modal -->
+<div class="modal fade" id="orderSummaryModal" tabindex="-1" aria-labelledby="orderSummaryLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderSummaryLabel">Confirm Your Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Medication</th>
+                            <th>Quantity</th>
+                            <th>Price per Unit</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderSummaryBody">
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3" class="text-end">Total:</th>
+                            <th id="orderTotalPrice">0.00</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmOrderBtn" class="btn btn-success">Confirm Order</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @if (!ViewData.ModelState.IsValid)
 {
     <div class="alert alert-danger">
@@ -73,7 +111,7 @@
 
                 <div class="d-flex justify-content-between">
                     <button type="button" class="btn btn-outline-primary" onclick="addMedicationRow()">Add Medication</button>
-                    <button type="submit" class="btn btn-success">Submit Order</button>
+                    <button type="button" id="openOrderSummaryBtn" class="btn btn-success">Submit Order</button>
                 </div>
             }
         </form>
@@ -138,6 +176,70 @@
             }
         })
         .catch(() => alert("Something went wrong. Please try again."));
+    });
+
+
+       
+
+    const medicationPrices = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.MedicationPrices ?? new Dictionary<int, double>()));
+
+    // Function to get medication name from medList by Id
+    function getMedicationName(medId) {
+        const med = medicationOptions.find(m => m.Value === medId.toString());
+        return med ? med.Text : 'Unknown';
+    }
+
+    document.getElementById('openOrderSummaryBtn').addEventListener('click', function() {
+        const tbody = document.getElementById('orderSummaryBody');
+        tbody.innerHTML = ''; // Clear previous
+
+        let totalPrice = 0;
+        const form = document.getElementById('orderForm');
+
+        // Collect all selected medications and quantities
+        const meds = [];
+        const selects = form.querySelectorAll('select[name^="BOrderLines"][name$="MedicineId"]');
+           selects.forEach((select, index) => {
+        const medId = select.value;
+        const qtyInput = form.querySelector(`input[name="BOrderLines[${index}].Quantity"]`);
+        if (medId && qtyInput && qtyInput.value > 0) {
+            const qty = parseInt(qtyInput.value);
+                const price = medicationPrices[String(medId)] || 0;
+                const subtotal = qty * price;
+            totalPrice += subtotal;
+
+            meds.push({ medId, qty, price, subtotal });
+        }
+    });
+
+        if (meds.length === 0) {
+            alert('Please add at least one medication with quantity.');
+            return;
+        }
+
+        // Build modal rows
+        meds.forEach(med => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${getMedicationName(med.medId)}</td>
+                <td>${med.qty}</td>
+                <td>${med.price.toFixed(2)}</td>
+                <td>${med.subtotal.toFixed(2)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('orderTotalPrice').textContent = totalPrice.toFixed(2);
+
+        // Show the modal
+        const orderModal = new bootstrap.Modal(document.getElementById('orderSummaryModal'));
+        orderModal.show();
+
+        // Handle Confirm button inside modal
+        document.getElementById('confirmOrderBtn').onclick = function() {
+            orderModal.hide();
+            form.submit();  // Actually submit the form now
+        };
     });
 
 </script>

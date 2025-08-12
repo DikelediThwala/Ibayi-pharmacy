@@ -15,7 +15,7 @@ namespace ONT_PROJECT.Controllers
         }
 
 
-        public async Task<IActionResult> CreatePrescriptionLine()
+        public async Task<IActionResult> Create()
         {           
             var prescLine = await _prescriptionLineRepository.GetMedicineName();
             ViewBag.MedicineID = new SelectList(prescLine.Select(f=> new { f.MedicineID, f.MedicineName }), "MedicineID", "MedicineName");
@@ -25,6 +25,8 @@ namespace ONT_PROJECT.Controllers
         }      
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(PrescriptionLines prescriptionLi)
+        {
         public async Task<IActionResult> CreatePrescriptionLine(PrescriptionLines prescriptionLi)
          {
             var result = await _prescriptionLineRepository.GetLastPrescriptioRow();

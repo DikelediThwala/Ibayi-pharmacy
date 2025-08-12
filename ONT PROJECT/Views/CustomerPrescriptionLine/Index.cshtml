@@ -1,8 +1,8 @@
-﻿@model IEnumerable<ONT_PROJECT.Models.Doctor>
+﻿@model IEnumerable<ONT_PROJECT.Models.PrescriptionLine>
 
 @{
-    ViewData["Title"] = "Doctors List";
-    Layout = "_ManagerLayout";
+    ViewData["Title"] = "Prescription List";
+    Layout = "_CustomerLayout";
 }
 
 @if (TempData["SuccessMessage"] != null)
@@ -162,7 +162,7 @@
     <div class="mb-4 p-4 rounded shadow-sm bg-light border-start border-4 border-primary">
         <p class="lead text-muted mb-0">
             <i class="bi bi-info-circle-fill me-2 text-primary"></i>
-            List of all doctors currently registered in the system, including their contact details and practice numbers.
+            List of all Prescriptions currently  in the system.
         </p>
     </div>
 </div>
@@ -172,53 +172,53 @@
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title d-flex justify-content-between align-items-center">
-                    <h2><i class="material-icons">&#xE7EF;</i> Doctors' <b>List</b></h2>
-                    <a asp-action="Create" asp-controller="Doctor" class="btn btn-primary">
-                        <i class="material-icons">&#xE147;</i> <span>Add Doctor</span>
+                    <h2><i class="material-icons">&#xE7EF;</i> Prescription Details' <b>List</b></h2>
+                    <a asp-action="Create" asp-controller="CustomerPrescriptionLine" class="btn btn-primary">
+                        <i class="material-icons">&#xE147;</i> <span>Add Details</span>
                     </a>
                 </div>
 
                 <table class="table table-striped table-hover">
                     <thead class="table-primary">
                         <tr>
-                            <th>Name</th>
-                            <th>Surname</th>
-                            <th>Practice No</th>
-                            <th>Contact No</th>
-                            <th>Email</th>
+                            <th>Medicine</th>
+                            <th>Quantity</th>
+                            <th>Instructions</th>
+                            <th>Repeats</th>
+                            <th>Repeats </th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var doctor in Model)
+                        @foreach (var line in Model)
                         {
-                            if (doctor != null)
+                            if (line != null)
                             {
                                 <tr>
-                                    <td>@doctor.Name</td>
-                                    <td>@doctor.Surname</td>
-                                    <td>@doctor.PracticeNo</td>
-                                    <td>@doctor.ContactNo</td>
-                                    <td>@doctor.Email</td>
+                                    <td>@line.Medicine ?? line.MedicineId.ToString()</td>  <!-- Use MedicineName if you have it -->
+                                    <td>@line.Quantity</td>
+                                    <td>@line.Instructions</td>
+                                    <td>@line.Repeats</td>
+                                    <td>@line.RepeatsLeft</td>
                                     <td>
-                                        <a asp-action="Edit" asp-controller="Doctor" asp-route-id="@doctor.DoctorId"
+                                        <a asp-action="Edit" asp-controller="CustomerPrescriptionLine" asp-route-id="@line.PrescriptionLineId"
                                            class="btn btn-outline-primary btn-sm" title="Edit">
                                             <i class="material-icons">&#xE254;</i>
                                         </a>
 
-                                        <form asp-action="Delete" asp-controller="Doctor" asp-route-id="@doctor.DoctorId"
-                                              method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this doctor?');">
+                                        <form asp-action="Delete" asp-controller="CustomerPrescriptionLine" asp-route-id="@line.PrescriptionLineId"
+                                              method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this prescription line?');">
                                             @Html.AntiForgeryToken()
                                             <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">
                                                 <i class="material-icons">&#xE872;</i>
                                             </button>
                                         </form>
                                     </td>
-
                                 </tr>
                             }
                         }
                     </tbody>
+
                 </table>
 
                 <div class="clearfix">

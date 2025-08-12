@@ -29,8 +29,7 @@
                 <option value="4">Schedule 4</option>
                 <option value="5">Schedule 5</option>
                 <option value="6">Schedule 6</option>
-                <option value="7">Schedule 7</option>
-                <option value="8">Schedule 8</option>
+                
             </select>
             <span asp-validation-for="Schedule" class="text-danger small"></span>
         </div>
@@ -117,7 +116,7 @@
 
 @section Scripts {
     <script>
-        const ingredients = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Ingredients));
+               const ingredients = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Ingredients));
 
         function addIngredientRow() {
             const tableBody = document.getElementById("ingredientsTableBody");
@@ -125,7 +124,7 @@
 
             let options = `<option value="">-- Select Ingredient --</option>`;
             ingredients.forEach(i => {
-                options += `<option value="${i.value}">${i.text}</option>`;
+                options += `<option value="${i.Value}">${i.Text}</option>`;
             });
 
             newRow.innerHTML = `
@@ -146,6 +145,7 @@
 
             tableBody.appendChild(newRow);
         }
+
 
         function removeRow(button) {
             button.closest('tr').remove();

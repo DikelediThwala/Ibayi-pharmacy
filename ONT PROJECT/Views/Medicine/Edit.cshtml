@@ -7,6 +7,11 @@
 
 <h2>Edit Medicine</h2>
 
+<hr style="height: 4px; background-color: #011425; border: none;" />
+<div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
+    <i class="bi bi-info-circle-fill"></i>
+    Update Medicine details below. Fields marked with <span class="text-danger">*</span> are required.
+</div>
 <form asp-action="Edit" method="post">
     @Html.AntiForgeryToken()
     @Html.HiddenFor(m => m.MedicineId)
@@ -24,7 +29,7 @@
             <label asp-for="Schedule" class="form-label">Schedule <span class="text-danger">*</span></label>
             <select asp-for="Schedule" class="form-select">
                 <option value="">-- Select Schedule --</option>
-                @for (int i = 1; i <= 8; i++)
+                @for (int i = 1; i <= 6; i++)
                 {
                     <option value="@i" selected="@(Model?.Schedule == i ? "selected" : null)">Schedule @i</option>
                 }

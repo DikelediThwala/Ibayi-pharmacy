@@ -1,4 +1,316 @@
-﻿  @{
+﻿@{
+    ViewData["Title"] = "Manage Users";
+    Layout = "_ManagerLayout";
+    var managers = ViewBag.Managers as List<ONT_PROJECT.Models.TblUser>;
+    var pharmacists = ViewBag.Pharmacists as List<ONT_PROJECT.Models.TblUser>;
+    var customers = ViewBag.Customers as List<ONT_PROJECT.Models.TblUser>;
+}
+
+<!-- External Styles -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+
+<style>
+    body {
+        color: #566787;
+        font-family: 'Varela Round', sans-serif;
+        font-size: 13px;
+        background: #f5f5f5;
+    }
+
+    .table-wrapper {
+        min-width: 700px;
+        background: #fff;
+        padding: 20px 25px;
+        border-radius: 3px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+        margin-bottom: 2rem;
+    }
+
+    .table-title {
+        color: #fff;
+        background: #4b5366;
+        padding: 16px 25px;
+        margin: -20px -25px 10px;
+        border-radius: 3px 3px 0 0;
+    }
+
+        .table-title h2 {
+            margin: 5px 0 0;
+            font-size: 24px;
+        }
+
+        .table-title .btn {
+            float: right;
+            color: #fff;
+            background: #03A9F4;
+            border: none;
+            min-width: 120px;
+            border-radius: 2px;
+            margin-left: 10px;
+        }
+
+            .table-title .btn i {
+                margin-right: 6px;
+            }
+
+    table.table {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+        table.table tr th,
+        table.table tr td {
+            border-color: #e9e9e9;
+            padding: 12px 15px;
+        }
+
+    table.table-hover tbody tr:hover {
+        background: #f5f5f5;
+    }
+
+    .btn-sm i {
+        vertical-align: middle;
+    }
+</style>
+
+<div class="container py-4">
+
+    @if (TempData["GeneratedPassword"] != null)
+    {
+        <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>New user registered!</strong><br />
+            Temporary Password: <code>@TempData["GeneratedPassword"]</code>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-dark fw-bold"><i class="fas fa-users-cog"></i> Manage Pharmacy Users</h2>
+        <a asp-action="Create" asp-controller="User" class="btn btn-primary shadow-sm px-4 py-2">
+            <i class="fas fa-user-plus me-2"></i> Register User
+        </a>
+    </div>
+
+    <hr class="mb-5" style="height: 4px; background-color: #011425; border: none;" />
+
+    <!-- MANAGERS -->
+    <section id="Manager" class="reviews-section">
+        <p class="text-muted fs-5 mb-3">
+            <i class="fas fa-info-circle text-primary"></i>
+            Below is the list of <strong>Pharmacy Managers</strong> who are responsible for overseeing overall pharmacy operations.
+        </p>
+        <div class="table-wrapper">
+            <div class="table-title d-flex justify-content-between align-items-center">
+                <h2><i class="material-icons">&#xe7ef;</i> Managers</h2>
+            </div>
+            <table id="managerTable" class="table table-striped table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Title</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in managers)
+                    {
+                        <tr>
+                            <td>@user.Title</td>
+                            <td>@user.FirstName</td>
+                            <td>@user.LastName</td>
+                            <td>@user.Email</td>
+                            <td>@user.PhoneNumber</td>
+                            <td><span class="badge bg-primary">@user.Role</span></td>
+                            <td>
+                                <a asp-action="Edit" asp-controller="User" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                    <i class="material-icons">&#xE254;</i>
+                                </a>
+                                <a asp-action="Delete" asp-controller="User" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <i class="material-icons">&#xE872;</i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- PHARMACISTS -->
+    <section id="Pharmacist" class="reviews-section">
+        <p class="text-muted fs-5 mb-3">
+            <i class="fas fa-info-circle text-dark"></i>
+            <strong>Pharmacists</strong> who manage prescriptions, stock, and patient care within the pharmacy.
+        </p>
+        <div class="table-wrapper">
+            <div class="table-title d-flex justify-content-between align-items-center">
+                <h2><i class="material-icons">&#xe7ef;</i> Pharmacists</h2>
+            </div>
+            <table id="pharmacistTable" class="table table-striped table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Title</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in pharmacists)
+                    {
+                        <tr>
+                            <td>@user.Title</td>
+                            <td>@user.FirstName</td>
+                            <td>@user.LastName</td>
+                            <td>@user.Email</td>
+                            <td>@user.PhoneNumber</td>
+                            <td><span class="badge bg-secondary">@user.Role</span></td>
+                            <td>
+                                <a asp-action="Edit" asp-controller="User" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                    <i class="material-icons">&#xE254;</i>
+                                </a>
+                                <a asp-action="Delete" asp-controller="User" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <i class="material-icons">&#xE872;</i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- CUSTOMERS -->
+    <section id="Customers" class="reviews-section">
+        <p class="text-muted fs-5 mb-3">
+            <i class="fas fa-info-circle text-primary"></i>
+            <strong>Customers</strong> registered in the pharmacy system who receive services and prescriptions.
+        </p>
+        <div class="table-wrapper">
+            <div class="table-title d-flex justify-content-between align-items-center">
+                <h2><i class="material-icons">&#xe7ef;</i> Customers</h2>
+            </div>
+            <table id="customerTable" class="table table-striped table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Title</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in customers)
+                    {
+                        <tr>
+                            <td>@user.Title</td>
+                            <td>@user.FirstName</td>
+                            <td>@user.LastName</td>
+                            <td>@user.Email</td>
+                            <td>@user.PhoneNumber</td>
+                            <td><span class="badge bg-info">@user.Role</span></td>
+                            <td>
+                                <a asp-action="Edit" asp-controller="User" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                    <i class="material-icons">&#xE254;</i>
+                                </a>
+                                <a asp-action="Delete" asp-controller="User" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <i class="material-icons">&#xE872;</i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#managerTable, #pharmacistTable, #customerTable').DataTable({
+            pageLength: 8,
+            lengthChange: false,
+            language: {
+                search: "Search table:",
+                paginate: {
+                    previous: "← Previous",
+                    next: "Next →"
+                }
+            }
+        });
+
+        setTimeout(function () {
+            var alert = document.getElementById('successAlert');
+            if (alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }
+        }, 4000);
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*   @{
     ViewData["Title"] = "Manage Users";
     Layout = "_ManagerLayout";
     var managers = ViewBag.Managers as List<ONT_PROJECT.Models.TblUser>;
@@ -197,3 +509,4 @@
         });
     });
 </script>
+ *@

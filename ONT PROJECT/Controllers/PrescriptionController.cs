@@ -106,4 +106,13 @@ public class PrescriptionController : Controller
         return userId ?? 0;
     }
 
+
+
+
+    // =======================
+    // PRESCRIPTION LINE ACTIONS
+    // =======================
+
+    // GET: Prescription/Lines/5
+    
 }
