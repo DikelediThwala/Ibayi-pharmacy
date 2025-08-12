@@ -65,8 +65,11 @@ namespace ONT_PROJECT.Controllers
             _context.SaveChanges();
 
             TempData["SuccessMessage"] = "Prescription line added successfully!";
+
+            // Redirect to Index and pass the prescriptionId to show correct prescription lines
             return RedirectToAction(nameof(Index), new { prescriptionId = prescriptionLine.PrescriptionId });
         }
+
 
 
         // GET: Edit view
