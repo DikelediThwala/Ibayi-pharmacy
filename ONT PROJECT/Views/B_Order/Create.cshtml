@@ -1,9 +1,24 @@
 ﻿@model ONT_PROJECT.Models.BOrder
 @using Microsoft.AspNetCore.Mvc.Rendering
 
+
 @{
     var medications = ViewBag.Medications as List<SelectListItem> ?? new List<SelectListItem>();
     var medList = medications.Select(m => new { m.Value, m.Text }).ToList();
+}
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var entry in ViewData.ModelState)
+            {
+                foreach (var error in entry.Value.Errors)
+                {
+                    <li>@entry.Key: @error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
 }
 
 <h4>Create Medication Order</h4>
@@ -18,7 +33,6 @@
     <div class="card-body">
         <form asp-action="Create" asp-controller="B_Order" method="post" id="orderForm">
             @Html.AntiForgeryToken()
-
             @if (!medications.Any())
             {
                 <div class="alert alert-warning">
@@ -66,7 +80,6 @@
     </div>
 </div>
 
-<!-- JS: Add/Remove rows + AJAX form submission -->
 <script>
     let rowIndex = 1;
     const medicationOptions = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(medList));
@@ -110,25 +123,21 @@
         fetch(form.action, {
             method: "POST",
             headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
                 "RequestVerificationToken": form.querySelector('input[name="__RequestVerificationToken"]').value
             },
             body: new URLSearchParams(new FormData(form))
         })
-        .then(response => response.text())
-        .then(html => {
-            if (html.includes("order-success")) {
-                alert("Order submitted successfully.");
-                form.reset();
-                document.getElementById("medicationTableBody").innerHTML = "";
-                addMedicationRow();
-            } else {
-                alert("Order failed to submit. Please check your input.");
-                // Optionally replace the form with the new returned HTML (with validation messages)
-                form.outerHTML = html;
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message); // success message
+                window.location.href = '/B_Order/Index?tab=orders';
+                } else {
+                alert(data.message); // error message from controller
             }
         })
-        .catch(() => alert("Error submitting form."));
+        .catch(() => alert("Something went wrong. Please try again."));
     });
 
 </script>
- 

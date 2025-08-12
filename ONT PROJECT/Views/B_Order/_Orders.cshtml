@@ -1,37 +1,135 @@
 ﻿@model List<ONT_PROJECT.Models.BOrder>
 
-<h5 class="mb-4">Previous Orders</h5>
 
-<table class="table table-bordered table-hover">
-    <thead class="table-dark">
-        <tr>
-            <th>Order ID</th>
-            <th>Date Ordered</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var order in Model)
-        {
+<style>
+    .table-wrapper {
+        min-width: 1000px;
+        background: #fff;
+        padding: 20px 25px;
+        border-radius: 3px;
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        margin-bottom: 30px;
+    }
+
+    .table-title {
+        color: #fff;
+        background: #4b5366;
+        padding: 16px 25px;
+        margin: -20px -25px 10px;
+        border-radius: 3px 3px 0 0;
+    }
+
+    table.table tr th,
+    table.table tr td {
+        border-color: #e9e9e9;
+        padding: 12px 15px;
+        vertical-align: middle;
+    }
+
+    .table-primary {
+        background-color: #dbe9f7 !important;
+    }
+
+    .table-warning {
+        background-color: #ffe5b4 !important;
+    }
+
+    .table-success {
+        background-color: #d4edda !important;
+    }
+</style>
+
+<div class="table-wrapper">
+    <div class="table-title d-flex justify-content-between align-items-center mb-2" style="background: #4b5366; padding: 8px 15px; border-radius: 4px;">
+        <h2><i class="fas fa-clipboard-list"></i> Previous <b>Orders</b></h2>
+        <div>
+            <label for="statusFilter" class="form-label text-white me-2 mb-0" style="font-weight: 600; font-size: 0.9rem;">Filter by Status:</label>
+            <select id="statusFilter" class="form-select form-select-sm d-inline-block w-auto" onchange="filterOrdersByStatus()" style="font-size: 0.85rem;">
+                <option value="">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Received">Received</option>
+            </select>
+        </div>
+    </div>
+
+    <table class="table table-hover" id="ordersTable">
+        <!-- ✅ Added id -->
+        <thead>
             <tr>
-                <td>@order.BOrderId</td>
-                <td>@order.DatePlaced.ToShortDateString()</td>
-                <td>@order.Status</td>
-                <td>
-                    @if (order.Status != "Received")
-                    {
-                        <form asp-action="MarkAsReceived" asp-controller="B_Order" method="post" class="d-inline">
-                            <input type="hidden" name="id" value="@order.BOrderId" />
-                            <button type="submit" class="btn btn-sm btn-success">Mark as Received</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <span class="badge bg-success">Received</span>
-                    }
-                </td>
+                <th>Order ID</th>
+                <th>Date Ordered</th>
+                <th>Medicines Ordered</th>
+                <th>Status</th>
+                <th>Action</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr data-status="@order.Status">
+                    <!-- ✅ Added data-status -->
+                    <td>@order.BOrderId</td>
+                    <td>@order.DatePlaced.ToShortDateString()</td>
+                    <td>
+                        <ul class="mb-0 ps-3">
+                            @foreach (var line in order.BOrderLines)
+                            {
+                                <li>@line.Medicine.MedicineName - Qty: @line.Quantity</li>
+                            }
+                        </ul>
+                    </td>
+                    <td>
+                        @switch (order.Status)
+                        {
+                            case "Pending":
+                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2">Pending</span>
+                                ;
+                                break;
+                            case "Processing":
+                                <span class="badge bg-primary text-white rounded-pill px-3 py-2">Processing</span>
+                                ;
+                                break;
+                            case "Received":
+                                <span class="badge bg-success text-white rounded-pill px-3 py-2">Received</span>
+                                ;
+                                break;
+                            default:
+                                <span class="badge bg-secondary rounded-pill px-3 py-2">@order.Status</span>
+                                ;
+                                break;
+                        }
+                    </td>
+                    <td>
+                        @if (order.Status != "Received")
+                        {
+                            <form asp-action="MarkAsReceived" asp-controller="B_Order" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@order.BOrderId" />
+                                <button type="submit" class="btn btn-sm btn-success">Mark as Received</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <i class="text-success">✓</i>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function filterOrdersByStatus() {
+        const filterValue = document.getElementById('statusFilter').value;
+        const rows = document.querySelectorAll('#ordersTable tbody tr');
+
+        rows.forEach(row => {
+            const status = row.getAttribute('data-status');
+            if (!filterValue || status === filterValue) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>

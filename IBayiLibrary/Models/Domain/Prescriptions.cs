@@ -15,9 +15,6 @@ namespace IBayiLibrary.Models.Domain
 
         public int PrescriptionID { get; set; }
         public DateTime Date { get; set; }
-
-
-
         [ForeignKey("CustomerID")]
         public int CustomerID { get; set; }
 
@@ -30,6 +27,6 @@ namespace IBayiLibrary.Models.Domain
         public IFormFile? PescriptionFile { get; set; }
         [ForeignKey("DoctorID")]
         public int DoctorID { get; set; }
-       
+        
     }
 }

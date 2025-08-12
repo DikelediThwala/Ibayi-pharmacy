@@ -4,6 +4,368 @@
     ViewData["Title"] = "Manage Medication";
     Layout = "_ManagerLayout";
 }
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <script>
+        setTimeout(function () {
+            var alert = document.querySelector('.alert');
+            if (alert) {
+                alert.classList.remove('show');
+                alert.classList.add('hide');
+            }
+        }, 4000);
+    </script>
+}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+<style>
+    body {
+        color: #566787;
+        background: #f5f5f5;
+        font-family: 'Varela Round', sans-serif;
+        font-size: 13px;
+    }
+
+    .table-responsive {
+        margin: 30px 0;
+    }
+
+    .table-wrapper {
+        min-width: 1000px;
+        background: #fff;
+        padding: 20px 25px;
+        border-radius: 3px;
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    }
+
+        .table-wrapper .btn {
+            float: right;
+            color: #333;
+            background-color: #fff;
+            border-radius: 3px;
+            border: none;
+            outline: none !important;
+            margin-left: 10px;
+        }
+
+            .table-wrapper .btn:hover {
+                color: #333;
+                background: #f2f2f2;
+            }
+
+            .table-wrapper .btn.btn-primary {
+                color: #fff;
+                background: #03A9F4;
+            }
+
+                .table-wrapper .btn.btn-primary:hover {
+                    background: #03a3e7;
+                }
+
+    .table-title .btn {
+        font-size: 13px;
+        border: none;
+    }
+
+        .table-title .btn i {
+            float: left;
+            font-size: 21px;
+            margin-right: 5px;
+        }
+
+        .table-title .btn span {
+            float: left;
+            margin-top: 2px;
+        }
+
+    .table-title {
+        color: #fff;
+        background: #4b5366;
+        padding: 16px 25px;
+        margin: -20px -25px 10px;
+        border-radius: 3px 3px 0 0;
+    }
+
+        .table-title h2 {
+            margin: 5px 0 0;
+            font-size: 24px;
+        }
+
+    table.table tr th, table.table tr td {
+        border-color: #e9e9e9;
+        padding: 12px 15px;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+        table.table tr th:first-child {
+            width: 60px;
+        }
+
+        table.table tr th:last-child {
+            width: 80px;
+        }
+
+    table.table-striped tbody tr:nth-of-type(odd) {
+        background-color: #fff; /* No stripes */
+    }
+
+    table.table-striped.table-hover tbody tr:hover {
+        background: #f5f5f5;
+    }
+
+    table.table th i {
+        font-size: 13px;
+        margin: 0 5px;
+        cursor: pointer;
+    }
+
+    table.table td a {
+        font-weight: bold;
+        color: #566787;
+        display: inline-block;
+        text-decoration: none;
+    }
+
+        table.table td a:hover {
+            color: #2196F3;
+        }
+
+        table.table td a.view {
+            width: 30px;
+            height: 30px;
+            color: #2196F3;
+            border: 2px solid;
+            border-radius: 30px;
+            text-align: center;
+        }
+
+            table.table td a.view i {
+                font-size: 22px;
+                margin: 2px 0 0 1px;
+            }
+
+    .pagination {
+        float: right;
+        margin: 0 0 5px;
+    }
+
+        .pagination li a {
+            border: none;
+            font-size: 13px;
+            min-width: 30px;
+            min-height: 30px;
+            color: #999;
+            margin: 0 2px;
+            line-height: 30px;
+            border-radius: 2px !important;
+            text-align: center;
+            padding: 0 6px;
+        }
+
+            .pagination li a:hover {
+                color: #666;
+            }
+
+        .pagination li.active a {
+            background: #03A9F4;
+        }
+
+            .pagination li.active a:hover {
+                background: #0397d6;
+            }
+
+        .pagination li.disabled i {
+            color: #ccc;
+        }
+
+        .pagination li i {
+            font-size: 16px;
+            padding-top: 6px
+        }
+
+    .hint-text {
+        float: left;
+        margin-top: 10px;
+        font-size: 13px;
+    }
+</style>
+
+<body>
+
+    <div class="container my-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-primary mb-0">
+                <i class="bi bi-capsule me-2"></i> Manage Medication
+            </h2>
+           
+        </div>
+
+        <hr style="height: 5px; background-color: #011425; border: none;" />
+
+        <!-- Dashboard Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card shadow border-0 text-white" style="background: linear-gradient(45deg, #1e3c72, #2a5298);">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="fw-light">Total Medicines</h6>
+                            <h3 class="fw-bold">@Model.Count</h3>
+                        </div>
+                        <i class="bi bi-capsule-pill fs-1 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <a href="@Url.Action("Index", "B_Order")" class="text-decoration-none">
+                    <div class="card shadow border-0 text-white" style="background: linear-gradient(45deg, #f7971e, #ffd200);">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-light">Low Stock</h6>
+                                <h3 class="fw-bold">@Model.Count(m => m.Quantity < m.ReorderLevel)</h3>
+                            </div>
+                            <i class="bi bi-exclamation-triangle-fill fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow border-0 text-white" style="background: linear-gradient(45deg, #2193b0, #6dd5ed);">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="fw-light">Critical Schedule (7+)</h6>
+                            <h3 class="fw-bold">@Model.Count(m => m.Schedule >= 7)</h3>
+                        </div>
+                        <i class="bi bi-clock-fill fs-1 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="container-xl">
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h2>Manage <b>Medication</b></h2>
+                        </div>
+                        <div class="col-sm-6">
+                            <a asp-action="Create" class="btn btn-primary">
+                                <i class="material-icons">&#xE147;</i> <span>Add Medicine</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Schedule</th>
+                            <th>Ingredients</th>
+                            <th>Form</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Strength</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var med in Model)
+                        {
+                            <tr>
+                                <td>@med.MedicineName</td>
+                                <td>Schedule @med.Schedule</td>
+                                <td>@string.Join(", ", med.MedIngredients.Select(i => i.ActiveIngredient.Ingredients))</td>
+                                <td>@med.Form?.FormName</td>
+                                <td>R@($"{med.SalesPrice:0.00}")</td>
+                                <td>@med.Quantity</td>
+                                <td>@string.Join(", ", med.MedIngredients.Select(i => i.Strength))</td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@med.MedicineId" class="view" title="Edit" data-toggle="tooltip">
+                                        <i class="material-icons">&#xE254;</i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@med.MedicineId" class="view" title="Delete" data-toggle="tooltip">
+                                        <i class="material-icons">&#xE872;</i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div class="clearfix">
+                    <div class="hint-text">Showing <b>@Model.Count</b> entries</div>
+                    <ul class="pagination">
+                        <li class="page-item disabled"><a href="#">Previous</a></li>
+                        <li class="page-item active"><a href="#" class="page-link">1</a></li>
+                        <li class="page-item"><a href="#" class="page-link">2</a></li>
+                        <li class="page-item"><a href="#" class="page-link">3</a></li>
+                        <li class="page-item"><a href="#" class="page-link">Next</a></li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*  @model List<ONT_PROJECT.Models.Medicine>
+
+@{
+    ViewData["Title"] = "Manage Medication";
+    Layout = "_ManagerLayout";
+}
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -128,3 +490,4 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  *@

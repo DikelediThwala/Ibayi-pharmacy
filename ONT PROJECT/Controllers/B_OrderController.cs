@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Controllers;
 using ONT_PROJECT.Models;
 using System.Collections.Generic;
@@ -15,10 +16,91 @@ namespace ONT_PROJECT.Controllers
         public B_OrderController(ApplicationDbContext context)
         {
             _context = context;
-            SeedMedicines();  // Ensure medicines exist
+            SeedMedicines();  
+        }
+        public IActionResult Index()
+        {
+            var vm = new NewOrderViewModel
+            {
+                Medicines = _context.Medicines.ToList(),
+                BOrders = _context.BOrders
+                     .Include(o => o.BOrderLines)           
+                     .ThenInclude(ol => ol.Medicine)       
+                     .ToList(),
+                NewOrder = new BOrder()
+            };
+            return View(vm);      
+        }
+        public IActionResult Create()
+        {
+            ViewBag.Medications = _context.Medicines
+                .Select(m => new SelectListItem
+                {
+                    Value = m.MedicineId.ToString(),
+                    Text = m.MedicineName
+                })
+                .ToList();
+
+            return View(new BOrder());
         }
 
-        // Seed medicines if none exist in DB
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(BOrder order)
+        {
+            ModelState.Remove("Status");
+
+            if (!ModelState.IsValid)
+            {
+                var allErrors = ModelState
+                    .SelectMany(kvp => kvp.Value.Errors.Select(e => new { Field = kvp.Key, Error = e.ErrorMessage }))
+                    .ToList();
+
+                return BadRequest(new { success = false, message = "Validation errors occurred.", errors = allErrors });
+            }
+
+            if (order == null || order.BOrderLines == null || !order.BOrderLines.Any())
+            {
+                return BadRequest(new { success = false, message = "Please add at least one medication." });
+            }
+
+            order.DatePlaced = DateOnly.FromDateTime(DateTime.Now);
+            order.Status = "Pending";
+
+            _context.BOrders.Add(order);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { success = true, message = "Order placed successfully!" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MarkAsReceived(int id)
+        {
+            var order = await _context.BOrders.FindAsync(id);
+            if (order == null)
+                return NotFound();
+
+            order.DateRecieved = DateOnly.FromDateTime(DateTime.Now);
+            order.Status = "Received";
+
+            await _context.SaveChangesAsync();
+
+            var viewModel = new NewOrderViewModel
+            {
+                Medicines = _context.Medicines.ToList(),
+                BOrders = _context.BOrders
+                  .Include(o => o.BOrderLines)
+                  .ThenInclude(ol => ol.Medicine)
+                  .ToList(),
+                NewOrder = new BOrder()
+            };
+
+            ViewData["ActiveTab"] = "orders";
+
+            return View("Index", viewModel);
+        }
+
+
         private void SeedMedicines()
         {
             if (!_context.Medicines.Any())
@@ -38,167 +120,33 @@ namespace ONT_PROJECT.Controllers
             return Content($"Medicines count: {count}");
         }
 
-        public IActionResult Index()
+        public IActionResult AdjustStock(int id)
         {
-            var vm = new NewOrderViewModel
-            {
-                Medicines = _context.Medicines.ToList(),
-                BOrders = _context.BOrders.ToList(),
-                NewOrder = new BOrder()
-            };
-            return View(vm);
-        }
-        public IActionResult Create()
-        {
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "Name");
-            ViewData["PharmacyManagerId"] = new SelectList(_context.PharmacyManagers, "PharmacyManagerId", "Name");
-
-            ViewBag.Medicines = _context.Medicines.ToList();
-            return View();
-        }
-
-        // POST: BOrder/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(BOrder order, List<int> medicineIds, List<int> quantities)
-        {
-            if (ModelState.IsValid)
-            {
-                // Set automatic date placed
-                order.DatePlaced = DateOnly.FromDateTime(DateTime.Now);
-
-                order.Status = "Pending";
-
-                // Save the order
-                _context.BOrders.Add(order);
-                await _context.SaveChangesAsync();
-
-                // Save order lines
-                for (int i = 0; i < medicineIds.Count; i++)
-                {
-                    var line = new BOrderLine
-                    {
-                        BOrderId = order.BOrderId,
-                        MedicineId = medicineIds[i],
-                        Quantity = quantities[i]
-                    };
-                    _context.BOrderLines.Add(line);
-                }
-
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Order placed successfully!";
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "Name", order.SupplierId);
-            ViewData["PharmacyManagerId"] = new SelectList(_context.PharmacyManagers, "PharmacyManagerId", "Name", order.PharmacyManagerId);
-            ViewBag.Medicines = _context.Medicines.ToList();
-
-            return View(order);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> MarkAsReceived(int id)
-        {
-            var order = await _context.BOrders.FindAsync(id);
-            if (order == null)
+            var medicine = _context.Medicines.FirstOrDefault(m => m.MedicineId == id);
+            if (medicine == null)
                 return NotFound();
 
-            order.DateRecieved = DateOnly.FromDateTime(DateTime.Now);
-            order.Status = "Received";
+            return PartialView("_AdjustStock", medicine);
+        }
+        [HttpPost]
+        public IActionResult AdjustStock(int medicineId, int addQuantity, int removeQuantity, int reorderLevel)
+        {
+            var medicine = _context.Medicines.FirstOrDefault(m => m.MedicineId == medicineId);
+            if (medicine == null)
+                return NotFound();
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            medicine.Quantity += addQuantity;
+            medicine.Quantity -= removeQuantity;
+            if (medicine.Quantity < 0)
+                medicine.Quantity = 0;
+
+            medicine.ReorderLevel = reorderLevel;
+
+            _context.SaveChanges();
+
+            return Json(new { success = true, newQuantity = medicine.Quantity, newReorderLevel = medicine.ReorderLevel });
         }
 
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//// GET: Create order form - populate medications dropdown
-//public IActionResult Create()
-//{
-//    ViewBag.Medications = _context.Medicines
-//        .Select(m => new SelectListItem
-//        {
-//            Value = m.MedicineId.ToString(),
-//            Text = m.MedicineName
-//        })
-//        .ToList();
-
-//    return View(new BOrder());
-//}
-
-//// POST: Create order submit
-//[HttpPost]
-//[ValidateAntiForgeryToken]
-//public async Task<IActionResult> Create(BOrder order)
-//{
-//    if (order == null || order.BOrderLines == null || !order.BOrderLines.Any())
-//    {
-//        ModelState.AddModelError("", "Please add at least one medication.");
-//    }
-
-//    if (ModelState.IsValid)
-//    {
-//        order.DatePlaced = System.DateOnly.FromDateTime(System.DateTime.Today);
-//        order.Status = "Pending";
-//        order.PharmacyManagerId = 1; // Set your actual manager id
-
-//        var firstMed = _context.Medicines.FirstOrDefault(m => m.MedicineId == order.BOrderLines[0].MedicineId);
-//        if (firstMed != null)
-//        {
-//            order.SupplierId = firstMed.SupplierId;
-//        }
-
-//        _context.BOrders.Add(order);
-//        await _context.SaveChangesAsync();
-
-//        return RedirectToAction(nameof(Index));
-//    }
-
-//    ViewBag.Medications = _context.Medicines
-//        .Select(m => new SelectListItem
-//        {
-//            Value = m.MedicineId.ToString(),
-//            Text = m.MedicineName
-//        })
-//        .ToList();
-
-//    return View(order);
-//}
-
-
-
-
-

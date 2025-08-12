@@ -21,9 +21,11 @@ namespace ONT_PROJECT.Controllers
     public class UploadPrescriptionController : Controller
     {
         private readonly IPrescriptionRepository _prescriptionRepository;
-        public UploadPrescriptionController(IPrescriptionRepository prescriptionRepository)
+        private readonly IPrescriptionLineRepository _prescriptionLineRepository;
+        public UploadPrescriptionController(IPrescriptionRepository prescriptionRepository,IPrescriptionLineRepository prescriptionLineRepository)
         {
             _prescriptionRepository = prescriptionRepository;
+            _prescriptionLineRepository = prescriptionLineRepository;
         }
        
 
@@ -33,6 +35,7 @@ namespace ONT_PROJECT.Controllers
             ViewBag.UserID = new SelectList(customerRequests.Select(c => new { c.UserID, FullName = c.FirstName + " " + c.LastName }), "UserID", "FullName");
             var doc = await _prescriptionRepository.GetDoctorName();
             ViewBag.DoctorID = new SelectList(doc.Select(c => new { c.DoctorID, FullName = c.Name + " " + c.Surname }), "DoctorID", "FullName");
+            
             return View();
             
         }
@@ -44,14 +47,6 @@ namespace ONT_PROJECT.Controllers
         {
             try
             {
-                //if (prescription.PescriptionFile != null && prescription.PescriptionFile.Length > 0)
-                //{
-                //    using var ms = new MemoryStream();
-                //    prescription.PescriptionFile.CopyTo(ms);
-                //
-                //   prescription.PrescriptionPhoto = ms.ToArray();
-                //}
-
 
                 if (prescription.PescriptionFile != null && prescription.PescriptionFile.Length > 0)
                 {
@@ -75,20 +70,6 @@ namespace ONT_PROJECT.Controllers
                     prescription.PrescriptionPhoto = ms.ToArray();
                 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 var role = prescription;
                 role.PharmacistID = 1009;
 
@@ -111,11 +92,12 @@ namespace ONT_PROJECT.Controllers
                 ViewBag.UserID = new SelectList(customerRequests.Select(c => new { c.UserID, FullName = c.FirstName + " " + c.LastName }), "UserID", "FullName");
                 var doc = await _prescriptionRepository.GetDoctorName();
                 ViewBag.DoctorID = new SelectList(doc.Select(c => new { c.DoctorID, FullName = c.Name + " " + c.Surname }), "DoctorID", "FullName");
-
-               
-                //var person = await _prescriptionRepository.GetCustomerByIDs(id);                   
-                      
                 
+
+
+                //var person = await _prescriptionRepository.GetCustomerByIDs(id);                   
+
+
                 //return View(ViewBag);
             }
             catch (Exception ex)
@@ -124,6 +106,7 @@ namespace ONT_PROJECT.Controllers
             }
             return RedirectToAction("CreateDoctor", "Doctors");          
         }
+       
         public async Task<IActionResult> UnprocessedPrescription(int PrescriptionI)
         {
             var fridge = await _prescriptionRepository.GetUnproccessedPrescriptions();          
@@ -164,7 +147,8 @@ namespace ONT_PROJECT.Controllers
             var fileName = $"Prescription_{id}.pdf";
             return File(prescription.PrescriptionPhoto, "application/pdf", fileName);
 
-        }
+           }
+
    
     }
 }

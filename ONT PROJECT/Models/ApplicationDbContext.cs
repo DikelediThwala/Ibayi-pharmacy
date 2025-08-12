@@ -127,15 +127,15 @@ public partial class ApplicationDbContext : DbContext
 
             entity.Property(e => e.CustomerAllergyId).HasColumnName("CustomerAllergyID");
             entity.Property(e => e.ActiveIngredientId).HasColumnName("ActiveIngredientID");
-            entity.Property(e => e.CustomeId).HasColumnName("CustomeID");
+            entity.Property(e => e.CustomerId).HasColumnName("CustomeID");
 
             entity.HasOne(d => d.ActiveIngredient).WithMany(p => p.CustomerAllergies)
                 .HasForeignKey(d => d.ActiveIngredientId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CustomerAllergy_ActiveIngredient");
 
-            entity.HasOne(d => d.Custome).WithMany(p => p.CustomerAllergies)
-                .HasForeignKey(d => d.CustomeId)
+            entity.HasOne(d => d.Customer).WithMany(p => p.CustomerAllergies)
+                .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CustomerAllergy_Customer");
         });
