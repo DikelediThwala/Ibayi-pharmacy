@@ -1,4 +1,4 @@
-﻿@model IBayiLibrary.Models.Domain.Prescriptions;
+﻿@model IBayiLibrary.Models.Domain.PrescriptionViewModel;
 
 
 @{
@@ -300,7 +300,38 @@
                 <input asp-for="Date" type="date" class="form-control" />
                 <span asp-validation-for="Date" class="text-danger small"></span>
             </div>
+        </div>    
+        <div id="medicationContainer">            
+            <div class="row mb-3 medication-row align-items-end">
+                <!-- Medication -->
+                <div class="col-md-3">                           
+                    <label class="form-label">Medicine ID</label>
+                    <select asp-for="MedicineID" class="form-select" asp-items="@ViewBag.MedicineID">
+                        <option value="">-- Select Medication --</option>
+                    </select>
+                </div>
+                <!-- Quantity -->
+                <div class="col-md-2">                           
+                    <label class="form-label">Quantity</label>
+                    <input asp-for="Quantity" type="number" name="Quantity[]" value="0" min="0" max="100" step="1" class="form-control" />
+                </div>
+
+                <!-- Instructions -->
+                <div class="col-md-2">                          
+                    <label>Instructions</label>
+                    <input asp-for="Instructions" type="text" name="Instructions[]" class="form-control" />
+                </div>
+                <div class="col-md-2">                    
+                    <label>Repeats</label>
+                    <input asp-for="Repeats" type="number" value="0" min="1" max="100" step="1" class="form-control" />
+                </div>                                     
+            <!-- Buttons -->
+            <div class="col-md-2 d-flex gap-2">
+                <button type="button" class="btn btn-outline-primary add-btn">+</button>
+                <button type="button" class="btn btn-outline-danger remove-btn">–</button>
+            </div>
         </div>
+    </div>           
         <div class="input-group mb-3">
             <input asp-for="PescriptionFile" type="file" class="form-control" id="inputGroupFile02" accept="application/pdf">
             <label asp-for="PrescriptionPhoto" class="input-group-text" for="inputGroupFile02">Upload Prescription</label>
@@ -350,16 +381,27 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
 <script>
-
     document.addEventListener('DOMContentLoaded', function () {
-           const container = document.getElementById('medicationContainer');
+        const container = document.getElementById('medicationContainer');
 
-           container.addEventListener('click', function (e) {
+        container.addEventListener('click', function (e) {
+            // Add new row
+            if (e.target.classList.contains('add-btn')) {
+                const row = e.target.closest('.medication-row');
+                const newRow = row.cloneNode(true);
 
-               if (e.target.classList.contains('add-btn')) {
-                   const row = e.target.closest('.medication-row');
-                   const newRow = row.cloneNode(true);
+                // Reset values
+                newRow.querySelectorAll('select, input, textarea').forEach(el => el.value = '');
+                container.appendChild(newRow);
+            }
 
-                   
-
+            // Remove row
+            if (e.target.classList.contains('remove-btn')) {
+                const rows = container.querySelectorAll('.medication-row');
+                if (rows.length > 1) {
+                    e.target.closest('.medication-row').remove();
+                }
+            }
+        });
+    });
 </script>

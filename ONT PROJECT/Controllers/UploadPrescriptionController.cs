@@ -4,7 +4,7 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using ONT_PROJECT.Models;
+//using ONT_PROJECT.Models;
 //using iText.Kernel.Pdf;
 //using iText.Layout;
 //using iTextSharp.text;
@@ -35,7 +35,9 @@ namespace ONT_PROJECT.Controllers
             ViewBag.UserID = new SelectList(customerRequests.Select(c => new { c.UserID, FullName = c.FirstName + " " + c.LastName }), "UserID", "FullName");
             var doc = await _prescriptionRepository.GetDoctorName();
             ViewBag.DoctorID = new SelectList(doc.Select(c => new { c.DoctorID, FullName = c.Name + " " + c.Surname }), "DoctorID", "FullName");
-            
+            var prescLine = await _prescriptionLineRepository.GetMedicineName();
+            ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
+
             return View();
             
         }
@@ -43,7 +45,7 @@ namespace ONT_PROJECT.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task <IActionResult> CreatePrescription(Prescriptions prescription,int id,string searchString)
+        public async Task <IActionResult> CreatePrescription(PrescriptionViewModel prescription)
         {
             try
             {
@@ -74,7 +76,8 @@ namespace ONT_PROJECT.Controllers
                 role.PharmacistID = 1009;
                 var status = prescription;
                 status.Status = "Proccessed";
-
+                var repLeft = prescription;
+                repLeft.RepeatsLeft = repLeft.Repeats;
                 bool addPerson = await _prescriptionRepository.AddAsync(prescription);
                 if (addPerson)
                 {
@@ -84,7 +87,22 @@ namespace ONT_PROJECT.Controllers
                 {
                     TempData["msg"] = "Could not add";
                 }
-                
+
+                var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
+                var lastRow = result.FirstOrDefault();
+
+                int prescriptionID = lastRow?.PrescriptionID ?? 0;
+                prescription.PrescriptionID = prescriptionID;
+                bool addPrescLine = await _prescriptionRepository.AddPrescLineAsync(prescription);
+
+                if (addPrescLine)
+                {
+                    TempData["msg"] = "Sucessfully Added";
+                }
+                else
+                {
+                    TempData["msg"] = "Could not add";
+                }
                 //var custID = await _prescriptionRepository.GetCutomerIDNo();
                 //if (!String.IsNullOrEmpty(searchString))
                 //{
@@ -94,7 +112,8 @@ namespace ONT_PROJECT.Controllers
                 ViewBag.UserID = new SelectList(customerRequests.Select(c => new { c.UserID, FullName = c.FirstName + " " + c.LastName }), "UserID", "FullName");
                 var doc = await _prescriptionRepository.GetDoctorName();
                 ViewBag.DoctorID = new SelectList(doc.Select(c => new { c.DoctorID, FullName = c.Name + " " + c.Surname }), "DoctorID", "FullName");
-                
+                var prescLine = await _prescriptionLineRepository.GetMedicineName();
+                ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
 
 
                 //var person = await _prescriptionRepository.GetCustomerByIDs(id);                   

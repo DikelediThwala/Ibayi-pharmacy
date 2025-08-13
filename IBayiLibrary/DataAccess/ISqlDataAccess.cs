@@ -10,5 +10,7 @@ namespace IBayiLibrary.DataAccess
     {
         Task<IEnumerable<T>> GetData<T, P>(string spName, P parameters, string connectionId = "DefaultConnection");
         Task SaveData<T>(string spName, T parameters, string connectionId = "DefaultConnection");
+        Task<int> SaveDataWithReturn<T>(string spName, T parameters, string connectionId = "DefaultConnection");
+
     }
 }
