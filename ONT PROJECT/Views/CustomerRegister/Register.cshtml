@@ -227,6 +227,13 @@
         transform: translateX(0);
     }
 
+    select.allergy-dropdown {
+        max-height: 60px; /* keep the smaller height */
+        padding: 1px 5px;
+        font-size: 0.8rem;
+        line-height: 1;
+        width: 150px; /* reduce width */
+    }
     .container.right-panel-active .overlay-right {
         transform: translateX(20%);
     }
@@ -316,10 +323,18 @@
                     <span asp-validation-for="Idnumber" class="text-danger small"></span>
                 </div>
 
+               @*  <label>Allergies</label>
+                <select asp-for="SelectedAllergyIds" asp-items="ViewBag.ActiveIngredients" multiple class="form-control">
+                </select> *@
+
                 <div class="col-md-12">
-                    <input asp-for="Allergies" class="form-control bg-light" placeholder="Allergies" />
-                    <span asp-validation-for="Allergies" class="text-danger small"></span>
+                    <label for="SelectedAllergies">Select Allergies</label>
+                    <select asp-for="SelectedAllergyIds" asp-items="ViewBag.ActiveIngredients" multiple="multiple" class="form-control form-control-sm allergy-dropdown" size="2">
+                    </select>
+
+                    <span asp-validation-for="SelectedAllergyIds" class="text-danger small"></span>
                 </div>
+
 
                 <div class="col-md-6">
                     <input type="password" name="Password" class="form-control bg-light" placeholder="Password" required />

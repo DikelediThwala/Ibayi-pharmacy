@@ -166,26 +166,35 @@
         </p>
     </div>
 </div>
-
+<div class="mb-3">
+    <a asp-action="SelectPrescription" asp-controller="CustomerPrescriptionLine" class="btn btn-primary">
+        <i class="material-icons">&#xE147;</i> Add PLine
+    </a>
+</div>
 <body>
     <div class="container-xl">
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title d-flex justify-content-between align-items-center">
-                    <h2><i class="material-icons">&#xE7EF;</i> Prescription Details' <b>List</b></h2>
-                    <a asp-action="Create" asp-controller="CustomerPrescriptionLine" class="btn btn-primary">
+                    <h2>
+                        <i class="material-icons">&#xE7EF;</i>
+                        Prescription Details' <b>List for Prescription @ViewBag.PrescriptionId</b>
+                    </h2>
+                    <a asp-action="Create" asp-controller="CustomerPrescriptionLine" asp-route-prescriptionId="@ViewBag.PrescriptionId" class="btn btn-primary">
                         <i class="material-icons">&#xE147;</i> <span>Add Details</span>
                     </a>
+
                 </div>
 
                 <table class="table table-striped table-hover">
                     <thead class="table-primary">
                         <tr>
+                            <th>Prescription ID</th> <!-- New Column -->
                             <th>Medicine</th>
                             <th>Quantity</th>
                             <th>Instructions</th>
                             <th>Repeats</th>
-                            <th>Repeats </th>
+                            <th>Repeats Left</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -195,7 +204,8 @@
                             if (line != null)
                             {
                                 <tr>
-                                    <td>@line.Medicine ?? line.MedicineId.ToString()</td>  <!-- Use MedicineName if you have it -->
+                                    <td>@line.PrescriptionId</td>  <!-- Show Prescription ID -->
+                                    <td>@line.Medicine ?? line.MedicineId.ToString()</td>
                                     <td>@line.Quantity</td>
                                     <td>@line.Instructions</td>
                                     <td>@line.Repeats</td>
@@ -218,8 +228,8 @@
                             }
                         }
                     </tbody>
-
                 </table>
+
 
                 <div class="clearfix">
                     <div class="hint-text">Showing <b>@Model.Count()</b> entries</div>

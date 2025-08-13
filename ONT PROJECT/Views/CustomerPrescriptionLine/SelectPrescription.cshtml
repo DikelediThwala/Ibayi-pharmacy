@@ -1,0 +1,29 @@
+﻿@model IEnumerable<ONT_PROJECT.Models.Prescription>
+@{
+    ViewData["Title"] = "Prescription List";
+    Layout = "_CustomerLayout";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Prescription ID</th>
+            <th>Date</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.PrescriptionId</td>
+                <td>@p.Date</td>
+                <td>
+                    <a asp-action="Index" asp-route-prescriptionId="@p.PrescriptionId" class="btn btn-primary">
+                        Select
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -53,5 +53,6 @@ namespace ONT_PROJECT.Controllers
             ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
             return RedirectToAction("CreateDoctor", "Doctors");
         }
+
     }
 }
