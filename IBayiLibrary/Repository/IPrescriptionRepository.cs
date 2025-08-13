@@ -14,7 +14,7 @@ namespace IBayiLibrary.Repository
         Task<IEnumerable<tblUser>> GetCustomerName();
         Task<IEnumerable<Doctor>> GetDoctorName();
         Task<IEnumerable<tblUser>> GetCutomerIDNo();
-        Task<IEnumerable<PrescriptionModel>> GetUnproccessedPrescriptions();
+        
         Task<tblUser> GetCustomerByIDs(int UserID);
         Task<PrescriptionModel> GetPrescriptionByID(int id);
         Task<bool> UpdatePrescription(Prescriptions prescriptions);

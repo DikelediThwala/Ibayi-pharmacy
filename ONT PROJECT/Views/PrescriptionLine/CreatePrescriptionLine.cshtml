@@ -236,8 +236,9 @@
                     <div class="col-md-3">
                         <label asp-for = "MedicineID" class="form-label">Medication <span class="text-danger">*</span></label>
                         <select asp-for="MedicineID" class="form-select" asp-items="@ViewBag.MedicineID">
-                            <option value="">-- Select Medication --</option>                          
-                        </select>
+                                                    
+                         <option value="">-- Select Medication --</option>  
+                         </select>
                     </div>
 
                     <!-- Quantity -->
@@ -289,8 +290,6 @@
 
     </div>
 </div>
-
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const container = document.getElementById('medicationContainer');

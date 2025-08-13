@@ -44,11 +44,7 @@ namespace IBayiLibrary.Repository
             string query = "spGetCustomerIDNo";
             return await _db.GetData<tblUser, dynamic>(query, new { });
         }
-        public async Task<IEnumerable<PrescriptionModel>> GetUnproccessedPrescriptions()
-        {
-            string query = "spGetUnproccessedPrescription";
-            return await _db.GetData<PrescriptionModel, dynamic>(query, new { });
-        }     
+       
         public async Task<tblUser> GetCustomerByIDs(int UserID)
         {
             IEnumerable<tblUser> result = await _db.GetData<tblUser, dynamic>("GetCustomerByID", new { ID = UserID });

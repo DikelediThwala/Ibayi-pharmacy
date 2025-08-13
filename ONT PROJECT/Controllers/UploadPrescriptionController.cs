@@ -109,11 +109,7 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("CreatePrescriptionLine", "PrescriptionLine");          
         }
        
-        public async Task<IActionResult> UnprocessedPrescription()
-        {
-            var fridge = await _prescriptionRepository.GetUnproccessedPrescriptions();          
-            return View(fridge);
-        }
+       
 
       
            public async Task<IActionResult> DownloadPrescription(int id)
@@ -155,6 +151,11 @@ namespace ONT_PROJECT.Controllers
         {
             var person = await _prescriptionRepository.GetPrescriptionByID(id);
             return View(person);
+        }
+        public async Task<IActionResult> UnprocessedPrescription()
+        {
+          
+            return View();
         }
 
         //public async Task<IActionResult> EditPrescription(Prescriptions prescriptions)
