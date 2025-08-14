@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-
 
 namespace ONT_PROJECT.Controllers
 {
@@ -18,45 +16,65 @@ namespace ONT_PROJECT.Controllers
             _context = context;
         }
 
-        // GET: /CustomerRegister/Register
-        [HttpGet]
+        // GET: Register
         public IActionResult Register()
         {
-            LoadAllergyDropdown();
+            var activeIngredients = _context.ActiveIngredient
+                .Select(ai => new SelectListItem
+                {
+                    Value = ai.ActiveIngredientId.ToString(),
+                    Text = ai.Ingredients
+                }).ToList();
+
+            ViewBag.ActiveIngredients = activeIngredients;
+
             return View();
         }
 
-        // POST: /CustomerRegister/Register
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(TblUser model, string Password, string ConfirmPassword)
+        public IActionResult Register(TblUser model, string Password, string ConfirmPassword, List<int> SelectedAllergyIds)
         {
-            if (Password != ConfirmPassword)
+            // existing validation...
+
+            // Save user
+            model.Password = HashPassword(Password);
+            model.Role = "Customer";
+            _context.TblUsers.Add(model);
+            _context.SaveChanges();
+
+            // Save customer
+            var customer = new Customer
             {
-                ModelState.AddModelError("", "Passwords do not match.");
-            }
+                CustomerId = model.UserId,
+                CustomerNavigation = model
+            };
+            _context.Customers.Add(customer);
+            _context.SaveChanges();
 
-            if (_context.TblUsers.Any(u => u.Email == model.Email))
+            // Save allergies
+            foreach (var allergyId in SelectedAllergyIds)
             {
-                ModelState.AddModelError("Email", "Email is already registered.");
+                var customerAllergy = new CustomerAllergy
+                {
+                    CustomerId = customer.CustomerId,
+                    ActiveIngredientId = allergyId
+                };
+                _context.CustomerAllergies.Add(customerAllergy);
             }
+            _context.SaveChanges();
 
-            if (ModelState.IsValid)
-            {
-                model.Password = HashPassword(Password);
-                _context.TblUsers.Add(model);
-                _context.SaveChanges();
-
-                TempData["Success"] = "Account created successfully. Please log in.";
-                LoadAllergyDropdown();
-                return View("Register"); // reload same combined view
-            }
-
-            LoadAllergyDropdown();
-            return View("Register", model);
+            TempData["Success"] = "Registration successful. Please login.";
+            return RedirectToAction("Dashboard", "Customer");
         }
 
-        // POST: /CustomerRegister/Login
+        
+        public IActionResult Login()
+        {
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Login(string Email, string Password)
@@ -71,45 +89,25 @@ namespace ONT_PROJECT.Controllers
                 HttpContext.Session.SetString("UserRole", user.Role);
 
                 TempData["Success"] = "Login successful!";
-
-                switch (user.Role)
-                {
-                    case "Customer":
-                        return RedirectToAction("Dashboard", "Customer");
-                    case "Pharmacist":
-                        return RedirectToAction("Index", "Pharmacist");
-                    case "PharmacyManager":
-                        return RedirectToAction("Dashboard", "Manager");
-                    default:
-                        return RedirectToAction("Index", "Home");
-                }
+                return RedirectToAction("Dashboard", "Customer"); 
             }
 
-            ModelState.AddModelError("", "Invalid login credentials.");
-            LoadAllergyDropdown();
-            return View("Register", new TblUser { Email = Email });
-        }
-
-        private void LoadAllergyDropdown()
-        {
-            ViewBag.ActiveIngredients = _context.ActiveIngredient
-                .Select(ai => new SelectListItem
-                {
-                    Value = ai.ActiveIngredientId.ToString(),
-                    Text = ai.Ingredients
-                }).ToList();
+            ModelState.AddModelError("", "Invalid login credentials");
+            return View();
         }
 
         private string HashPassword(string password)
         {
-            // TODO: replace with proper hashing (e.g., BCrypt)
-            return password;
+            using var sha256 = SHA256.Create();
+            var bytes = Encoding.UTF8.GetBytes(password);
+            var hash = sha256.ComputeHash(bytes);
+            return Convert.ToBase64String(hash);
         }
 
-        private bool VerifyPassword(string enteredPassword, string storedPassword)
+        private bool VerifyPassword(string password, string storedHash)
         {
-            // TODO: replace with proper verification
-            return enteredPassword == storedPassword;
+            var hashOfInput = HashPassword(password);
+            return hashOfInput == storedHash;
         }
     }
 }
