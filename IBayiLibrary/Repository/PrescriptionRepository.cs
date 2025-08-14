@@ -1,7 +1,10 @@
-﻿using IBayiLibrary.DataAccess;
+﻿using Dapper;
+using IBayiLibrary.DataAccess;
 using IBayiLibrary.Models.Domain;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,11 +29,24 @@ namespace IBayiLibrary.Repository
             string query = "sp_GetDoctorNames";
             return await _db.GetData<Doctor, dynamic>(query, new { });
         }
-        public async Task<bool> AddAsync(Prescriptions prescription)
+        public async Task<bool> AddAsync(PrescriptionViewModel prescription)
         {
             try
             {
-                await _db.SaveData("spInsertPrescription", new {prescription.Date,prescription.CustomerID,prescription.PharmacistID, prescription.PrescriptionPhoto,prescription.DoctorID});
+                await _db.SaveData("spInsertPrescription", new { prescription.Date, prescription.CustomerID, prescription.PharmacistID, prescription.PrescriptionPhoto, prescription.DoctorID });
+                return true;
+            }
+
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+        public async Task<bool> AddPrescLineAsync(PrescriptionViewModel prescription)
+        {
+            try
+            {
+                await _db.SaveData("spInsertPrescriptionLine", new { prescription.MedicineID, prescription.PrescriptionID, prescription.Instructions, prescription.Quantity, prescription.Repeats, prescription.RepeatsLeft });
                 return true;
             }
 
@@ -44,11 +60,7 @@ namespace IBayiLibrary.Repository
             string query = "spGetCustomerIDNo";
             return await _db.GetData<tblUser, dynamic>(query, new { });
         }
-        public async Task<IEnumerable<PrescriptionModel>> GetUnproccessedPrescriptions()
-        {
-            string query = "spGetUnproccessedPrescription";
-            return await _db.GetData<PrescriptionModel, dynamic>(query, new { });
-        }     
+       
         public async Task<tblUser> GetCustomerByIDs(int UserID)
         {
             IEnumerable<tblUser> result = await _db.GetData<tblUser, dynamic>("GetCustomerByID", new { ID = UserID });
@@ -91,6 +103,11 @@ namespace IBayiLibrary.Repository
             {
                 return false;
             }
+        }
+        public async Task<IEnumerable<PrescriptionLines>> GetLastPrescriptioRow()
+        {
+            string query = "spGetLastPrescriptioRow";
+            return await _db.GetData<PrescriptionLines, dynamic>(query, new { });
         }
 
     }

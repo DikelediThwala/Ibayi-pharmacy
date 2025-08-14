@@ -33,5 +33,11 @@ namespace IBayiLibrary.DataAccess
             using IDbConnection connection = new SqlConnection(_config.GetConnectionString(connectionId));
             await connection.ExecuteAsync(spName, parameters, commandType: CommandType.StoredProcedure);
         }
+        public async Task<int> SaveDataWithReturn<T>(string spName, T parameters, string connectionId = "DefaultConnection")
+        {
+            using IDbConnection connection = new SqlConnection(_config.GetConnectionString(connectionId));
+            return await connection.ExecuteScalarAsync<int>(spName, parameters, commandType: CommandType.StoredProcedure);
+        }
+
     }
 }
