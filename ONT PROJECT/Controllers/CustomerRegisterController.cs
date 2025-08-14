@@ -83,8 +83,6 @@ namespace ONT_PROJECT.Controllers
             HttpContext.Session.SetString("UserFirstName", model.FirstName);
             HttpContext.Session.SetString("UserRole", model.Role);
 
-            TempData["SuccessMessage"] = "Account created successfully!";
-            // Redirect to the customer's dashboard
             return RedirectToAction("Dashboard", "Customer");
         }
 
