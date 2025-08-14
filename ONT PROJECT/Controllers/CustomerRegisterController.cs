@@ -21,17 +21,10 @@ namespace ONT_PROJECT.Controllers
 
         // POST: /CustomerRegister/Register
         // GET: Register
+        // GET: Register
         public IActionResult Register()
         {
-            var activeIngredients = _context.ActiveIngredient
-                .Select(ai => new SelectListItem
-                {
-                    Value = ai.ActiveIngredientId.ToString(),
-                    Text = ai.Ingredients
-                }).ToList();
-
-            ViewBag.ActiveIngredients = activeIngredients;
-
+            LoadAllergyDropdown(); // Load allergies alphabetically
             return View();
         }
 
@@ -43,7 +36,7 @@ namespace ONT_PROJECT.Controllers
             if (Password != ConfirmPassword)
             {
                 ModelState.AddModelError("ConfirmPassword", "Passwords do not match.");
-                LoadAllergyDropdown();
+                LoadAllergyDropdown(SelectedAllergyIds);
                 return View(model);
             }
 
@@ -51,7 +44,7 @@ namespace ONT_PROJECT.Controllers
             if (_context.TblUsers.Any(u => u.Email.ToLower() == model.Email.ToLower()))
             {
                 ModelState.AddModelError("Email", "This email is already registered.");
-                LoadAllergyDropdown();
+                LoadAllergyDropdown(SelectedAllergyIds);
                 return View(model);
             }
 
@@ -66,12 +59,15 @@ namespace ONT_PROJECT.Controllers
             };
 
             // Add allergies to customer
-            foreach (var allergyId in SelectedAllergyIds)
+            if (SelectedAllergyIds != null)
             {
-                customer.CustomerAllergies.Add(new CustomerAllergy
+                foreach (var allergyId in SelectedAllergyIds)
                 {
-                    ActiveIngredientId = allergyId
-                });
+                    customer.CustomerAllergies.Add(new CustomerAllergy
+                    {
+                        ActiveIngredientId = allergyId
+                    });
+                }
             }
 
             _context.Customers.Add(customer);
@@ -86,14 +82,20 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("Dashboard", "Customer");
         }
 
-        private void LoadAllergyDropdown()
+        // Updated LoadAllergyDropdown method
+        private void LoadAllergyDropdown(List<int>? selectedIds = null)
         {
+            selectedIds ??= new List<int>();
+
             ViewBag.ActiveIngredients = _context.ActiveIngredient
                 .Select(ai => new SelectListItem
                 {
                     Value = ai.ActiveIngredientId.ToString(),
-                    Text = ai.Ingredients
-                }).ToList();
+                    Text = ai.Ingredients,
+                    Selected = selectedIds.Contains(ai.ActiveIngredientId) // Pre-select if in list
+                })
+                .OrderBy(ai => ai.Text) // Alphabetical order
+                .ToList();
         }
 
         [HttpPost]
