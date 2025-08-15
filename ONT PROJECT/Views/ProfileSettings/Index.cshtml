@@ -2,6 +2,10 @@
 @{
     ViewData["Title"] = "My Profile";
     Layout = "_CustomerLayout";
+
+    var selectedAllergies = ViewBag.SelectedAllergies as List<int> ?? new List<int>();
+    var allAllergies = ViewBag.ActiveIngredients as List<SelectListItem> ?? new List<SelectListItem>();
+    bool isEditMode = ViewBag.EditMode != null && (bool)ViewBag.EditMode;
 }
 
 @if (TempData["SuccessMessage"] != null)
@@ -11,32 +15,152 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+
 <div class="container mt-5">
     <h2 class="mb-4 text-center">My Profile</h2>
 
-    <div class="card p-4 shadow-sm">
-        <dl class="row">
-            <dt class="col-sm-3">First Name</dt>
-            <dd class="col-sm-9">@Model.FirstName</dd>
+    @if (!isEditMode)
+    {
+        <!-- VIEW MODE -->
+        <div class="card p-4 shadow-sm">
+            <dl class="row">
+                <dt class="col-sm-3">First Name</dt>
+                <dd class="col-sm-9">@Model.FirstName</dd>
 
-            <dt class="col-sm-3">Last Name</dt>
-            <dd class="col-sm-9">@Model.LastName</dd>
+                <dt class="col-sm-3">Last Name</dt>
+                <dd class="col-sm-9">@Model.LastName</dd>
 
-            <dt class="col-sm-3">ID Number</dt>
-            <dd class="col-sm-9">@Model.Idnumber</dd>
+                <dt class="col-sm-3">ID Number</dt>
+                <dd class="col-sm-9">@Model.Idnumber</dd>
 
-            <dt class="col-sm-3">Phone Number</dt>
-            <dd class="col-sm-9">@Model.PhoneNumber</dd>
+                <dt class="col-sm-3">Phone Number</dt>
+                <dd class="col-sm-9">@Model.PhoneNumber</dd>
 
-            <dt class="col-sm-3">Email</dt>
-            <dd class="col-sm-9">@Model.Email</dd>
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
 
-            <dt class="col-sm-3">Allergies</dt>
-            <dd class="col-sm-9">@Model.Allergies</dd>
-        </dl>
-
-        <div class="text-center mt-4">
-            <a class="btn btn-primary" href="@Url.Action("Edit")">Edit Profile</a>
+                <dt class="col-sm-3">Allergies</dt>
+                <dd class="col-sm-9">
+                    @if (selectedAllergies.Any())
+                    {
+                        <ul>
+                            @foreach (var id in selectedAllergies)
+                            {
+                                var allergy = allAllergies.FirstOrDefault(a => a.Value == id.ToString());
+                                if (allergy != null)
+                                {
+                                    <li>@allergy.Text</li>
+                                }
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span>No allergies listed.</span>
+                    }
+                </dd>
+            </dl>
+            <div class="text-center mt-4">
+                <a asp-action="Index" asp-route-edit="true" class="btn btn-primary">Edit Profile</a>
+            </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <!-- EDIT MODE -->
+        <form asp-action="Index" method="post">
+            <div class="card p-4 shadow-sm">
+                <dl class="row">
+                    <dt class="col-sm-3">First Name</dt>
+                    <dd class="col-sm-9">
+                        <input asp-for="FirstName" class="form-control" />
+                    </dd>
+
+                    <dt class="col-sm-3">Last Name</dt>
+                    <dd class="col-sm-9">
+                        <input asp-for="LastName" class="form-control" />
+                    </dd>
+
+                    <dt class="col-sm-3">ID Number</dt>
+                    <dd class="col-sm-9">
+                        <input asp-for="Idnumber" class="form-control" />
+                    </dd>
+
+                    <dt class="col-sm-3">Phone Number</dt>
+                    <dd class="col-sm-9">
+                        <input asp-for="PhoneNumber" class="form-control" />
+                    </dd>
+
+                    <dt class="col-sm-3">Email</dt>
+                    <dd class="col-sm-9">@Model.Email</dd>
+
+                    <dt class="col-sm-3">Allergies</dt>
+                    <dd class="col-sm-9">
+                        <div class="d-flex gap-2 mb-2">
+                            <select id="allergySelect" class="form-control form-control-sm">
+                                <option value="">-- Select Allergy --</option>
+                                @foreach (var item in allAllergies)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <button type="button" id="addAllergyBtn" class="btn btn-sm btn-success">Add</button>
+                        </div>
+
+                        <ul id="selectedAllergiesList" class="list-group mb-2">
+                            @foreach (var id in selectedAllergies)
+                            {
+                                var allergy = allAllergies.FirstOrDefault(a => a.Value == id.ToString());
+                                if (allergy != null)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        @allergy.Text
+                                        <button type="button" class="btn btn-sm btn-danger remove-btn">Remove</button>
+                                        <input type="hidden" name="SelectedAllergyIds" value="@allergy.Value" />
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </dd>
+                </dl>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                </div>
+            </div>
+        </form>
+
+        <script>
+            // Add allergy dynamically
+            const addBtn = document.getElementById('addAllergyBtn');
+            addBtn.addEventListener('click', function () {
+                const select = document.getElementById('allergySelect');
+                const selectedValue = select.value;
+                const selectedText = select.options[select.selectedIndex]?.text;
+
+                if (!selectedValue) { alert('Please select an allergy.'); return; }
+                if ([...document.querySelectorAll('#selectedAllergiesList input')].some(i => i.value === selectedValue)) {
+                    alert('Allergy already added.');
+                    return;
+                }
+
+                const li = document.createElement('li');
+                li.className = "list-group-item d-flex justify-content-between align-items-center";
+                li.innerHTML = `${selectedText} <button type="button" class="btn btn-sm btn-danger remove-btn">Remove</button><input type="hidden" name="SelectedAllergyIds" value="${selectedValue}" />`;
+
+                li.querySelector('.remove-btn').addEventListener('click', function () { li.remove(); });
+
+                document.getElementById('selectedAllergiesList').appendChild(li);
+                select.value = "";
+            });
+
+            // Remove allergy dynamically
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    btn.parentElement.remove();
+                });
+            });
+        </script>
+    }
 </div>
