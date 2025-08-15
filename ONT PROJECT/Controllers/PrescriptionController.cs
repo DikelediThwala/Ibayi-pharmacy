@@ -30,30 +30,74 @@ public class PrescriptionController : Controller
         return View(prescriptions);
     }
 
+    //[HttpPost]
+    //public async Task<IActionResult> Upload(IFormFile PrescriptionFile, bool RequestDispense)
+    //{
+    //    int customerId = GetLoggedInCustomerId();
+    //    if (customerId == 0)
+    //        return RedirectToAction("Login", "CustomerRegister");
+
+    //    if (PrescriptionFile != null && PrescriptionFile.Length > 0)
+    //    {
+    //        using var memoryStream = new MemoryStream();
+    //        await PrescriptionFile.CopyToAsync(memoryStream);
+
+    //        var prescription = new UnprocessedPrescription
+    //        {
+    //            Date = DateOnly.FromDateTime(DateTime.Now),
+    //            CustomerId = customerId,
+    //            PrescriptionPhoto = memoryStream.ToArray(),
+    //            Dispense = RequestDispense ? "Requested" : "Uploaded",
+    //            Status = RequestDispense ? "Requested" : "Uploaded"
+    //        };
+
+    //        _context.UnprocessedPrescriptions.Add(prescription);
+    //        await _context.SaveChangesAsync();
+    //    }
+
+    //    return RedirectToAction("Upload");
+    //}
     [HttpPost]
-    public async Task<IActionResult> Upload(IFormFile PrescriptionFile, bool RequestDispense)
+    public async Task<IActionResult> Upload(IFormFile PrescriptionFile)
     {
         int customerId = GetLoggedInCustomerId();
         if (customerId == 0)
-        {
             return RedirectToAction("Login", "CustomerRegister");
-        }
 
         if (PrescriptionFile != null && PrescriptionFile.Length > 0)
         {
             using var memoryStream = new MemoryStream();
             await PrescriptionFile.CopyToAsync(memoryStream);
 
+            // FIX: check if the form values contain "true"
+            bool isRequested = Request.Form["RequestDispense"].ToString().Contains("true");
+
             var prescription = new UnprocessedPrescription
             {
                 Date = DateOnly.FromDateTime(DateTime.Now),
                 CustomerId = customerId,
                 PrescriptionPhoto = memoryStream.ToArray(),
-                Dispense = RequestDispense ? "Requested" : "Uploaded",
-                Status = "Pending" // You can adjust status logic if needed
+                Dispense = isRequested ? "Requested" : "Uploaded",
+                Status = isRequested ? "Requested" : "Uploaded"
             };
 
             _context.UnprocessedPrescriptions.Add(prescription);
+            await _context.SaveChangesAsync();
+        }
+
+        return RedirectToAction("Upload");
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> RequestDispenseAction(int id)
+    {
+        var prescription = await _context.UnprocessedPrescriptions.FindAsync(id);
+        if (prescription != null && prescription.Status == "Uploaded")
+        {
+            prescription.Status = "Requested";
+            prescription.Dispense = "Requested";
+            _context.Update(prescription);
             await _context.SaveChangesAsync();
         }
 
@@ -84,19 +128,19 @@ public class PrescriptionController : Controller
         return File(prescription.PrescriptionPhoto, "application/pdf");
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Request(int id)
-    {
-        var prescription = await _context.UnprocessedPrescriptions.FindAsync(id);
-        if (prescription != null && prescription.Dispense == "Uploaded")
-        {
-            prescription.Dispense = "Requested";
-            _context.Update(prescription);
-            await _context.SaveChangesAsync();
-        }
+    //[HttpPost]
+    //public async Task<IActionResult> Request(int id)
+    //{
+    //    var prescription = await _context.UnprocessedPrescriptions.FindAsync(id);
+    //    if (prescription != null && prescription.Dispense == "Uploaded")
+    //    {
+    //        prescription.Dispense = "Requested";
+    //        _context.Update(prescription);
+    //        await _context.SaveChangesAsync();
+    //    }
 
-        return RedirectToAction("Upload");
-    }
+    //    return RedirectToAction("Upload");
+    //}
 
     private int GetLoggedInCustomerId()
     {
