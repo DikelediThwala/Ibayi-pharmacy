@@ -171,31 +171,18 @@ namespace ONT_PROJECT.Controllers
             var person = await _prescriptionRepository.GetPrescriptionByID(id);
             return View(person);
         }
-        public async Task<IActionResult> UnprocessedPrescription()
+        public async Task<IActionResult> GetPrescriptions()
         {
-          
-            return View();
+
+            var p = await _prescriptionRepository.GetLastPrescriptions();
+            return View(p);
         }
-
-        //public async Task<IActionResult> EditPrescription(Prescriptions prescriptions)
-        //{
-        //    try
-        //    {
-
-        //        bool updateRecord = await _prescriptionRepository.UpdatePrescription(prescriptions);
-
-        //        if (updateRecord)
-        //            TempData["msg"] = "Successfully Updated";
-        //        else
-        //            TempData["msg"] = "Could not update";
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        TempData["msg"] = "error";
-        //    }
-        //    return View(prescriptions);
-        //}
-
+        [HttpPost]
+        public async Task<IActionResult> GetPrescByID(int id)
+        {
+            var success = await _prescriptionRepository.GetPrescriptionByID(id);
+            //return Json(new { success });
+            return View(success);
+        }              
     }
 }

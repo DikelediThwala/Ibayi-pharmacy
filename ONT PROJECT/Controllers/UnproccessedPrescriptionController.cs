@@ -22,12 +22,7 @@ namespace ONT_PROJECT.Controllers
             var fridge = await _unproccessedprescriptionRepository.GetUnproccessedPrescriptions();
             return View(fridge);
         }              
-        [HttpPost]
-        public async Task<IActionResult> ProcessPrescription(int id)
-        {
-            bool success = await _unproccessedprescriptionRepository.GetPrescByIDPrescription(id);
-            return Json(new { success });
-        }
+       
 
 
     }

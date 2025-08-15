@@ -1,4 +1,4 @@
-﻿@model IEnumerable<IBayiLibrary.Models.Domain.UnproccessedPrescription>
+﻿@model IEnumerable<IBayiLibrary.Models.Domain.PrescriptionModel>
 
 @{
     ViewData["Title"] = "Unproccessed Prescription";
@@ -17,8 +17,6 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-
 <style>
     body {
         color: #566787;
@@ -291,22 +289,27 @@
                         <div class="col-sm-4">
                             <h2>Unproccessed <b>Prescriptions</b></h2>
                         </div>
-                         
+                        
                     </div>
                 </div>
                 <div class="table-filter">
-                  
+                   
                 </div>
-                
-                    <table id="prescriptionsTable" class="table table-striped table-hover">
-
+                <table id="prescriptionsTable" class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>Customer</th>                           
+                            <th>Prescription ID</th>                           
+                            <th>Customer</th>
+                            <th>Doctor</th>
+                            <th>Medicine Name</th>
                             <th>Date</th>
                             <th>Photo</th>
-                            <th>Status</th> 
-                            <th>Action</th>
+                            <th>Repeats</th>
+                            <th>Repeats Left</th>
+                            <th>Instructions</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                            <th></th>
                         </tr>
                     </thead>
 
@@ -315,12 +318,15 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>@item.FirstName</td>                               
+                                <td>@item.PrescriptionID</td>                               
+                                <td>@item.FirstName</td>
+                                <td>@item.Name</td>
+                                <td>@item.MedicineName</td>
                                 <td>@item.Date.ToString("yyyy-MM-dd")</td>
                                 <td>
                                     @if (item.PrescriptionPhoto != null)
                                     {
-                                        <a asp-action="DownloadPrescription" asp-route-id="@item.UnproccessedPrescriptionID">
+                                        <a asp-action="DownloadPrescription" asp-route-id="@item.PrescriptionID">
                                             Download Prescrption
                                         </a>
                                     }
@@ -329,33 +335,21 @@
                                         <span>No File</span>
                                     }
                                 </td>
-                                <td class="status-cell">@item.Status</td>
-                                <td>
-                                    @if (item.Status != "Processed")
-                                    {
-                                        <button class="btn btn-success btn-sm process-btn"
-                                                data-id="@item.UnproccessedPrescriptionID">
-                                            Process
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-success">Processed</span>
-                                    }
-                                </td>
-
+                                <td>@item.Repeats</td>
+                                <td>@item.RepeatsLeft</td>
+                                <td>@item.Instructions</td>
+                                <td>@item.Quantity</td>
+                                <td>@item.Status</td>
+                                <td><a asp-action="GetPrescByID" class="btn btn-success" asp-route-id="@item.PrescriptionID" class="view" title="View Details" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a></td>
 
                             </tr>
                         }
                     </tbody>
-                </table>              
+                </table>               
             </div>
         </div>
     </div>
-   
-
 </body>
-
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>

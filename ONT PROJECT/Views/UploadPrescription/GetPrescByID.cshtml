@@ -16,31 +16,14 @@
 </div>
 
 <div class="accordion-body"> 
+    <p><strong> @Html.DisplayNameFor(model => model.PrescriptionID):</strong> @Html.DisplayFor(model => model.PrescriptionID) </p>
     <p><strong> @Html.DisplayNameFor(model => model.Name):</strong> @Html.DisplayFor(model => model.Name) </p>
     <p><strong>@Html.DisplayNameFor(model => model.FirstName):</strong>  @Html.DisplayFor(model => model.FirstName)</p>
     <p><strong>@Html.DisplayNameFor(model => model.MedicineName):</strong> @Html.DisplayFor(model => model.MedicineName)</p>
     <p><strong>@Html.DisplayNameFor(model => model.Date):</strong> @Html.DisplayFor(model => model.Date)</p>
     <p><strong>@Html.DisplayNameFor(model => model.Repeats):</strong> @Html.DisplayFor(model => model.Repeats)</p>
     <p><strong>@Html.DisplayNameFor(model => model.RepeatsLeft):</strong> @Html.DisplayFor(model => model.RepeatsLeft)</p>
+    <p><strong> @Html.DisplayNameFor(model => model.Quantity):</strong> @Html.DisplayFor(model => model.Quantity) </p>
+    <p><strong> @Html.DisplayNameFor(model => model.Instructions):</strong> @Html.DisplayFor(model => model.Instructions) </p>
     <p><strong>@Html.DisplayNameFor(model => model.Status):</strong> @Html.DisplayFor(model => model.Status)</p>    
-   @*  <p>
-        <strong>Status:</strong>
-        <div class="col-md-6">
-            <select for="Status" class="form-select">
-                <option value="" selected>Processed</option>
-                <option value="Mr.">Dispensed</option>
-                <option value="Mrs.">Placed</option>
-                <option value="Miss">Collected</option>
-
-            </select>
-        </div>
-    </p>  *@
-    <div class="d-flex justify-content-between">
-        <a asp-action="ViewPrescription" asp-controller="Pharmacist" asp-route-id="1" class="btn btn-sm btn-outline-danger">
-            <i class="bi bi-trash"></i> Delete
-        </a>
-        <a asp-action="ViewPrescription" asp-controller="Pharmacist" class="btn btn-success btn-sm">
-            <i class="bi bi-save me-1"></i> Save
-        </a>
-    </div>
 </div>

@@ -42,6 +42,7 @@ namespace IBayiLibrary.Repository
                 return false;
             }
         }
+
         public async Task<bool> AddPrescLineAsync(PrescriptionViewModel prescription)
         {
             try
@@ -73,22 +74,27 @@ namespace IBayiLibrary.Repository
             return result.FirstOrDefault();
 
         }
-        //public async Task<PrescriptionModel> GetPrescriptionByID(int id)
-        //{
-        //    IEnumerable<Prescriptions> result = await _db.GetData<Prescriptions, dynamic>("spGetPrescriptionByID", new { PrescriptionID = id });
-        //    return result.FirstOrDefault();
-
-
         public async Task<PrescriptionModel> GetPrescriptionByID(int id)
         {
-            var result = await _db.GetData<PrescriptionModel, dynamic>(
-                "spGetPrescriptionByID",
-                new { PrescriptionID = id }
-            );
-            
+            IEnumerable<PrescriptionModel> result = await _db.GetData<PrescriptionModel, dynamic>("spGetPrescriptionByID", new { PrescriptionID = id });
             return result.FirstOrDefault();
         }
 
+
+        //public async Task<PrescriptionModel> GetPrescriptionByID(int id)
+        //{
+        //    var result = await _db.GetData<PrescriptionModel, dynamic>(
+        //        "spGetPrescriptionByID",
+        //        new { PrescriptionID = id }
+        //    );
+            
+        //    return result.FirstOrDefault();
+        //}
+        //public async Task<Person> GetByIdAsync(int id)
+        //{
+        //    IEnumerable<Person> result = await _db.GetData<Person, dynamic>("sp_Get_Person", new { ID = id });
+        //    return result.FirstOrDefault();
+        //}
 
 
         public async Task<bool> UpdatePrescription(Prescriptions prescriptions)
@@ -109,6 +115,26 @@ namespace IBayiLibrary.Repository
             string query = "spGetLastPrescriptioRow";
             return await _db.GetData<PrescriptionLines, dynamic>(query, new { });
         }
+        public async Task<IEnumerable<PrescriptionModel>> GetLastPrescriptions()
+        {
+            string query = "spGetProccessedPrescrption";
+            return await _db.GetData<PrescriptionModel, dynamic>(query, new { });
+        }
+        public async Task<bool> GetPrescByIDPrescription(int unprocessedPrescriptionId)
+        {
+            try
+            {
+                await _db.SaveData(
+                    "spProcessPrescription",
+                    new { UnproccessedPrescriptionID = unprocessedPrescriptionId, Status = "Processed" }
+                );
 
+                return true; // If no exception, assume success
+            }
+            catch
+            {
+                return false; // Something went wrong
+            }
+        }
     }
 }
