@@ -24,7 +24,7 @@ public class PrescriptionController : Controller
             return RedirectToAction("Login", "CustomerRegister");
         }
 
-        var prescriptions = _context.Prescriptions
+        var prescriptions = _context.UnprocessedPrescriptions
             .Where(p => p.CustomerId == customerId)
             .ToList();
         return View(prescriptions);
@@ -44,17 +44,16 @@ public class PrescriptionController : Controller
             using var memoryStream = new MemoryStream();
             await PrescriptionFile.CopyToAsync(memoryStream);
 
-            var prescription = new Prescription
+            var prescription = new UnprocessedPrescription
             {
                 Date = DateOnly.FromDateTime(DateTime.Now),
                 CustomerId = customerId,
-                DoctorId = 1, // TODO: get real doctor ID if applicable
-                PharmacistId = 1, // TODO: get real pharmacist ID if applicable
                 PrescriptionPhoto = memoryStream.ToArray(),
-                Status = RequestDispense ? "Requested" : "Uploaded"
+                Dispense = RequestDispense ? "Requested" : "Uploaded",
+                Status = "Pending" // You can adjust status logic if needed
             };
 
-            _context.Prescriptions.Add(prescription);
+            _context.UnprocessedPrescriptions.Add(prescription);
             await _context.SaveChangesAsync();
         }
 
@@ -64,18 +63,19 @@ public class PrescriptionController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(int id)
     {
-        var prescription = await _context.Prescriptions.FindAsync(id);
+        var prescription = await _context.UnprocessedPrescriptions.FindAsync(id);
         if (prescription != null)
         {
-            _context.Prescriptions.Remove(prescription);
+            _context.UnprocessedPrescriptions.Remove(prescription);
             await _context.SaveChangesAsync();
         }
 
         return RedirectToAction("Upload");
     }
+
     public async Task<IActionResult> ViewPdf(int id)
     {
-        var prescription = await _context.Prescriptions.FindAsync(id);
+        var prescription = await _context.UnprocessedPrescriptions.FindAsync(id);
         if (prescription == null || prescription.PrescriptionPhoto == null)
         {
             return NotFound();
@@ -84,14 +84,13 @@ public class PrescriptionController : Controller
         return File(prescription.PrescriptionPhoto, "application/pdf");
     }
 
-
     [HttpPost]
     public async Task<IActionResult> Request(int id)
     {
-        var prescription = await _context.Prescriptions.FindAsync(id);
-        if (prescription != null && prescription.Status == "Uploaded")
+        var prescription = await _context.UnprocessedPrescriptions.FindAsync(id);
+        if (prescription != null && prescription.Dispense == "Uploaded")
         {
-            prescription.Status = "Requested";
+            prescription.Dispense = "Requested";
             _context.Update(prescription);
             await _context.SaveChangesAsync();
         }
@@ -105,14 +104,4 @@ public class PrescriptionController : Controller
         int? userId = HttpContext.Session.GetInt32("UserId");
         return userId ?? 0;
     }
-
-
-
-
-    // =======================
-    // PRESCRIPTION LINE ACTIONS
-    // =======================
-
-    // GET: Prescription/Lines/5
-    
 }

@@ -1,4 +1,4 @@
-﻿@model List<ONT_PROJECT.Models.Prescription>
+﻿@model List<ONT_PROJECT.Models.UnprocessedPrescription>
 @{
     ViewData["Title"] = "Upload Prescription";
     Layout = "_CustomerLayout";
@@ -55,7 +55,7 @@
                             <tr>
                                 <td>@p.Date.ToString("yyyy-MM-dd")</td>
                                 <td>
-                                    @if (p.Status == "Requested")
+                                    @if (p.Dispense == "Requested")
                                     {
                                         <span class="badge bg-warning">Requested</span>
                                     }
@@ -69,15 +69,15 @@
                                     }
                                 </td>
                                 <td>
-                                    <a asp-controller="Prescription" asp-action="ViewPdf" asp-route-id="@p.PrescriptionId" target="_blank">View</a>
+                                    <a asp-controller="Prescription" asp-action="ViewPdf" asp-route-id="@p.UnprocessedPrescriptionId" target="_blank">View</a>
                                 </td>
                                 <td>
-                                    <form asp-action="Delete" asp-route-id="@p.PrescriptionId" method="post" class="d-inline">
+                                    <form asp-action="Delete" asp-route-id="@p.UnprocessedPrescriptionId" method="post" class="d-inline">
                                         <button class="btn btn-sm btn-danger">Delete</button>
                                     </form>
-                                    @if (p.Status == "Uploaded")
+                                    @if (p.Dispense == "Uploaded")
                                     {
-                                        <form asp-action="Request" asp-route-id="@p.PrescriptionId" method="post" class="d-inline">
+                                        <form asp-action="Request" asp-route-id="@p.UnprocessedPrescriptionId" method="post" class="d-inline">
                                             <button class="btn btn-sm btn-outline-primary">Request to Dispense</button>
                                         </form>
                                     }
