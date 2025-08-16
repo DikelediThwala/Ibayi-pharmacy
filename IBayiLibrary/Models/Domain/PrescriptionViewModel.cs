@@ -11,6 +11,8 @@ namespace IBayiLibrary.Models.Domain
     public class PrescriptionViewModel
     {
         public string FirstName {  get; set; }
+         public string Name { get; set; }
+        public string MedicineName { get; set; }
         public int PrescrptionLineID { get; set; }
         [ForeignKey("MedicineID")]
         public int MedicineID { get; set; }
@@ -20,7 +22,7 @@ namespace IBayiLibrary.Models.Domain
         public int Quantity { get; set; }
         public int Repeats { get; set; }
         public int RepeatsLeft { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime ?Date { get; set; }
         [ForeignKey("CustomerID")]
         public int CustomerID { get; set; }
         [ForeignKey("PharmacistID")]

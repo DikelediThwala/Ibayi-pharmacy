@@ -74,9 +74,9 @@ namespace IBayiLibrary.Repository
             return result.FirstOrDefault();
 
         }
-        public async Task<PrescriptionModel> GetPrescriptionByID(int id)
+        public async Task<PrescriptionViewModel> GetPrescriptionByID(int id)
         {
-            IEnumerable<PrescriptionModel> result = await _db.GetData<PrescriptionModel, dynamic>("spGetPrescriptionByID", new { PrescriptionID = id });
+            IEnumerable<PrescriptionViewModel> result = await _db.GetData<PrescriptionViewModel, dynamic>("spGetPrescriptionByID", new { PrescriptionID = id });
             return result.FirstOrDefault();
         }
 

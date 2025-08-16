@@ -322,7 +322,7 @@
                                 <td>@item.FirstName</td>
                                 <td>@item.Name</td>
                                 <td>@item.MedicineName</td>
-                                <td>@item.Date.ToString("yyyy-MM-dd")</td>
+                                <td>@item.Date</td>
                                 <td>
                                     @if (item.PrescriptionPhoto != null)
                                     {
@@ -340,7 +340,17 @@
                                 <td>@item.Instructions</td>
                                 <td>@item.Quantity</td>
                                 <td>@item.Status</td>
-                                <td><a asp-action="GetPrescByID" class="btn btn-success" asp-route-id="@item.PrescriptionID" class="view" title="View Details" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a></td>
+                                @* <td> class="btn btn-success" asp-route-id="@item.PrescriptionID" class="view"
+                                    title="View Details" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></td>*@       
+                                    <td>
+                                    <a asp-action="GetPrescByID"
+                                       asp-route-id="@item.PrescriptionID"
+                                       class="btn btn-success"
+                                       title="View Details">
+                                        <i class="material-icons">&#xE5C8;</i>
+                                    </a>
+
+                                </td>
 
                             </tr>
                         }

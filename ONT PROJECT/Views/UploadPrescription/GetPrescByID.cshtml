@@ -1,6 +1,6 @@
-﻿@model IBayiLibrary.Models.Domain.PrescriptionModel;
+﻿@* @model IBayiLibrary.Models.Domain.PrescriptionModel;
 @{
-    
+
     ViewData["Title"] = "Edit PrescriptionLine";
     Layout = "PharmacistLayout";
 }
@@ -15,7 +15,7 @@
     </h2>
 </div>
 
-<div class="accordion-body"> 
+<div class="accordion-body">
     <p><strong> @Html.DisplayNameFor(model => model.PrescriptionID):</strong> @Html.DisplayFor(model => model.PrescriptionID) </p>
     <p><strong> @Html.DisplayNameFor(model => model.Name):</strong> @Html.DisplayFor(model => model.Name) </p>
     <p><strong>@Html.DisplayNameFor(model => model.FirstName):</strong>  @Html.DisplayFor(model => model.FirstName)</p>
@@ -25,5 +25,7 @@
     <p><strong>@Html.DisplayNameFor(model => model.RepeatsLeft):</strong> @Html.DisplayFor(model => model.RepeatsLeft)</p>
     <p><strong> @Html.DisplayNameFor(model => model.Quantity):</strong> @Html.DisplayFor(model => model.Quantity) </p>
     <p><strong> @Html.DisplayNameFor(model => model.Instructions):</strong> @Html.DisplayFor(model => model.Instructions) </p>
-    <p><strong>@Html.DisplayNameFor(model => model.Status):</strong> @Html.DisplayFor(model => model.Status)</p>    
+    <p><strong>@Html.DisplayNameFor(model => model.Status):</strong> @Html.DisplayFor(model => model.Status)</p>
 </div>
+
+ *@
