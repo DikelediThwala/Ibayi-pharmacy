@@ -1,0 +1,31 @@
+﻿@model ONT_PROJECT.Models.TblUser
+@{
+    ViewData["Title"] = "Profile Settings";
+    Layout = "_CustomerLayout"; // Use your customer layout
+}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="card shadow-sm p-4 text-center" style="width: 400px;">
+        <h3 class="mb-4">Profile Settings</h3>
+
+        <div class="d-grid gap-3">
+            <!-- Edit Profile Button -->
+            <a asp-controller="ProfileSettings" asp-action="Index" class="btn btn-primary btn-lg">
+                <i class="bi bi-person-lines-fill me-2"></i> Edit Profile
+            </a>
+
+            <!-- Change Password Button -->
+            <a asp-controller="ProfileSettings" asp-action="ChangePassword" class="btn btn-warning btn-lg">
+                <i class="bi bi-lock-fill me-2"></i> Change Password
+            </a>
+
+            <!-- Delete Account Button -->
+            <form asp-controller="ProfileSettings" asp-action="DeleteAccount" method="post" onsubmit="return confirm('Are you sure you want to delete your account?');">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger btn-lg">
+                    <i class="bi bi-trash-fill me-2"></i> Delete Account
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

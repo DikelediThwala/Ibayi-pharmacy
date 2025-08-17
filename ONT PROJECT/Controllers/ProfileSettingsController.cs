@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
 using System.IO;
 using System.Linq;
@@ -19,7 +20,17 @@ namespace ONT_PROJECT.Controllers
             _context = context;
             _environment = environment;
         }
+        [HttpGet]
+        public IActionResult Settings()
+        {
+            var email = HttpContext.Session.GetString("UserEmail");
+            if (email == null) return RedirectToAction("Login", "CustomerRegister");
 
+            var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
+            if (user == null) return NotFound();
+
+            return View(user); // This is the Settings.cshtml view with 3 buttons
+        }
         // Show list of all customers (report)
         [HttpGet]
         public IActionResult Index(bool? edit)
@@ -106,40 +117,60 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteAccount()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Index", "Home");
 
-        //[HttpGet]
-        //public IActionResult Edit()
-        //{
-        //    var email = HttpContext.Session.GetString("UserEmail");
-        //    if (email == null) return RedirectToAction("Login", "CustomerRegister");
+            // Delete user from DB
+            // _dbContext.TblUser.Remove(user);
+            // _dbContext.SaveChanges();
 
-        //    var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
-        //    if (user == null) return NotFound();
+            // Clear session and redirect
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
+        }
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            var email = HttpContext.Session.GetString("UserEmail");
+            if (email == null) return RedirectToAction("Login", "CustomerRegister");
 
-        //    return View(user);
-        //}
+            var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
+            if (user == null) return NotFound();
 
-        //[HttpPost]
-        //public IActionResult Edit(TblUser model)
-        //{
-        //    var email = HttpContext.Session.GetString("UserEmail");
-        //    if (email == null) return RedirectToAction("Login", "CustomerRegister");
+            return View(user); // Return the ChangePassword.cshtml view
+        }
 
-        //    var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
-        //    if (user == null) return NotFound();
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ChangePassword(int UserId, string Password, string NewPassword, string ConfirmPassword)
+        {
+            var user = _context.TblUsers.FirstOrDefault(u => u.UserId == UserId);
+            if (user == null) return RedirectToAction("Index", "Home");
 
-        //    user.FirstName = model.FirstName;
-        //    user.LastName = model.LastName;
-        //    user.Idnumber = model.Idnumber;
-        //    user.PhoneNumber = model.PhoneNumber;
-        //    user.Allergies = model.Allergies;
+            if (user.Password != Password)
+            {
+                ModelState.AddModelError("", "Current password is incorrect.");
+                return View(user);
+            }
 
-        //    _context.SaveChanges();
+            if (NewPassword != ConfirmPassword)
+            {
+                ModelState.AddModelError("", "New password and confirmation do not match.");
+                return View(user);
+            }
 
-        //    // ✅ Save success message in TempData
-        //    TempData["SuccessMessage"] = "Your profile was updated successfully.";
+            user.Password = NewPassword;
+            _context.SaveChanges();
 
-        //    return RedirectToAction("Index");
-        //}
+            TempData["SuccessMessage"] = "Password updated successfully!";
+            return RedirectToAction("Index");
+        }
+
+
+
     }
 }
