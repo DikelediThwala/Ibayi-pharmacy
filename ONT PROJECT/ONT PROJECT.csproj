@@ -16,6 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\UploadPrescription\CreatePrescription.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\images\.DS_Store" />
     <None Include="wwwroot\scss\.DS_Store" />
     <None Include="wwwroot\scss\bootstrap\.DS_Store" />

@@ -77,8 +77,8 @@ public class PrescriptionController : Controller
                 Date = DateOnly.FromDateTime(DateTime.Now),
                 CustomerId = customerId,
                 PrescriptionPhoto = memoryStream.ToArray(),
-                Dispense = isRequested ? "Requested" : "Uploaded",
-                Status = isRequested ? "Requested" : "Uploaded"
+                Dispense = isRequested ? "Requested" : "Unpocessed",
+                Status = isRequested ? "Requested" : "Unpocessed"
             };
 
             _context.UnprocessedPrescriptions.Add(prescription);
@@ -93,7 +93,7 @@ public class PrescriptionController : Controller
     public async Task<IActionResult> RequestDispenseAction(int id)
     {
         var prescription = await _context.UnprocessedPrescriptions.FindAsync(id);
-        if (prescription != null && prescription.Status == "Uploaded")
+        if (prescription != null && prescription.Status == "Unpocessed")
         {
             prescription.Status = "Requested";
             prescription.Dispense = "Requested";

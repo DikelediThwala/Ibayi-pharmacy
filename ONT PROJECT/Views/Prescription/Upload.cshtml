@@ -159,7 +159,7 @@
                                 <tr>
                                     <td>@p.Date.ToString("yyyy-MM-dd")</td>
                                     <td>
-                                        @if (p.Dispense == "Uploaded")
+                                        @if (p.Dispense == "Unpocessed")
                                         {
                                             <form asp-action="RequestDispenseAction" asp-route-id="@p.UnprocessedPrescriptionId" method="post" class="d-inline">
                                                 <button class="btn btn-outline-primary btn-sm" title="Request to Dispense">
