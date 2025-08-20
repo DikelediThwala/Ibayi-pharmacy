@@ -9,7 +9,9 @@ namespace IBayiLibrary.Repository
 {
     public interface IUnproccessedPrescriptionRepository
     {
-        Task<IEnumerable<UnproccessedPrescription>> GetUnproccessedPrescriptions();             
+        Task<IEnumerable<UnproccessedPrescription>> GetUnproccessedPrescriptions();
         public Task<bool> GetPrescByIDPrescription(int unprocessedPrescriptionId);
+        public Task<PrescriptionViewModel> GetPrescriptionByID(int id);
+        public Task<bool> UpdateUnprocessedPrescription(UnproccessedPrescription unproccessedPrescription);
     }
 }

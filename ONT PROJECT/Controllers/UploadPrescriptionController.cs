@@ -114,15 +114,17 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("CreateUser", "Pharmacist");
         }
 
-        public async Task<IActionResult> CreatePrescription()
-        {         
+        public async Task<IActionResult> CreatePrescriptions()
+        {
+            var prescLine = await _prescriptionLineRepository.GetMedicineName();
+            ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");      
             return View();
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePrescription(PrescriptionViewModel prescription)
+        public async Task<IActionResult> CreatePrescriptions(PrescriptionViewModel prescription)
         {
             try
             {
@@ -149,12 +151,14 @@ namespace ONT_PROJECT.Controllers
                     prescription.PrescriptionPhoto = ms.ToArray();
                 }
 
+
+                
                 var role = prescription;
                 role.PharmacistID = 1009;
                 var status = prescription;
                 status.Status = "Proccessed";
-                var repLeft = prescription;
-                repLeft.RepeatsLeft = repLeft.Repeats;
+                //var repLeft = prescription;
+                //repLeft.RepeatsLeft = repLeft.Repeats;
                 bool addPerson = await _prescriptionRepository.AddAsync(prescription);
                 if (addPerson)
                 {
@@ -164,23 +168,26 @@ namespace ONT_PROJECT.Controllers
                 {
                     TempData["msg"] = "Could not add";
                 }
+                //var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
+                //var lastRow = result.FirstOrDefault();
 
-                var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
-                var lastRow = result.FirstOrDefault();
+                //int prescriptionID = lastRow?.PrescriptionID ?? 0;
+                //prescription.PrescriptionID = prescriptionID;
+                //bool addPrescLine = await _prescriptionRepository.AddPrescLineAsync(prescription);
 
-                int prescriptionID = lastRow?.PrescriptionID ?? 0;
-                prescription.PrescriptionID = prescriptionID;
-                bool addPrescLine = await _prescriptionRepository.AddPrescLineAsync(prescription);
-
-                if (addPrescLine)
-                {
-                    TempData["msg"] = "Sucessfully Added";
-                }
-                else
-                {
-                    TempData["msg"] = "Could not add";
-                }             
+                //if (addPrescLine)
+                //{
+                //    TempData["msg"] = "Sucessfully Added";
+                //}
+                //else
+                //{
+                //    TempData["msg"] = "Could not add";
+                //}
+                //
+                var prescLine = await _prescriptionLineRepository.GetMedicineName();
+                ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
             }
+
             catch (Exception ex)
             {
                 TempData["msg"] = " Something went wrong!!!";
@@ -237,7 +244,7 @@ namespace ONT_PROJECT.Controllers
             }
 
             // Return the form view
-            return View("CreatePrescription", prescription);
+            return View("CreatePrescriptions","UploadPrescription");
         }
 
     }

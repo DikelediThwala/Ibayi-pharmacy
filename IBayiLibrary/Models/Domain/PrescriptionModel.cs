@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,8 +8,8 @@ using System.Threading.Tasks;
 namespace IBayiLibrary.Models.Domain
 {
     public class PrescriptionModel
-    {
-        
+    {         
+            public int UnprocessedPrescriptionID { get; set; }       
             public int PrescriptionID { get; set; }
             public int PharmacistID { get; set; }
             public string FirstName { get; set; }
