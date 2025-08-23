@@ -101,14 +101,26 @@ namespace ONT_PROJECT.Controllers
         public IActionResult Login(string Email, string Password)
         {
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == Email);
+            var pharmacy = _context.Pharmacies.FirstOrDefault();
+
 
             if (user != null && VerifyPassword(Password, user.Password))
             {
                 HttpContext.Session.SetInt32("UserId", user.UserId);
                 HttpContext.Session.SetString("UserEmail", user.Email);
                 HttpContext.Session.SetString("UserFirstName", user.FirstName);
+                HttpContext.Session.SetString("UserLastName", user.LastName);
                 HttpContext.Session.SetString("UserRole", user.Role);
-
+                if (user.ProfilePicture != null && user.ProfilePicture.Length > 0)
+                {
+                    string base64String = Convert.ToBase64String(user.ProfilePicture);
+                    HttpContext.Session.SetString("UserProfilePic", base64String);
+                }
+                else
+                {
+                    HttpContext.Session.SetString("UserProfilePic", "");
+                }
+                
                 TempData["Success"] = "Login successful!";
 
                 switch (user.Role)
