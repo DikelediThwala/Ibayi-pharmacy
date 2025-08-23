@@ -22,6 +22,11 @@ namespace IBayiLibrary.Repository
             string query = "spGetUnproccessedPrescription";
             return await _db.GetData<UnproccessedPrescription, dynamic>(query, new { });
         }
+        public async Task<PrescriptionViewModel> GetPrescriptionByID(int id)
+        {
+            IEnumerable<PrescriptionViewModel> result = await _db.GetData<PrescriptionViewModel, dynamic>("spGetUnprocessedPresciptionByID", new { UnprocessedPrescriptionID = id });
+            return result.FirstOrDefault();
+        }
         public async Task<bool> GetPrescByIDPrescription(int unprocessedPrescriptionId)
         {
             try
@@ -37,6 +42,21 @@ namespace IBayiLibrary.Repository
             {
                 return false; // Something went wrong
             }
+        }       
+        public async Task<bool> UpdateUnprocessedPrescription(UnproccessedPrescription unproccessedPrescription)
+        {
+            try
+            {
+                await _db.SaveData("spUpdateUnprocessedPrescription",
+                    new { UnprocessedPrescriptionID = unproccessedPrescription.UnprocessedPrescriptionID });
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
+
     }
 }

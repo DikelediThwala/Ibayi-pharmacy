@@ -1,4 +1,4 @@
-﻿@model IEnumerable<IBayiLibrary.Models.Domain.PrescriptionModel>
+﻿@model IEnumerable<IBayiLibrary.Models.Domain.UnproccessedPrescription>
 
 @{
     ViewData["Title"] = "Unproccessed Prescription";
@@ -12,6 +12,11 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <style>
     body {
         color: #566787;
@@ -284,111 +289,120 @@
                         <div class="col-sm-4">
                             <h2>Unproccessed <b>Prescriptions</b></h2>
                         </div>
-                        <div class="col-sm-8">
-                            <a href="#" class="btn btn-primary"><i class="material-icons">&#xE863;</i> <span>Refresh List</span></a>
-                            <a href="#" class="btn btn-secondary"><i class="material-icons">&#xE24D;</i> <span>Export to Excel</span></a>
-                        </div>
+
                     </div>
                 </div>
                 <div class="table-filter">
-                    <div class="row">
-                        <div class="col-sm-3">
-
-
-                            <div class="filter-group">
-                                <label>Status</label>
-                                <select class="form-control">
-                                    <option>Any</option>
-                                    <option>Unproccessed</option>
-                                    <option>Opened</option>
-                                    <option>Packed</option>
-                                    <option>Colllected</option>
-                                </select>
-                            </div>
-
-
-                        </div>
-                        <div class="col-sm-9">
-                            <button type="button" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                            <div class="filter-group">
-                                <label>Name</label>
-                                <input type="text" class="form-control">
-                            </div>
-                            <div class="filter-group">
-                                <label>Medication</label>
-                                <select class="form-control">
-                                    <option>All</option>
-                                    <option>Acetaminophen (Tylenol)</option>
-                                    <option>ibuprofen (Advil, Motrin IB)</option>
-                                    <option>Loratadine (Claritin)</option>
-                                    <option>Antacids (Tums, Maalox)</option>
-                                    <option>Metformin</option>
-                                </select>
-                            </div>
-
-                            <span class="filter-icon"><i class="fa fa-filter"></i></span>
-                        </div>
-                    </div>
                 </div>
-                <table class="table table-striped table-hover">
+                <table id="prescriptionsTable" class="table table-striped table-hover">
                     <thead>
-                        <tr>
+                        <tr>   
+                            <th>UnprocessedPrescription ID</th>
                             <th>Customer</th>
-                            <th>Doctor</th>
-                            <th>Medicine Name</th>
-                            <th>Date</th>                          
-                            <th>Photo</th>                                       
-                            <th>Repeats</th>
-                            <th>Repeats Left</th>
+                            <th>Doctor</th>                           
+                            <th>Date</th>
+                            <th>Photo</th>                          
                             <th>Status</th>
                             <th></th>
                         </tr>
                     </thead>
-                    
+
 
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            <tr>
+                            <tr id="prescription-@item.UnprocessedPrescriptionID">
+                                <td>@item.UnprocessedPrescriptionID</td>
                                 <td>@item.FirstName</td>
                                 <td>@item.Name</td>
-                                <td>@item.MedicineName</td>
-                                <td>@item.Date.ToString("yyyy-MM-dd")</td>                          
+                                <td>@item.Date.ToString("yyyy-MM-dd")</td>
                                 <td>
                                     @if (item.PrescriptionPhoto != null)
                                     {
-                                        <a asp-action="DownloadPrescription" asp-route-id="@item.PrescriptionID">
-                                            Download Prescrption
+                                        <a asp-action="DownloadPrescription" asp-route-id="@item.UnprocessedPrescriptionID">
+                                            Download Prescription
                                         </a>
                                     }
                                     else
                                     {
                                         <span>No File</span>
                                     }
-                                </td>                           
-                                <td>@item.Repeats</td>
-                                <td>@item.RepeatsLeft</td>
-                                <td>@item.Status</td>                            
-                                <td><a asp-action="EditPrescription" class="btn btn-success" asp-route-id="@item.PrescriptionID" class="view" title="View Details" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a></td>                            
+                                </td>
+                                <td class="status-cell">
+                                    <span id="status-@item.UnprocessedPrescriptionID">@item.Status</span>
+                                </td>
+                                <td>
+                                    <!-- View Details Button -->
+                                    <a asp-controller="UnproccessedPrescription"
+                                       asp-action="GetPrescByID"
+                                       asp-route-id="@item.UnprocessedPrescriptionID"
+                                       class="btn btn-success"
+                                       title="View Details">
+                                        <i class="material-icons">&#xE5C8;</i>
+                                    </a>
+
+                                    <!-- Process Button -->
+                                    @if (item.Status != "Processed")
+                                    {
+                                        <button class="btn btn-primary process-btn"
+                                                data-id="@item.UnprocessedPrescriptionID">
+                                            Process
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success">Processed</span>
+                                    }
+                                </td>
                             </tr>
                         }
                     </tbody>
-                </table>                                
-                <div class="clearfix">
-                    <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
-                    <ul class="pagination">
-                        <li class="page-item disabled"><a href="#">Previous</a></li>
-                        <li class="page-item"><a href="#" class="page-link">1</a></li>
-                        <li class="page-item"><a href="#" class="page-link">2</a></li>
-                        <li class="page-item"><a href="#" class="page-link">3</a></li>
-                        <li class="page-item active"><a href="#" class="page-link">4</a></li>
-                        <li class="page-item"><a href="#" class="page-link">5</a></li>
-                        <li class="page-item"><a href="#" class="page-link">6</a></li>
-                        <li class="page-item"><a href="#" class="page-link">7</a></li>
-                        <li class="page-item"><a href="#" class="page-link">Next</a></li>
-                    </ul>
-                </div>
+                </table>
             </div>
         </div>
     </div>
 </body>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Initialize DataTable
+        $('#prescriptionsTable').DataTable({
+            pageLength: 5,
+            lengthMenu: [5, 10, 25, 50],
+            ordering: true,
+            searching: true,
+            paging: true
+        });
+
+        // Handle Process button click
+        $(document).on('click', '.process-btn', function () {
+            var button = $(this);
+            var id = button.data('id');
+            var row = button.closest('tr');
+
+            $.ajax({
+                url: '/UnproccessedPrescription/Process', // make sure this matches controller
+                type: 'POST',
+                data: { id: id },
+                success: function (response) {
+                    if (response.success) {
+                        // Update status column
+                        row.find('.status-cell span').text('Processed');
+
+                        // Disable and change Process button
+                        button.replaceWith('<span class="text-success">Processed</span>');
+                    } else {
+                        alert("Error: Could not process prescription.");
+                    }
+                },
+                error: function () {
+                    alert("Error processing prescription.");
+                }
+            });
+        });
+    });
+
+</script>

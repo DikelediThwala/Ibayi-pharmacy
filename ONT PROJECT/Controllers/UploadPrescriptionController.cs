@@ -22,14 +22,12 @@ namespace ONT_PROJECT.Controllers
     {
         private readonly IPrescriptionRepository _prescriptionRepository;
         private readonly IPrescriptionLineRepository _prescriptionLineRepository;
-        public UploadPrescriptionController(IPrescriptionRepository prescriptionRepository,IPrescriptionLineRepository prescriptionLineRepository)
+        public UploadPrescriptionController(IPrescriptionRepository prescriptionRepository, IPrescriptionLineRepository prescriptionLineRepository)
         {
             _prescriptionRepository = prescriptionRepository;
             _prescriptionLineRepository = prescriptionLineRepository;
         }
-       
-
-        public async Task<IActionResult> CreatePrescription()
+        public async Task<IActionResult> CreatePrescForWalkins()
         {
             var customerRequests = await _prescriptionRepository.GetCustomerName();
             ViewBag.UserID = new SelectList(customerRequests.Select(c => new { c.UserID, FullName = c.FirstName + " " + c.LastName }), "UserID", "FullName");
@@ -38,14 +36,12 @@ namespace ONT_PROJECT.Controllers
             var prescLine = await _prescriptionLineRepository.GetMedicineName();
             ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
 
-            return View();
-            
-        }
 
-        
+            return View();
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task <IActionResult> CreatePrescription(PrescriptionViewModel prescription)
+        public async Task<IActionResult> CreatePrescForWalkins(PrescriptionViewModel prescription)
         {
             try
             {
@@ -103,36 +99,103 @@ namespace ONT_PROJECT.Controllers
                 {
                     TempData["msg"] = "Could not add";
                 }
-                //var custID = await _prescriptionRepository.GetCutomerIDNo();
-                //if (!String.IsNullOrEmpty(searchString))
-                //{
-                //    custID = custID.Where(n => n.IDNumber.Contains(searchString)).ToList();
-                //}
+
                 var customerRequests = await _prescriptionRepository.GetCustomerName();
                 ViewBag.UserID = new SelectList(customerRequests.Select(c => new { c.UserID, FullName = c.FirstName + " " + c.LastName }), "UserID", "FullName");
                 var doc = await _prescriptionRepository.GetDoctorName();
                 ViewBag.DoctorID = new SelectList(doc.Select(c => new { c.DoctorID, FullName = c.Name + " " + c.Surname }), "DoctorID", "FullName");
                 var prescLine = await _prescriptionLineRepository.GetMedicineName();
                 ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
-
-
-                //var person = await _prescriptionRepository.GetCustomerByIDs(id);                   
-
-
-                //return View(ViewBag);
             }
             catch (Exception ex)
             {
                 TempData["msg"] = " Something went wrong!!!";
             }
-            return RedirectToAction("CreatePrescriptionLine", "PrescriptionLine");          
+            return RedirectToAction("CreateUser", "Pharmacist");
         }
-       
-       
 
-      
-           public async Task<IActionResult> DownloadPrescription(int id)
-           {
+        public async Task<IActionResult> CreatePrescriptions()
+        {
+            var prescLine = await _prescriptionLineRepository.GetMedicineName();
+            ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");      
+            return View();
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePrescriptions(PrescriptionViewModel prescription)
+        {
+            try
+            {
+
+                if (prescription.PescriptionFile != null && prescription.PescriptionFile.Length > 0)
+                {
+                    // Open stream and validate PDF header
+                    var stream = prescription.PescriptionFile.OpenReadStream();
+                    using var reader = new BinaryReader(stream);
+                    var header = reader.ReadBytes(4);
+
+                    // Reset stream position so we can read it again below
+                    stream.Position = 0;
+
+                    if (Encoding.ASCII.GetString(header) != "%PDF")
+                    {
+                        ModelState.AddModelError("PescriptionFile", "This is not a valid PDF file.");
+                        return View(prescription);
+                    }
+
+                    // Copy full file to memory
+                    using var ms = new MemoryStream();
+                    await prescription.PescriptionFile.CopyToAsync(ms);
+                    prescription.PrescriptionPhoto = ms.ToArray();
+                }
+
+
+                
+                var role = prescription;
+                role.PharmacistID = 1009;
+                var status = prescription;
+                status.Status = "Proccessed";
+                //var repLeft = prescription;
+                //repLeft.RepeatsLeft = repLeft.Repeats;
+                bool addPerson = await _prescriptionRepository.AddAsync(prescription);
+                if (addPerson)
+                {
+                    TempData["msg"] = "Sucessfully Added";
+                }
+                else
+                {
+                    TempData["msg"] = "Could not add";
+                }
+                //var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
+                //var lastRow = result.FirstOrDefault();
+
+                //int prescriptionID = lastRow?.PrescriptionID ?? 0;
+                //prescription.PrescriptionID = prescriptionID;
+                //bool addPrescLine = await _prescriptionRepository.AddPrescLineAsync(prescription);
+
+                //if (addPrescLine)
+                //{
+                //    TempData["msg"] = "Sucessfully Added";
+                //}
+                //else
+                //{
+                //    TempData["msg"] = "Could not add";
+                //}
+                //
+                var prescLine = await _prescriptionLineRepository.GetMedicineName();
+                ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
+            }
+
+            catch (Exception ex)
+            {
+                TempData["msg"] = " Something went wrong!!!";
+            }
+            return RedirectToAction("CreateUser", "Pharmacist");
+        }
+        public async Task<IActionResult> DownloadPrescription(int id)
+        {
             //var prescription = await _prescriptionRepository.FindPrescription(id);
             //if (prescription == null || prescription.PrescriptionPhoto == null)
             //{
@@ -164,38 +227,25 @@ namespace ONT_PROJECT.Controllers
             var fileName = $"Prescription_{id}.pdf";
             return File(prescription.PrescriptionPhoto, "application/pdf", fileName);
 
-           }
-
-        public async Task<IActionResult> EditPrescription(int id)
-        {
-            var person = await _prescriptionRepository.GetPrescriptionByID(id);
-            return View(person);
         }
-        public async Task<IActionResult> UnprocessedPrescription()
+        public async Task<IActionResult> GetPrescriptions()
         {
-          
-            return View();
+
+            var p = await _prescriptionRepository.GetLastPrescriptions();
+            return View(p);
+        }   
+        [HttpGet]
+        public async Task<IActionResult> GetPrescByID(int id)
+        {
+            var prescription = await _prescriptionRepository.GetPrescriptionByID(id);
+            if (prescription == null)
+            {
+                return NotFound();
+            }
+
+            // Return the form view
+            return View("CreatePrescriptions","UploadPrescription");
         }
-
-        //public async Task<IActionResult> EditPrescription(Prescriptions prescriptions)
-        //{
-        //    try
-        //    {
-
-        //        bool updateRecord = await _prescriptionRepository.UpdatePrescription(prescriptions);
-
-        //        if (updateRecord)
-        //            TempData["msg"] = "Successfully Updated";
-        //        else
-        //            TempData["msg"] = "Could not update";
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        TempData["msg"] = "error";
-        //    }
-        //    return View(prescriptions);
-        //}
 
     }
 }
