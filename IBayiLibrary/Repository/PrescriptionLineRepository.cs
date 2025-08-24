@@ -40,5 +40,11 @@ namespace IBayiLibrary.Repository
             string query = "spGetLastPrescriptioRow";
             return await _db.GetData<PrescriptionLines, dynamic>(query, new { });
         }
+        public async Task<IEnumerable<PrescriptionModel>> SearchPrescriptions(string searchTerm)
+        {
+            string query = "spDispensePrescription";
+            return await _db.GetData<PrescriptionModel, dynamic>(query, new { SearchTerm = searchTerm });
+        }
+
     }
 }
