@@ -4,6 +4,26 @@
     ViewData["Title"] = "Edit Doctor";
     Layout = "_ManagerLayout";
 }
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <script>
+        // Auto-hide after 5 seconds (5000 ms)
+        setTimeout(function () {
+            var alert = document.getElementById('successAlert');
+            if (alert) {
+                // Fade out using Bootstrap's built-in classes
+                alert.classList.remove('show');
+                alert.classList.add('hide');
+            }
+        }, 5000);
+    </script>
+}
+
 
 
 <div class="d-flex justify-content-between align-items-center mb-4">

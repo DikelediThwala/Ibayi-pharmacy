@@ -31,10 +31,20 @@ namespace ONT_PROJECT.Controllers
             if (form == null)
                 return BadRequest();
 
-            Console.WriteLine($"Received form.Form: '{form.FormName}'");
+            ////Console.WriteLine($"Received form.Form: '{form.FormName}'");
 
             if (ModelState.IsValid)
             {
+                bool exists = _context.DosageForms
+                   .Any(d => d.FormName.ToLower() == form.FormName.ToLower());
+
+
+                if (exists)
+                {
+                    TempData["ErrorMessage"] = "Form already exists in the system!";
+                    return RedirectToAction(nameof(Create));
+                }
+
                 _context.Add(form);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Dosage form added successfully.";

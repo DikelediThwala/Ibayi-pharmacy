@@ -30,6 +30,18 @@ namespace ONT_PROJECT.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Check if doctor already exists
+                bool exists = _context.Doctors.Any(d =>
+                    d.Name.ToLower() == doctor.Name.ToLower() &&
+                    d.Surname.ToLower() == doctor.Surname.ToLower() &&
+                    d.PracticeNo.ToLower() == doctor.PracticeNo.ToLower()
+                );
+
+                if (exists)
+                {
+                    TempData["ErrorMessage"] = "Doctor already exists in the system!";
+                    return RedirectToAction(nameof(Create));
+                }
                 _context.Doctors.Add(doctor);
                 _context.SaveChanges();
 
@@ -57,8 +69,13 @@ namespace ONT_PROJECT.Controllers
             {
                 _context.Doctors.Update(doctor);
                 _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
+
+
+                TempData["SuccessMessage"] = "Doctor details updated successfully.";
+                return RedirectToAction(nameof(Index), new { id = doctor.DoctorId });
             }
+
+
             return View(doctor);
         }
 

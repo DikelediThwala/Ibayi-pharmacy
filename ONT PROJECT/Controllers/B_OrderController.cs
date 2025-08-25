@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using iText.Layout.Element;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Controllers;
 using ONT_PROJECT.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using System.Net;
-using System.Threading.Tasks;
 using System.Configuration;
+using System.Linq;
+using System.Net;
+using System.Net.Mail;
+using System.Threading.Tasks;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -23,21 +24,24 @@ namespace ONT_PROJECT.Controllers
             _configuration = configuration;
             SeedMedicines();  
         }
-     
-        public IActionResult Index()
+
+        public IActionResult Index(string tab)  // <-- accept tab from query string
         {
             var vm = new NewOrderViewModel
             {
                 Medicines = _context.Medicines.ToList(),
                 BOrders = _context.BOrders
-                     .Include(o => o.BOrderLines)           
-                     .ThenInclude(ol => ol.Medicine)       
+                     .Include(o => o.BOrderLines)
+                     .ThenInclude(ol => ol.Medicine)
                      .ToList(),
                 NewOrder = new BOrder()
             };
-            return View(vm);      
+
+            ViewData["ActiveTab"] = tab ?? "stock"; // default to "stock"
+            return View(vm);
         }
-        
+
+
 
         [HttpPost]
         public async Task<IActionResult> MarkAsReceived(int id)

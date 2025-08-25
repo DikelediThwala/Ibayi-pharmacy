@@ -4,6 +4,13 @@
     ViewData["Title"] = "Manage Users";
     Layout = "_ManagerLayout";
 }
+@if (TempData["ErrorMessage"] != null)
+{
+    <div id="errorAlert" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger">
@@ -95,7 +102,6 @@
                     <label asp-for="Role" class="form-label">Role <span class="text-danger">*</span></label>
                     <select asp-for="Role" class="form-select">
                         <option value="">-- Select Role --</option>
-                        <option value="Customer">Customer</option>
                         <option value="Pharmacist">Pharmacist</option>
                         <option value="PharmacyManager">PharmacyManager</option>
                     </select>
@@ -150,6 +156,18 @@
             }
         });
     </script>
+
+    <script>
+        setTimeout(function () {
+
+            var error = document.getElementById('errorAlert');
+            if (error) {
+                var bsAlert = new bootstrap.Alert(error);
+                bsAlert.close();
+            }
+        }, 4000);
+    </script>
+
 }
 
 

@@ -4,7 +4,13 @@
     ViewData["Title"] = "Manage Active Ingredient";
     Layout = "_ManagerLayout";
 }
-
+@if (TempData["ErrorMessage"] != null)
+{
+    <div id="errorAlert" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <!-- Page Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-dark">
@@ -53,3 +59,15 @@
 
 <!-- Bootstrap Icons (if not already included globally) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+
+<script>
+    setTimeout(function () {
+
+        var error = document.getElementById('errorAlert');
+        if (error) {
+            var bsAlert = new bootstrap.Alert(error);
+            bsAlert.close();
+        }
+    }, 4000);
+</script>

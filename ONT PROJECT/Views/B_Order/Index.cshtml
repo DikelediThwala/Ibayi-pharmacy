@@ -19,7 +19,14 @@
     var activeTab = ViewData["ActiveTab"]?.ToString() ?? Context.Request.Query["tab"].ToString() ?? "stock";
 }
 
-
+<style>
+     .content-area .table-wrapper {
+        color: #566787;
+        font-family: 'Varela Round', sans-serif;
+        font-size: 13px;
+        background: #f5f5f5;
+    }
+</style>
 <h2 class="text-dark fw-bold mb-4"><i class="fas fa-capsules"></i> Medication Management</h2>
 
 <ul class="nav nav-tabs" id="medicationTabs" role="tablist">

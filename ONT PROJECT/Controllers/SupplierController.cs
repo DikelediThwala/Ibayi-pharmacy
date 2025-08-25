@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ONT_PROJECT.Models;
+﻿using IBayiLibrary.Models.Domain;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ONT_PROJECT.Models;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -30,6 +31,16 @@ namespace ONT_PROJECT.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Check if doctor already exists
+                bool exists = _context.Suppliers.Any(d =>
+                    d.Name.ToLower() == supplier.Name.ToLower() 
+                 );
+
+                if (exists)
+                {
+                    TempData["ErrorMessage"] = "Supplier already exists in the system!";
+                    return RedirectToAction(nameof(Create));
+                }
                 _context.Suppliers.Add(supplier);
                 _context.SaveChanges();
                 TempData["SuccessMessage"] = "Supplier added successfully!";

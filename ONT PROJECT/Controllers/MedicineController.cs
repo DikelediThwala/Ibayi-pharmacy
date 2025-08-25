@@ -26,9 +26,13 @@ namespace ONT_PROJECT.Controllers
 
         public IActionResult Create()
         {
-            ViewBag.Forms = new SelectList(_context.DosageForms, "FormId", "FormName");
-
+            ViewBag.Forms = new SelectList(
+                    _context.DosageForms.OrderBy(f => f.FormName),
+                    "FormId",
+                    "FormName"
+                );
             ViewBag.Suppliers = _context.Suppliers
+                 .OrderBy(s => s.Name)
                 .Select(s => new SelectListItem
                 {
                     Value = s.SupplierId.ToString(),
@@ -36,6 +40,7 @@ namespace ONT_PROJECT.Controllers
                 }).ToList();
 
             ViewBag.Ingredients = _context.ActiveIngredient
+                .OrderBy(i => i.Ingredients)
                 .Select(ai => new SelectListItem
                 {
                     Value = ai.ActiveIngredientId.ToString(),
@@ -57,6 +62,21 @@ namespace ONT_PROJECT.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Medicine medicine, List<int> selectedIngredients, List<string> strengths)
         {
+            if (_context.Medicines.Any(m => m.MedicineName == medicine.MedicineName))
+            {
+                TempData["ErrorMessage"] = "This medicine already exists!";
+
+                // Reload dropdowns and ingredient list
+                ViewBag.Forms = new SelectList(_context.DosageForms.OrderBy(f => f.FormName), "FormId", "FormName");
+                ViewBag.Suppliers = _context.Suppliers.OrderBy(s => s.Name)
+                    .Select(s => new SelectListItem { Value = s.SupplierId.ToString(), Text = s.Name }).ToList();
+                ViewBag.Ingredients = _context.ActiveIngredient.OrderBy(i => i.Ingredients)
+                    .Select(ai => new SelectListItem { Value = ai.ActiveIngredientId.ToString(), Text = ai.Ingredients }).ToList();
+                ViewBag.ScheduleList = Enumerable.Range(1, 8)
+                    .Select(i => new SelectListItem { Value = i.ToString(), Text = $"Schedule {i}" }).ToList();
+
+                return View(medicine);
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(medicine);
@@ -74,13 +94,19 @@ namespace ONT_PROJECT.Controllers
                 }
 
                 await _context.SaveChangesAsync();
+                // Set success message
+                TempData["SuccessMessage"] = "Medicine created successfully!";
                 return RedirectToAction(nameof(Index));
             }
 
-            // Reload form data if model state is invalid
-            ViewBag.Forms = new SelectList(_context.DosageForms, "FormId", "FormName");
-
+           
+            ViewBag.Forms = new SelectList(
+                              _context.DosageForms.OrderBy(f => f.FormName),
+                              "FormId",
+                              "FormName"
+                          );
             ViewBag.Suppliers = _context.Suppliers
+                .OrderBy(s => s.Name) 
                 .Select(s => new SelectListItem
                 {
                     Value = s.SupplierId.ToString(),
@@ -88,6 +114,7 @@ namespace ONT_PROJECT.Controllers
                 }).ToList();
 
             ViewBag.Ingredients = _context.ActiveIngredient
+                 .OrderBy(i => i.Ingredients)
                 .Select(ai => new SelectListItem
                 {
                     Value = ai.ActiveIngredientId.ToString(),
@@ -118,12 +145,16 @@ namespace ONT_PROJECT.Controllers
                 return NotFound();
 
             ViewBag.Ingredients = _context.ActiveIngredient
+                 .OrderBy(i => i.Ingredients)
                 .Select(i => new SelectListItem { Value = i.ActiveIngredientId.ToString(), Text = i.Ingredients })
                 .ToList();
 
-            ViewBag.Forms = new SelectList(_context.DosageForms, "FormId", "FormName", medicine.FormId);
-
-            ViewBag.Suppliers = _context.Suppliers
+            ViewBag.Forms = new SelectList(
+                              _context.DosageForms.OrderBy(f => f.FormName),
+                              "FormId",
+                              "FormName"
+                          );
+            ViewBag.Suppliers = _context.Suppliers.OrderBy(s => s.Name)
                 .Select(s => new SelectListItem { Value = s.SupplierId.ToString(), Text = s.Name })
                 .ToList();
 
@@ -178,13 +209,17 @@ namespace ONT_PROJECT.Controllers
                 }
             }
 
-            ViewBag.Ingredients = _context.ActiveIngredient
+            ViewBag.Ingredients = _context.ActiveIngredient.OrderBy(i => i.Ingredients)
                 .Select(i => new SelectListItem { Value = i.ActiveIngredientId.ToString(), Text = i.Ingredients })
                 .ToList();
 
-            ViewBag.Forms = new SelectList(_context.DosageForms, "FormId", "FormName", medicine.FormId);
-
+            ViewBag.Forms = new SelectList(
+                                         _context.DosageForms.OrderBy(f => f.FormName),
+                                         "FormId",
+                                         "FormName"
+                                     );
             ViewBag.Suppliers = _context.Suppliers
+                 .OrderBy(s => s.Name)
                 .Select(s => new SelectListItem { Value = s.SupplierId.ToString(), Text = s.Name })
                 .ToList();
 

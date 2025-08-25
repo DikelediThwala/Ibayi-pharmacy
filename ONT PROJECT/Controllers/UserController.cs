@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ONT_PROJECT.Models;
 using System.Security.Cryptography;
 using System.Text;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -80,6 +81,12 @@ namespace ONT_PROJECT.Controllers
                 return View("Create", user);
             }
 
+            if (_context.TblUsers.Any(u => u.Idnumber == user.Idnumber))
+            {
+                TempData["ErrorMessage"] = "A user with this ID number already exists!";
+                return View("Create", user);
+            }
+
             if (user.ProfileFile != null && user.ProfileFile.Length > 0)
             {
                 using var ms = new MemoryStream();
@@ -135,8 +142,10 @@ namespace ONT_PROJECT.Controllers
             if (user == null)
                 return NotFound();
 
-            var titles = new List<string> { "Mr", "Mrs", "Miss", "Dr" };
-            ViewBag.Titles = new SelectList(titles, user.Title);
+            var titles = new List<string> { "Mr", "Mrs", "Miss", "Dr" }; // start with Mr
+            ViewBag.Titles = new SelectList(titles, user.Title?.Trim());
+
+
 
             if (user.Role == "Pharmacist")
             {
@@ -165,7 +174,7 @@ namespace ONT_PROJECT.Controllers
                 existingUser.Email = model.Email;
                 existingUser.Idnumber = model.Idnumber;
                 existingUser.PhoneNumber = model.PhoneNumber;
-                existingUser.Title = model.Title;
+                existingUser.Title = model.Title?.Trim(); 
                 existingUser.Role = model.Role;
 
                 if (model.ProfileFile != null && model.ProfileFile.Length > 0)
@@ -185,7 +194,8 @@ namespace ONT_PROJECT.Controllers
                         pharmacist.HealthCounsilRegNo = regNo;
                     }
                 }
-
+                var titles = new List<string> { "Mr", "Mrs", "Miss", "Dr" }; // start with Mr
+                ViewBag.Titles = new SelectList(titles, existingUser.Title?.Trim());
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }

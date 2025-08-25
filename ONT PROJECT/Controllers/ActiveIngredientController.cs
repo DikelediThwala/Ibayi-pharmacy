@@ -30,6 +30,16 @@ namespace ONT_PROJECT.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                bool exists = _context.ActiveIngredient
+           .Any(a => a.Ingredients.ToLower() == ingredient.Ingredients.ToLower());
+
+                if (exists)
+                {
+                    TempData["ErrorMessage"] = "Ingredient already exists in the system!";
+                    return RedirectToAction(nameof(Create));
+                }
+
                 _context.Add(ingredient);
                 _context.SaveChanges();
                 TempData["SuccessMessage"] = "Ingredient added successfully.";

@@ -1,11 +1,14 @@
 ﻿@model ONT_PROJECT.Models.UserSettingsViewModel
 
 @{
-    var profilePicSrc = Model.ExistingProfilePicture != null && Model.ExistingProfilePicture.Length > 0
-                        ? $"data:image/png;base64,{Convert.ToBase64String(Model.ExistingProfilePicture)}"
-                        : Url.Content("~/images/register/default-profile.png");
-}
+    ViewData["Title"] = "Settings";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
 
+    var profilePicSrc = (Model.ExistingProfilePicture != null && Model.ExistingProfilePicture.Length > 0)
+                     ? $"data:image/png;base64,{Convert.ToBase64String(Model.ExistingProfilePicture)}"
+                     : Url.Content("~/images/register/default-profile.png");
+
+}
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -26,55 +29,74 @@
     </li>
 </ul>
 
-<div class="row">
-    <!-- Profile Picture Sidebar -->
-    <div class="col-md-4 mb-4">
-        <div class="card text-center shadow-sm">
-            <div class="card-body">
-                <img src="@profilePicSrc" class="rounded-circle mb-3" style="width:150px;height:150px;object-fit:cover;" alt="Profile Picture" />
-                <h5 class="card-title">@Model.FirstName @Model.LastName</h5>
-                <p class="text-muted">@Model.Email</p>
-                <div class="mt-3">
-                    <label for="ProfilePicture" class="form-label fw-bold">Change Profile Picture</label>
-                    <input asp-for="ProfilePicture" type="file" class="form-control" />
-                    <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+<!-- SINGLE FORM WRAPS EVERYTHING -->
+<form asp-action="UpdateDetails" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="UserId" />
+
+    <div class="row">
+        <!-- Profile Sidebar -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <img src="@profilePicSrc" class="rounded-circle mb-3"
+                         style="width:150px;height:150px;object-fit:cover;" alt="Profile Picture" />
+                    <h5 class="card-title">@Model.Title @Model.FirstName @Model.LastName</h5>
+                    <p class="text-muted">@Model.Email</p>
+
+                    <!-- Profile picture upload -->
+                    <div class="mb-3 mt-3">
+                        <label asp-for="ProfilePicture" class="form-label fw-bold">Change Profile Picture</label>
+                        <input asp-for="ProfilePicture" type="file" class="form-control" />
+                        <!-- Remove validation span if you don't want it -->
+                        <!-- <span asp-validation-for="ProfilePicture" class="text-danger"></span> -->
+                    </div>
+
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Details Form -->
-    <div class="col-md-8">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <form asp-action="UpdateDetails" method="post" enctype="multipart/form-data">
+        <!-- Details Form -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
                     <div class="mb-3">
                         <label asp-for="Title" class="form-label">Title</label>
-                        <input asp-for="Title" class="form-control" placeholder="Mr, Ms, Dr..." />
+                        <select asp-for="Title" asp-items="ViewBag.TitleList" class="form-select">
+                            <option value="">-- Select Title --</option>
+                        </select>
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
+
                     <div class="mb-3">
                         <label asp-for="FirstName" class="form-label">First Name</label>
                         <input asp-for="FirstName" class="form-control" />
                         <span asp-validation-for="FirstName" class="text-danger"></span>
                     </div>
+
                     <div class="mb-3">
                         <label asp-for="LastName" class="form-label">Last Name</label>
                         <input asp-for="LastName" class="form-control" />
                         <span asp-validation-for="LastName" class="text-danger"></span>
                     </div>
+
                     <div class="mb-3">
                         <label asp-for="Email" class="form-label">Email</label>
                         <input asp-for="Email" class="form-control" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Update Details</button>
-                </form>
+
+                    <div class="mb-3 text-danger">
+                        @if (ViewBag.ErrorMessage != null)
+                        {
+                            <p>@ViewBag.ErrorMessage</p>
+                        }
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Update
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+</form>
