@@ -9,7 +9,8 @@ namespace IBayiLibrary.Models.Domain
 {
     public class PrescriptionModel
     {         
-            public int UnprocessedPrescriptionID { get; set; }       
+            public int UnprocessedPrescriptionID { get; set; }
+            public int PrescriptionLineID { get; set; }
             public int PrescriptionID { get; set; }
             public int PharmacistID { get; set; }
             public string FirstName { get; set; }

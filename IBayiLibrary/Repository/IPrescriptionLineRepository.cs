@@ -13,6 +13,7 @@ namespace IBayiLibrary.Repository
 
         Task<IEnumerable<Medicine>>GetMedicineName();
         Task<IEnumerable<PrescriptionLines>> GetLastPrescriptioRow();
+        Task<IEnumerable<PrescriptionModel>> SearchPrescriptions(string searchTerm);
 
     }
 }
