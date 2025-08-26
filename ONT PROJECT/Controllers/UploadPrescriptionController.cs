@@ -4,6 +4,8 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ONT_PROJECT.Models;
+
 //using ONT_PROJECT.Models;
 //using iText.Kernel.Pdf;
 //using iText.Layout;
@@ -71,7 +73,7 @@ namespace ONT_PROJECT.Controllers
                 var role = prescription;
                 role.PharmacistID = 1009;
                 var status = prescription;
-                status.Status = "Proccessed";
+                status.Status = "Walk'ins";
                 var repLeft = prescription;
                 repLeft.RepeatsLeft = repLeft.Repeats;
                 bool addPerson = await _prescriptionRepository.AddAsync(prescription);
@@ -116,8 +118,9 @@ namespace ONT_PROJECT.Controllers
 
         public async Task<IActionResult> CreatePrescriptions()
         {
-            var prescLine = await _prescriptionLineRepository.GetMedicineName();
-            ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");      
+
+            ViewBag.Medicines = new SelectList(_context.PrescriptionViewModel, "MedicineId", "MedicineName");
+            var model = new PrescriptionLine { PrescriptionId = prescriptionId };
             return View();
         }
 
@@ -184,8 +187,10 @@ namespace ONT_PROJECT.Controllers
                 //    TempData["msg"] = "Could not add";
                 //}
                 //
-                var prescLine = await _prescriptionLineRepository.GetMedicineName();
-                ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
+                var medicines = await _prescriptionLineRepository.GetMedicineName();
+                ViewBag.MedicineID = new SelectList(medicines, "MedicineID", "MedicineName", prescription.MedicineID);
+
+
             }
 
             catch (Exception ex)
