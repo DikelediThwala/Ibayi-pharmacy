@@ -1,8 +1,15 @@
 ﻿@model IEnumerable<IBayiLibrary.Models.Domain.PrescriptionModel>
 @{
+    var items = Model.FirstOrDefault();
     ViewData["Title"] = "Dispense Prescription";
     Layout = "PharmacistLayout";
 }
+
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
 
 <div class="card mt-3">
     <div class="card-header bg-dark text-white">
@@ -25,19 +32,33 @@
                 </button>
             </div>
         </form>
+       
 
         @if (!string.IsNullOrEmpty(ViewBag.SearchTerm))
         {
+            @if (items != null)
+            {
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <label for="CustomerID" class="form-label">First Name</label>
+                        <input for="CustomerID" type="type" name="name" value="@items.FirstName" class="form-control" disabled />                      
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="Date Of Birth" class="form-label">ID Number</label>
+                        <input for="CustomerID" type="type" name="name" value="@items.IDNumber" class="form-control" disabled />                       
+                    </div>
+                </div>
+            }          
             <!-- Only show table if a search was made -->
             <table class="table table-bordered table-hover mt-3">
                 <thead class="table-light">
                     <tr>
-                        <th>Customer</th>
-                        <th>Doctor</th>
-                        <th>Date</th>
-                        <th>Medications</th>
+                        <th>Medications</th>                                  
                         <th>Repeats</th>
                         <th>Repeats Left</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -48,19 +69,27 @@
                         foreach (var item in Model)
                         {
                             <tr>
-                                <td>@item.FirstName</td>
-                                <td>@item.Name</td>
-                                <td>@item.Date.ToString("yyyy-MM-dd")</td>
                                 <td>@item.MedicineName</td>
                                 <td>@item.Repeats</td>
                                 <td>@item.RepeatsLeft</td>
-                                <td>@item.Status</td>
-                                <td>
-                                    <a asp-action="DispensePrescription"
-                                       asp-route-id="@item.PrescriptionLineID"
-                                       class="btn btn-primary btn-sm">
-                                        Dispense
-                                    </a>
+                                <td>@item.Name</td>
+                                <td>@item.Date.ToString("yyyy-MM-dd")</td>
+                                <td class="status-cell">
+                                    <span id="status-@item.PrescriptionID">@item.Status</span>
+                                </td>
+                                <td>                                  
+                                    <!-- Process Button -->
+                                    @if (item.Status != "Dispensed")
+                                    {
+                                        <button class="btn btn-primary process-btn"
+                                                data-id="@item.PrescriptionID">
+                                            Dispense
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success">Dispensed</span>
+                                    }
                                 </td>
                             </tr>
                         }
@@ -78,3 +107,37 @@
         }
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+       
+        $(document).on('click', '.process-btn', function () {
+            var button = $(this);
+            var id = button.data('id');
+            var row = button.closest('tr');
+
+            $.ajax({
+                url: '/Dispense/Process', // make sure this matches controller
+                type: 'POST',
+                data: { id: id },
+                success: function (response) {
+                    if (response.success) {
+                        // Update status column
+                        row.find('.status-cell span').text('Unprocessed');
+
+                        // Disable and change Process button
+                        button.replaceWith('<span class="text-success">Dispensed</span>');
+                    } else {
+                        alert("Error: Could not dispense prescription.");
+                    }
+                },
+                error: function () {
+                    alert("Error dispensing prescription.");
+                }
+            });
+        });
+    });
+    
+</script>

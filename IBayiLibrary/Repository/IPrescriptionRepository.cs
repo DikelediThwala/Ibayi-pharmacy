@@ -20,6 +20,7 @@ namespace IBayiLibrary.Repository
         Task<tblUser> GetCustomerByIDs(int UserID);
         Task<PrescriptionViewModel> GetPrescriptionByID(int id);
         Task<bool> UpdatePrescription(Prescriptions prescriptions);
+        Task<bool> UpdateDispnse(PrescriptionModel prescriptions);
         Task<Prescriptions> FindPrescription(int PrescriptionID);
         
 

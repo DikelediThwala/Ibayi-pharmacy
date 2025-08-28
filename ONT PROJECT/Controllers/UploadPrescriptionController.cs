@@ -119,8 +119,8 @@ namespace ONT_PROJECT.Controllers
         public async Task<IActionResult> CreatePrescriptions()
         {
 
-            ViewBag.Medicines = new SelectList(_context.PrescriptionViewModel, "MedicineId", "MedicineName");
-            var model = new PrescriptionLine { PrescriptionId = prescriptionId };
+            //ViewBag.Medicines = new SelectList(_context.PrescriptionViewModel, "MedicineId", "MedicineName");
+            //var model = new PrescriptionLine { PrescriptionId = prescriptionId };
             return View();
         }
 
