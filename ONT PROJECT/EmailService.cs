@@ -32,5 +32,5 @@ public class EmailService
         mailMessage.To.Add(to);
 
         smtpClient.Send(mailMessage);
-    }
+    }    
 }

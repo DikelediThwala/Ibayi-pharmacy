@@ -32,7 +32,7 @@ namespace ONT_PROJECT.Controllers
 
             // Group by Customer + Doctor + Date
             var grouped = results
-                .GroupBy(r => new { r.FirstName, r.Name, r.Date, r.Status, r.Repeats, r.RepeatsLeft,r.IDNumber })
+                .GroupBy(r => new { r.FirstName, r.Name, r.Date, r.Status, r.Repeats, r.RepeatsLeft,r.IDNumber,r.PrescriptionID,r.Email })
                 .Select(g => new PrescriptionModel
                 {
                     FirstName = g.Key.FirstName,
@@ -42,6 +42,8 @@ namespace ONT_PROJECT.Controllers
                     Repeats = g.Key.Repeats,
                     RepeatsLeft = g.Key.RepeatsLeft,
                     IDNumber = g.Key.IDNumber,
+                    PrescriptionID = g.Key.PrescriptionID,
+                    Email = g.Key.Email,
                     // combine medications + quantities
                     MedicineName = string.Join(", ", g.Select(x => x.MedicineName + " (" + x.Quantity + ")")),
                     PrescriptionLineID = g.First().PrescriptionLineID // one ID for action
@@ -52,34 +54,27 @@ namespace ONT_PROJECT.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Process(int id,tblUser user,PrescriptionModel prescription)
-        {
-            
+        public async Task<IActionResult> Process(int id,PrescriptionModel prescription,tblUser user)
+        {       
             var prescriptionToUpdate = new PrescriptionModel
             {
                 PrescriptionID = id
             };
-
             bool success = await _prescriptionRepository.UpdateDispnse(prescriptionToUpdate);
-
             if (success)
             {
-                var resetLink = Url.Action("ResetPassword", "User", new { email = user.Email }, protocol: Request.Scheme);
-                string emailBody = $@" <p>Hello {user.FirstName},</p>
-            <p>Your Prescription has been dispensed:</p>
-           <p><strong>{prescription.MedicineName}</strong></p>
-           <p><strong>{prescription.Repeats}</strong></p>
-           <p><strong>{prescription.RepeatsLeft}</strong></p>
-           <p><strong>{prescription.Quantity}</strong></p>";
-                _emailService.Send(user.Email, "Your Medication", emailBody);
+
+               // string emailBody = $@" <p>Hello {user.FirstName},</p>
+               // <p>Your Prescription has been dispensed:</p>
+               //<p><strong>{prescription.MedicineName}</strong></p>
+               //<p><strong>{prescription.Repeats}</strong></p>
+               //<p><strong>{prescription.RepeatsLeft}</strong></p>
+               //<p><strong>{prescription.Quantity}</strong></p>";
+               // _emailService.Send(prescription.Email, "Your Medication", emailBody);
                 return Json(new { success = true, message = "Prescription dispensed." });
-            }
-                
+            }                                     
             else
-                return Json(new { success = false, message = "Failed to ." });
-
-
-           
+                return Json(new { success = false, message = "Failed to ." });         
         }
     }
 }
