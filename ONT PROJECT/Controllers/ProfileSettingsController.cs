@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Elfie.Serialization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,6 +11,7 @@ using QuestPDF.Infrastructure;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -161,12 +163,10 @@ namespace ONT_PROJECT.Controllers
             TempData["SuccessMessage"] = "Password updated successfully!";
             return RedirectToAction("Index");
         }
-
-        // ✅ Download Profile PDF
         [HttpGet]
         public IActionResult DownloadProfilePdf()
         {
-            QuestPDF.Settings.License = LicenseType.Community; // Important for free use
+            QuestPDF.Settings.License = LicenseType.Community; // Ensure Community license is set
 
             var email = HttpContext.Session.GetString("UserEmail");
             if (email == null) return RedirectToAction("Login", "CustomerRegister");
@@ -187,6 +187,9 @@ namespace ONT_PROJECT.Controllers
                     .ToList();
             }
 
+            // Path to logo image
+            var logoPath = Path.Combine(_environment.WebRootPath, "images", "Logo_2-removebg-preview.png");
+
             var pdfBytes = Document.Create(container =>
             {
                 container.Page(page =>
@@ -195,25 +198,65 @@ namespace ONT_PROJECT.Controllers
                     page.Margin(2, Unit.Centimetre);
                     page.DefaultTextStyle(x => x.FontSize(12));
 
+                    // Header with logo and pharmacy name
                     page.Header()
-                        .Text("Profile Details")
-                        .SemiBold().FontSize(20).AlignCenter();
+                        .Column(headerCol =>
+                        {
+                            if (System.IO.File.Exists(logoPath))
+                            {
+                                headerCol.Item().Element(imgContainer =>
+                                {
+                                    imgContainer
+                                        .AlignCenter()
+                                        .MaxWidth(80)       // maximum width
+                                        .MaxHeight(80)      // maximum height
+                                        .Image(logoPath);
+                                });
 
+
+                            }
+
+                            headerCol.Item().Text("IBHAYI PHARMACY")
+                                .Bold()
+                                .FontSize(20)
+                                .FontColor(Colors.Blue.Darken1)
+                                .AlignCenter();
+
+                            headerCol.Item().Text("My Profile")
+                                .SemiBold()
+                                .FontSize(18)
+                                .FontColor(Colors.Black)
+                                .AlignCenter();
+
+                            // Separator line
+                            headerCol.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                        });
+
+                    // Profile details
                     page.Content()
                         .Column(col =>
                         {
-                            col.Item().Text($"First Name: {user.FirstName}");
-                            col.Item().Text($"Last Name: {user.LastName}");
-                            col.Item().Text($"ID Number: {user.Idnumber}");
-                            col.Item().Text($"Phone Number: {user.PhoneNumber}");
-                            col.Item().Text($"Email: {user.Email}");
+                            void AddDetail(string label, string value)
+                            {
+                                col.Item().Row(row =>
+                                {
+                                    row.RelativeItem().Text(label).SemiBold();
+                                    row.RelativeItem().Text(value);
+                                });
+                            }
 
-                            col.Item().Text("Allergies:");
+                            AddDetail("First Name:", user.FirstName);
+                            AddDetail("Last Name:", user.LastName);
+                            AddDetail("ID Number:", user.Idnumber);
+                            AddDetail("Phone Number:", user.PhoneNumber);
+                            AddDetail("Email:", user.Email);
+
+                            col.Item().PaddingTop(10).Text("Allergies:").SemiBold();
                             if (selectedAllergies.Any())
                             {
                                 foreach (var allergy in selectedAllergies)
                                 {
-                                    col.Item().Text($"- {allergy}");
+                                    col.Item().Text($"• {allergy}");
                                 }
                             }
                             else
@@ -226,5 +269,9 @@ namespace ONT_PROJECT.Controllers
 
             return File(pdfBytes, "application/pdf", "ProfileDetails.pdf");
         }
+
     }
+
 }
+
+
