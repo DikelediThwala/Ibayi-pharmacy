@@ -4,9 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -20,6 +23,7 @@ namespace ONT_PROJECT.Controllers
             _context = context;
             _environment = environment;
         }
+
         [HttpGet]
         public IActionResult Settings()
         {
@@ -29,9 +33,9 @@ namespace ONT_PROJECT.Controllers
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
             if (user == null) return NotFound();
 
-            return View(user); // This is the Settings.cshtml view with 3 buttons
+            return View(user);
         }
-        // Show list of all customers (report)
+
         [HttpGet]
         public IActionResult Index(bool? edit)
         {
@@ -62,13 +66,10 @@ namespace ONT_PROJECT.Controllers
 
             ViewBag.SelectedAllergies = selectedAllergies;
             ViewBag.ActiveIngredients = allAllergies;
-
-            // Toggle edit mode
             ViewBag.EditMode = edit ?? false;
 
             return View(user);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -80,30 +81,26 @@ namespace ONT_PROJECT.Controllers
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
             if (user == null) return NotFound();
 
-            // Update user fields
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
             user.Idnumber = model.Idnumber;
             user.PhoneNumber = model.PhoneNumber;
 
-            // Update allergies
             var customer = _context.Customers.FirstOrDefault(c => c.CustomerNavigation.UserId == user.UserId);
             if (customer != null)
             {
-                // Remove all existing allergies
                 var existingAllergies = _context.CustomerAllergies
                     .Where(ca => ca.CustomerId == customer.CustomerId)
                     .ToList();
                 _context.CustomerAllergies.RemoveRange(existingAllergies);
 
-                // Add selected allergies
                 if (SelectedAllergyIds != null)
                 {
                     foreach (var allergyId in SelectedAllergyIds)
                     {
                         _context.CustomerAllergies.Add(new CustomerAllergy
                         {
-                            CustomerId = customer.CustomerId,    // important!
+                            CustomerId = customer.CustomerId,
                             ActiveIngredientId = allergyId
                         });
                     }
@@ -111,7 +108,6 @@ namespace ONT_PROJECT.Controllers
             }
 
             _context.SaveChanges();
-
             TempData["SuccessMessage"] = "Your profile was updated successfully.";
 
             return RedirectToAction("Index");
@@ -124,14 +120,10 @@ namespace ONT_PROJECT.Controllers
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null) return RedirectToAction("Index", "Home");
 
-            // Delete user from DB
-            // _dbContext.TblUser.Remove(user);
-            // _dbContext.SaveChanges();
-
-            // Clear session and redirect
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
+
         [HttpGet]
         public IActionResult ChangePassword()
         {
@@ -141,7 +133,7 @@ namespace ONT_PROJECT.Controllers
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
             if (user == null) return NotFound();
 
-            return View(user); // Return the ChangePassword.cshtml view
+            return View(user);
         }
 
         [HttpPost]
@@ -170,7 +162,69 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("Index");
         }
 
+        // ✅ Download Profile PDF
+        [HttpGet]
+        public IActionResult DownloadProfilePdf()
+        {
+            QuestPDF.Settings.License = LicenseType.Community; // Important for free use
 
+            var email = HttpContext.Session.GetString("UserEmail");
+            if (email == null) return RedirectToAction("Login", "CustomerRegister");
 
+            var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
+            if (user == null) return NotFound();
+
+            var customer = _context.Customers.FirstOrDefault(c => c.CustomerNavigation.UserId == user.UserId);
+            var selectedAllergies = new List<string>();
+            if (customer != null)
+            {
+                selectedAllergies = _context.CustomerAllergies
+                    .Where(ca => ca.CustomerId == customer.CustomerId)
+                    .Join(_context.ActiveIngredient,
+                          ca => ca.ActiveIngredientId,
+                          ai => ai.ActiveIngredientId,
+                          (ca, ai) => ai.Ingredients)
+                    .ToList();
+            }
+
+            var pdfBytes = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(2, Unit.Centimetre);
+                    page.DefaultTextStyle(x => x.FontSize(12));
+
+                    page.Header()
+                        .Text("Profile Details")
+                        .SemiBold().FontSize(20).AlignCenter();
+
+                    page.Content()
+                        .Column(col =>
+                        {
+                            col.Item().Text($"First Name: {user.FirstName}");
+                            col.Item().Text($"Last Name: {user.LastName}");
+                            col.Item().Text($"ID Number: {user.Idnumber}");
+                            col.Item().Text($"Phone Number: {user.PhoneNumber}");
+                            col.Item().Text($"Email: {user.Email}");
+
+                            col.Item().Text("Allergies:");
+                            if (selectedAllergies.Any())
+                            {
+                                foreach (var allergy in selectedAllergies)
+                                {
+                                    col.Item().Text($"- {allergy}");
+                                }
+                            }
+                            else
+                            {
+                                col.Item().Text("No allergies listed.");
+                            }
+                        });
+                });
+            }).GeneratePdf();
+
+            return File(pdfBytes, "application/pdf", "ProfileDetails.pdf");
+        }
     }
 }
