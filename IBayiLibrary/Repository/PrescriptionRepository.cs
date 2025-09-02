@@ -133,5 +133,14 @@ namespace IBayiLibrary.Repository
                 return false; // Something went wrong
             }
         }
+        public async Task<PrescriptionModel> GetDispenseById(int prescriptionId)
+        {
+            string query = "spDispenseByID";
+            var result = await _db.GetData<PrescriptionModel, dynamic>(
+                query,
+                new { PrescriptionID = prescriptionId }
+            );
+            return result.FirstOrDefault();
+        }
     }
 }

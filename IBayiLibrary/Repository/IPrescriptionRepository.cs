@@ -22,8 +22,7 @@ namespace IBayiLibrary.Repository
         Task<bool> UpdatePrescription(Prescriptions prescriptions);
         Task<bool> UpdateDispnse(PrescriptionModel prescriptions);
         Task<Prescriptions> FindPrescription(int PrescriptionID);
-        
-
+        Task<PrescriptionModel> GetDispenseById(int prescriptionId);
 
     }
 }

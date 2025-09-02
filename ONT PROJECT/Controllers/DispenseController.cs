@@ -54,8 +54,10 @@ namespace ONT_PROJECT.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Process(int id,PrescriptionModel prescription,tblUser user)
-        {       
+        public async Task<IActionResult> Process(int id)
+        {
+            var prescriptionss = await _prescriptionRepository.GetDispenseById(id);
+
             var prescriptionToUpdate = new PrescriptionModel
             {
                 PrescriptionID = id
@@ -63,16 +65,24 @@ namespace ONT_PROJECT.Controllers
             bool success = await _prescriptionRepository.UpdateDispnse(prescriptionToUpdate);
             if (success)
             {
+                if (!string.IsNullOrEmpty(prescriptionss.Email))
+                {
+                    string emailBody = $@"
+                        <p>Hello {prescriptionss.FirstName},</p>
+                        <p>Your prescription has been dispensed successfully.</p>
+                        <p><strong>Medication(s):</strong> {prescriptionss.MedicineName}</p>
+                        <p><strong>Repeats:</strong> {prescriptionss.Repeats}</p>
+                        <p><strong>Repeats Left:</strong> {prescriptionss.RepeatsLeft}</p>
+                        <p><strong>Quantity:</strong> {prescriptionss.Quantity}</p>                       
+                        <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
 
-               // string emailBody = $@" <p>Hello {user.FirstName},</p>
-               // <p>Your Prescription has been dispensed:</p>
-               //<p><strong>{prescription.MedicineName}</strong></p>
-               //<p><strong>{prescription.Repeats}</strong></p>
-               //<p><strong>{prescription.RepeatsLeft}</strong></p>
-               //<p><strong>{prescription.Quantity}</strong></p>";
-               // _emailService.Send(prescription.Email, "Your Medication", emailBody);
+
+                    _emailService.Send(prescriptionss.Email, "Your Medication Has Been Dispensed", emailBody);
+                   
+                }
                 return Json(new { success = true, message = "Prescription dispensed." });
-            }                                     
+            }
+                                                         
             else
                 return Json(new { success = false, message = "Failed to ." });         
         }
