@@ -119,8 +119,8 @@ namespace ONT_PROJECT.Controllers
         public async Task<IActionResult> CreatePrescriptions()
         {
 
-            //ViewBag.Medicines = new SelectList(_context.PrescriptionViewModel, "MedicineId", "MedicineName");
-            //var model = new PrescriptionLine { PrescriptionId = prescriptionId };
+            var prescLine = await _prescriptionLineRepository.GetMedicineName();
+            ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
             return View();
         }
 
@@ -171,25 +171,24 @@ namespace ONT_PROJECT.Controllers
                 {
                     TempData["msg"] = "Could not add";
                 }
-                //var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
-                //var lastRow = result.FirstOrDefault();
+                var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
+                var lastRow = result.FirstOrDefault();
 
-                //int prescriptionID = lastRow?.PrescriptionID ?? 0;
-                //prescription.PrescriptionID = prescriptionID;
-                //bool addPrescLine = await _prescriptionRepository.AddPrescLineAsync(prescription);
+                int prescriptionID = lastRow?.PrescriptionID ?? 0;
+                prescription.PrescriptionID = prescriptionID;
+                bool addPrescLine = await _prescriptionRepository.AddPrescLineAsync(prescription);
 
-                //if (addPrescLine)
-                //{
-                //    TempData["msg"] = "Sucessfully Added";
-                //}
-                //else
-                //{
-                //    TempData["msg"] = "Could not add";
-                //}
-                //
-                var medicines = await _prescriptionLineRepository.GetMedicineName();
-                ViewBag.MedicineID = new SelectList(medicines, "MedicineID", "MedicineName", prescription.MedicineID);
+                if (addPrescLine)
+                {
+                    TempData["msg"] = "Sucessfully Added";
+                }
+                else
+                {
+                    TempData["msg"] = "Could not add";
+                }
 
+                var prescLine = await _prescriptionLineRepository.GetMedicineName();
+                ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
 
             }
 
@@ -197,7 +196,7 @@ namespace ONT_PROJECT.Controllers
             {
                 TempData["msg"] = " Something went wrong!!!";
             }
-            return RedirectToAction("CreateUser", "Pharmacist");
+            return RedirectToAction("DispensePrescription", "Dispense");
         }
         public async Task<IActionResult> DownloadPrescription(int id)
         {
