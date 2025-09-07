@@ -21,7 +21,7 @@ else
                 <tr>
                     <th>Prescription #</th>
                     <th>Medication</th>
-                    <th>Instructions / Dosage</th>
+                    <th>Instructions</th>
                     <th>Quantity</th>
                     <th></th>
                 </tr>
@@ -32,8 +32,7 @@ else
                     <tr>
                         <td>@line.Prescription?.PrescriptionId ?? 0</td>
                         <td>@line.Medicine</td>
-                        <td>@line.Instructions/td>
-                        @* <td>@line.Dosage ?? line.Instructions</td> *@
+                        <td>@line.Instructions</td>
                         <td>@line.Quantity</td>
                         <td class="text-right">
                             <a asp-controller="Order"
