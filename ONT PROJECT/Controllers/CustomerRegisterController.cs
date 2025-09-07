@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -100,19 +103,35 @@ namespace ONT_PROJECT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(string Email, string Password)
+        public async Task<IActionResult> Login(string Email, string Password)
         {
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == Email);
-            var pharmacy = _context.Pharmacies.FirstOrDefault();
-
 
             if (user != null && VerifyPassword(Password, user.Password))
             {
+                // --- 1. Create claims for authentication ---
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new Claim(ClaimTypes.Name, user.Email),
+            new Claim(ClaimTypes.Role, user.Role)
+        };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                // --- 2. Sign in with cookie ---
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity)
+                );
+
+                // --- 3. Store extra data in session if needed ---
                 HttpContext.Session.SetInt32("UserId", user.UserId);
                 HttpContext.Session.SetString("UserEmail", user.Email);
                 HttpContext.Session.SetString("UserFirstName", user.FirstName);
                 HttpContext.Session.SetString("UserLastName", user.LastName);
                 HttpContext.Session.SetString("UserRole", user.Role);
+
                 if (user.ProfilePicture != null && user.ProfilePicture.Length > 0)
                 {
                     string base64String = Convert.ToBase64String(user.ProfilePicture);
@@ -122,9 +141,10 @@ namespace ONT_PROJECT.Controllers
                 {
                     HttpContext.Session.SetString("UserProfilePic", "");
                 }
-                
+
                 TempData["Success"] = "Login successful!";
 
+                // --- 4. Redirect based on role ---
                 switch (user.Role)
                 {
                     case "Customer":
@@ -138,9 +158,11 @@ namespace ONT_PROJECT.Controllers
                 }
             }
 
+            // Invalid credentials
             ModelState.AddModelError("", "Invalid login credentials.");
-            LoadAllergyDropdown();
+            LoadAllergyDropdown(); // keep this if needed
             return View("Register", new TblUser { Email = Email });
+        
         }
 
        
