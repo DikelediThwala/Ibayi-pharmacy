@@ -31,7 +31,7 @@ else
                 {
                     <tr>
                         <td>@line.Prescription?.PrescriptionId ?? 0</td>
-                        <td>@line.Medicine</td>
+                        <td>@(line.Medicine != null ? line.Medicine.MedicineName : "Unknown Medicine")</td>
                         <td>@line.Instructions</td>
                         <td>@line.Quantity</td>
                         <td class="text-right">
