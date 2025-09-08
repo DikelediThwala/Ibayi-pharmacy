@@ -16,35 +16,31 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
 
 <style>
-   
-    .content-area .table-wrapper {
-        color: #566787;
-        font-family: 'Varela Round', sans-serif;
-        font-size: 13px;
-        background: #f5f5f5;
-    }
-
     .table-wrapper {
         min-width: 700px;
-        background: #fff;
+        background: #f5f5f5; /* grey container like your Users tables */
         padding: 20px 25px;
         border-radius: 3px;
-        box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
         margin-bottom: 2rem;
     }
 
     .table-title {
         color: #fff;
-        background: #4b5366;
+        background: #4b5366; /* dark header color */
         padding: 16px 25px;
-        margin: -20px -25px 10px;
+        margin: -20px -25px 10px; /* removes the white gap above container */
         border-radius: 3px 3px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
         .table-title h2 {
-            margin: 5px 0 0;
-            font-size: 24px;
+            margin: 0;
+            font-size: 20px;
         }
+
 
         .table-title .btn {
             float: right;
@@ -55,10 +51,6 @@
             border-radius: 2px;
             margin-left: 10px;
         }
-
-            .table-title .btn i {
-                margin-right: 6px;
-            }
 
     table.table {
         text-align: center;
@@ -81,10 +73,16 @@
 </style>
 
 <div class="container py-4">
-
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show successAlert" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
     @if (TempData["GeneratedPassword"] != null)
     {
-        <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show successAlert" role="alert">
             <strong>New user registered!</strong><br />
             Temporary Password: <code>@TempData["GeneratedPassword"]</code>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -123,7 +121,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var user in managers)
+                    @foreach (var user in managers.Where(u => u.Status == "Active"))
                     {
                         <tr>
                             <td>@user.Title</td>
@@ -136,9 +134,9 @@
                                 <a asp-action="Edit" asp-controller="User" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-primary me-1" title="Edit">
                                     <i class="material-icons">&#xE254;</i>
                                 </a>
-                                <a asp-action="Delete" asp-controller="User" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-danger" title="Delete">
+                                <button type="button" class="btn btn-sm btn-outline-danger deactivate-btn" data-userid="@user.UserId" title="Deactivate">
                                     <i class="material-icons">&#xE872;</i>
-                                </a>
+                                </button>
                             </td>
                         </tr>
                     }
@@ -170,7 +168,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var user in pharmacists)
+                    @foreach (var user in pharmacists.Where(u => u.Status == "Active"))
                     {
                         <tr>
                             <td>@user.Title</td>
@@ -183,9 +181,9 @@
                                 <a asp-action="Edit" asp-controller="User" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-primary me-1" title="Edit">
                                     <i class="material-icons">&#xE254;</i>
                                 </a>
-                                <a asp-action="Delete" asp-controller="User" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-danger" title="Delete">
+                                <button type="button" class="btn btn-sm btn-outline-danger deactivate-btn" data-userid="@user.UserId" title="Deactivate">
                                     <i class="material-icons">&#xE872;</i>
-                                </a>
+                                </button>
                             </td>
                         </tr>
                     }
@@ -193,35 +191,171 @@
             </table>
         </div>
     </section>
+        <hr class="mb-5" style="height: 5px; background-color: #011425; border: none;" />
 
+    <!-- DEACTIVATED USERS -->
+    <section id="DeactivatedUsers" class="reviews-section mt-5">
+        <p class="text-muted fs-5 mb-3">
+            <i class="fas fa-info-circle text-danger"></i>
+           List of <strong>Inactive Users</strong>. You can reactivate them here.
+        </p>
+        <div class="table-wrapper">
+            <div class="table-title d-flex justify-content-between align-items-center bg-secondary">
+                <h2><i class="material-icons">&#xe7ef;</i> Deactivated Users</h2>
+            </div>
+            <table id="deactivatedTable" class="table table-striped table-hover">
+                <thead class="table-danger">
+                    <tr>
+                        <th>Title</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                        <th>Activate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in ViewBag.DeactivatedUsers as List<ONT_PROJECT.Models.TblUser>)
+                    {
+                        <tr>
+                            <td>@user.Title</td>
+                            <td>@user.FirstName</td>
+                            <td>@user.LastName</td>
+                            <td>@user.Email</td>
+                            <td>@user.PhoneNumber</td>
+                            <td><span class="badge bg-dark">@user.Role</span></td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-success activate-btn" data-userid="@user.UserId" title="Activate">
+                                    <i class="material-icons">&#xE5CA;</i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
 
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+<!-- Deactivate User Modal -->
+<div class="modal fade" id="deactivateModal" tabindex="-1" aria-labelledby="deactivateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deactivateModalLabel">Deactivate User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to deactivate <strong id="deactivateUserName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDeactivate" class="btn btn-danger">Deactivate</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
 <script>
     $(document).ready(function () {
-        $('#managerTable, #pharmacistTable, #customerTable').DataTable({
-            pageLength: 6,
-            lengthChange: false,
-            language: {
-                search: "Search table:",
-                paginate: {
-                    previous: "← Previous",
-                    next: "Next →"
+        var tables = ['#managerTable', '#pharmacistTable', '#deactivatedTable'];
+        var userIdToDeactivate = 0;
+
+        // Initialize DataTables
+        tables.forEach(function (tableId) {
+            if ($.fn.dataTable.isDataTable(tableId)) {
+                $(tableId).DataTable().destroy();
+            }
+
+            var pageLength = tableId === '#deactivatedTable' ? 2 : 6;
+
+            $(tableId).DataTable({
+                pageLength: pageLength,
+                lengthChange: false,
+                ordering: false,
+                language: {
+                    search: "Search table:",
+                    paginate: { previous: "← Previous", next: "Next →" }
                 }
+            });
+        });
+
+        // Auto-close alerts
+        function autoCloseAlerts() {
+            setTimeout(function () {
+                $('.successAlert').each(function() {
+                    new bootstrap.Alert(this).close();
+                });
+            }, 4000);
+        }
+
+        autoCloseAlerts();
+
+        // Deactivate user logic
+        $(document).on('click', '.deactivate-btn', function () {
+            userIdToDeactivate = $(this).data('userid');
+            var row = $(this).closest('tr');
+            var userName = row.find('td:nth-child(2)').text() + ' ' + row.find('td:nth-child(3)').text();
+            $('#deactivateUserName').text(userName);
+            new bootstrap.Modal(document.getElementById('deactivateModal')).show();
+        });
+
+        $('#confirmDeactivate').click(function () {
+            if (userIdToDeactivate) {
+                $.post('/User/SoftDelete', { id: userIdToDeactivate })
+                    .done(function () { location.reload(); })
+                    .fail(function () { alert('Failed to deactivate user.'); });
             }
         });
 
-        setTimeout(function () {
-            var alert = document.getElementById('successAlert');
-            if (alert) {
-                var bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
+        // Activate user logic
+        $(document).on('click', '.activate-btn', function () {
+            var userIdToActivate = $(this).data('userid');
+            var $row = $(this).closest('tr'); // current row
+            var firstName = $row.find('td:nth-child(2)').text();
+            var lastName = $row.find('td:nth-child(3)').text();
+            var title = $row.find('td:nth-child(1)').text();
+            var email = $row.find('td:nth-child(4)').text();
+            var phone = $row.find('td:nth-child(5)').text();
+            var role = $row.find('td:nth-child(6)').text();
+            var actions = `
+                <a asp-action="Edit" asp-controller="User" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                    <i class="material-icons">&#xE254;</i>
+                </a>
+                <button type="button" class="btn btn-sm btn-outline-danger deactivate-btn" data-userid="${userIdToActivate}" title="Deactivate">
+                    <i class="material-icons">&#xE872;</i>
+                </button>
+            `;
+
+            if (userIdToActivate) {
+                $.post('/User/Activate', { id: userIdToActivate })
+                    .done(function () {
+                        // Remove row from deactivated table
+                        var deactivatedTable = $('#deactivatedTable').DataTable();
+                        deactivatedTable.row($row).remove().draw();
+
+                        // Show success alert
+                        $('<div class="alert alert-success alert-dismissible fade show successAlert" role="alert">' +
+                          'User ' + firstName + ' ' + lastName + ' activated successfully.' +
+                          '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                          '</div>').prependTo('.container');
+
+                        autoCloseAlerts();
+
+                        // Add user to the correct active table
+                        var targetTableId = role.toLowerCase().includes('manager') ? '#managerTable' : '#pharmacistTable';
+                        var targetTable = $(targetTableId).DataTable();
+                        targetTable.row.add([title, firstName, lastName, email, phone, `<span class="badge ${role.toLowerCase().includes('manager') ? 'bg-primary' : 'bg-secondary'}">${role}</span>`, actions]).draw();
+                    })
+                    .fail(function () { alert('Failed to activate user.'); });
             }
-        }, 4000);
+        });
     });
 </script>

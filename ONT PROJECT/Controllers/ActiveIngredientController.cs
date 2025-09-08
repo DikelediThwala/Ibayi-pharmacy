@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
 using System.Linq;
 
@@ -13,11 +14,19 @@ namespace ONT_PROJECT.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var ingredients = _context.ActiveIngredient.ToList();
-            return View(ingredients);
+            var activeIngredients = await _context.ActiveIngredient
+                .Where(a => a.Status == "Active")
+                .ToListAsync();
+            var deactivatedIngredients = await _context.ActiveIngredient
+                .Where(a => a.Status == "Inactive")
+                .ToListAsync();
+
+            ViewBag.DeactivatedIngredients = deactivatedIngredients;
+            return View(activeIngredients);
         }
+
 
         public IActionResult Create()
         {
@@ -81,18 +90,30 @@ namespace ONT_PROJECT.Controllers
             return View(ingredient);
         }
 
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public IActionResult Deactivate(int id)
         {
-            var ingredient = _context.ActiveIngredient.Find(id);
-            if (ingredient != null)
-            {
-                _context.ActiveIngredient.Remove(ingredient);
-                _context.SaveChanges();
-                TempData["SuccessMessage"] = "Ingredient deleted.";
-            }
+            var ingredient = _context.ActiveIngredient.FirstOrDefault(a => a.ActiveIngredientId == id);
+            if (ingredient == null) return NotFound();
+
+            ingredient.Status = "Inactive";
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = $"Ingredient '{ingredient.Ingredients}' deactivated.";
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        public IActionResult Activate(int id)
+        {
+            var ingredient = _context.ActiveIngredient.FirstOrDefault(a => a.ActiveIngredientId == id);
+            if (ingredient == null) return NotFound();
+
+            ingredient.Status = "Active";
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = $"Ingredient '{ingredient.Ingredients}' activated.";
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

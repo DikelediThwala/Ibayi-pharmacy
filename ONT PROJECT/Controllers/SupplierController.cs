@@ -72,5 +72,50 @@ namespace ONT_PROJECT.Controllers
             }
             return View(supplier);
         }
+
+        [HttpPost]
+        public IActionResult Delete(int id, Dictionary<int, int> reassignments)
+        {
+            var supplier = _context.Suppliers.FirstOrDefault(s => s.SupplierId == id);
+            if (supplier == null) return NotFound();
+
+            var meds = _context.Medicines.Where(m => m.SupplierId == id).ToList();
+            foreach (var med in meds)
+            {
+                if (reassignments != null && reassignments.ContainsKey(med.MedicineId))
+                    med.SupplierId = reassignments[med.MedicineId];
+            }
+
+            supplier.Status = "Deactivated";
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Supplier deactivated and medications reassigned!";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public IActionResult Activate(int id)
+        {
+            var supplier = _context.Suppliers.FirstOrDefault(s => s.SupplierId == id);
+            if (supplier == null) return NotFound();
+
+            supplier.Status = "Active";
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Supplier activated successfully!";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public IActionResult GetSupplierMedications(int id)
+        {
+            var meds = _context.Medicines
+                .Where(m => m.SupplierId == id && m.Status == "Active")
+                .Select(m => new { m.MedicineId, m.MedicineName }).ToList();
+
+            var otherSuppliers = _context.Suppliers
+                .Where(s => s.SupplierId != id && s.Status == "Active")
+                .Select(s => new { s.SupplierId, s.Name }).ToList();
+
+            return Json(new { meds, otherSuppliers });
+        }
     }
 }

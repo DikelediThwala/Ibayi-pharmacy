@@ -16,7 +16,9 @@ namespace ONT_PROJECT.Controllers
         public IActionResult Index()
         {
             var doctors = _context.Doctors.ToList();
-            return View(doctors);
+            ViewBag.ActiveDoctors = _context.Doctors.Where(d => d.Status == "Active").ToList();
+            ViewBag.DeactivatedDoctors = _context.Doctors.Where(d => d.Status == "Deactivated").ToList();
+            return View();
         }
 
         public IActionResult Create()
@@ -77,6 +79,32 @@ namespace ONT_PROJECT.Controllers
 
 
             return View(doctor);
+        }
+
+        [HttpPost]
+        public IActionResult SoftDelete(int id)
+        {
+            var doctor = _context.Doctors.FirstOrDefault(d => d.DoctorId == id);
+            if (doctor != null)
+            {
+                doctor.Status = "Deactivated";
+                _context.SaveChanges();
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        public IActionResult Activate(int id)
+        {
+            var doctor = _context.Doctors.FirstOrDefault(d => d.DoctorId == id);
+            if (doctor != null)
+            {
+                doctor.Status = "Active";
+                _context.SaveChanges();
+                return Ok();
+            }
+            return BadRequest();
         }
 
 

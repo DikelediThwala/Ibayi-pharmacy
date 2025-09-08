@@ -40,9 +40,9 @@ namespace ONT_PROJECT.Controllers
 
         public IActionResult Edit()
         {
-            // Include Pharmacist to populate navigation property
             var pharmacy = _context.Pharmacies
                 .Include(p => p.Pharmacist)
+                    .ThenInclude(ph => ph.PharmacistNavigation) // include the related User
                 .FirstOrDefault();
 
             if (pharmacy == null)
@@ -51,21 +51,28 @@ namespace ONT_PROJECT.Controllers
                 return RedirectToAction("Index");
             }
 
+            // Only active pharmacists
+            var activePharmacists = _context.Pharmacists
+                .Include(p => p.PharmacistNavigation) // include User
+                .Where(p => p.PharmacistNavigation.Status == "Active") // filter by User.Status
+                .Select(p => new
+                {
+                    PharmacistId = p.PharmacistId,
+                    FullName = p.PharmacistNavigation.FirstName + " " + p.PharmacistNavigation.LastName
+                })
+                .OrderBy(p => p.FullName)
+                .ToList();
+
             ViewBag.PharmacistList = new SelectList(
-                _context.Pharmacists
-                    .Include(p => p.PharmacistNavigation)
-                    .Select(p => new
-                    {
-                        PharmacistId = p.PharmacistId,
-                        FullName = p.PharmacistNavigation.FirstName + " " + p.PharmacistNavigation.LastName
-                    }),
+                activePharmacists,
                 "PharmacistId",
                 "FullName",
-                pharmacy.PharmacistId // pre-select current pharmacist
+                pharmacy.PharmacistId // selected value
             );
 
             return View(pharmacy);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Pharmacy pharmacyModel, IFormFile? logoFile)  // nullable here
@@ -101,6 +108,7 @@ namespace ONT_PROJECT.Controllers
             
             ViewBag.PharmacistList = new SelectList(
                 _context.Pharmacists.Include(p => p.PharmacistNavigation)
+                    .OrderBy(p => p.PharmacistId)
                     .Select(p => new
                     {
                         PharmacistId = p.PharmacistId,

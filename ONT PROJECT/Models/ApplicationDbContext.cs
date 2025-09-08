@@ -67,6 +67,10 @@ public partial class ApplicationDbContext : DbContext
 
             entity.Property(e => e.ActiveIngredientId).HasColumnName("ActiveIngredientID");
             entity.Property(e => e.Ingredients).HasMaxLength(50);
+            entity.Property(e => e.Status)
+              .IsRequired()
+              .HasMaxLength(20)
+              .HasDefaultValue("Active");
         });
 
         modelBuilder.Entity<BOrder>(entity =>
@@ -150,6 +154,10 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.PracticeNo).HasMaxLength(50);
             entity.Property(e => e.Surname).HasMaxLength(50);
+            entity.Property(e => e.Status)
+              .IsRequired()
+              .HasMaxLength(20)
+              .HasDefaultValue("Active");
         });
 
         modelBuilder.Entity<DosageForm>(entity =>
@@ -160,6 +168,10 @@ public partial class ApplicationDbContext : DbContext
 
             entity.Property(e => e.FormId).HasColumnName("FormID");
             entity.Property(e => e.FormName).HasMaxLength(50);
+            entity.Property(e => e.Status)
+              .IsRequired()
+              .HasMaxLength(20)
+              .HasDefaultValue("Active");
         });
 
         modelBuilder.Entity<MedIngredient>(entity =>
@@ -195,6 +207,10 @@ public partial class ApplicationDbContext : DbContext
                 .HasForeignKey(d => d.FormId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Medicine_DosageForm");
+            entity.Property(e => e.Status)
+              .IsRequired()
+              .HasMaxLength(20)
+              .HasDefaultValue("Active");
         });
 
         modelBuilder.Entity<Order>(entity =>
@@ -274,6 +290,10 @@ public partial class ApplicationDbContext : DbContext
             entity.HasOne(d => d.Pharmacist).WithMany(p => p.Pharmacies)
                 .HasForeignKey(d => d.PharmacistId)
                 .HasConstraintName("FK_Pharmacy_Pharmacist");
+            entity.Property(e => e.Status)
+              .IsRequired()
+              .HasMaxLength(20)
+              .HasDefaultValue("Active");
         });
 
         modelBuilder.Entity<PharmacyManager>(entity =>
@@ -345,6 +365,10 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.ContactNo).HasMaxLength(11);
             entity.Property(e => e.Email).HasMaxLength(50);
             entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.Status)
+              .IsRequired()
+              .HasMaxLength(20)
+              .HasDefaultValue("Active");
         });
 
         modelBuilder.Entity<TblUser>(entity =>
@@ -368,6 +392,10 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Title)
                 .HasMaxLength(10)
                 .IsFixedLength();
+            entity.Property(e => e.Status)
+              .IsRequired()
+              .HasMaxLength(20)
+              .HasDefaultValue("Active");
         });
 
         modelBuilder.Entity<UnprocessedPrescription>(entity =>

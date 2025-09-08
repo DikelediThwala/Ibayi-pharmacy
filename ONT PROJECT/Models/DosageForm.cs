@@ -10,6 +10,7 @@ public partial class DosageForm
 
     [Required(ErrorMessage = "The Form Name field is required.")]
     public string FormName { get; set; } = null!;
+    public string Status { get; set; } = "Active";
 
     public virtual ICollection<Medicine> Medicines { get; set; } = new List<Medicine>();
 }

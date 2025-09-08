@@ -35,6 +35,16 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
 // Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {

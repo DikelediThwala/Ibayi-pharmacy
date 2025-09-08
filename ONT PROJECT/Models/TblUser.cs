@@ -33,8 +33,11 @@ public partial class TblUser
 
     [Required(ErrorMessage = "Title is required")]
     public string Title { get; set; } = null!;
+    public string Status { get; set; } = "Active";
+
     public string? Allergies { get; set; } = null!;
     [NotMapped]
+
     public List<int> SelectedAllergyIds { get; set; } = new();
 
     public byte[]? ProfilePicture { get; set; }

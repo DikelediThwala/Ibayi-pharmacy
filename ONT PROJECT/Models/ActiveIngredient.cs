@@ -8,6 +8,7 @@ public partial class ActiveIngredient
     public int ActiveIngredientId { get; set; }
 
     public string Ingredients { get; set; } = null!;
+    public string Status { get; set; } = "Active";
 
     public virtual ICollection<CustomerAllergy> CustomerAllergies { get; set; } = new List<CustomerAllergy>();
 

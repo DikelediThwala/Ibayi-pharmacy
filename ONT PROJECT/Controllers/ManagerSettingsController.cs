@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Build.Framework;
 using ONT_PROJECT.Models;
 using Org.BouncyCastle.Crypto.Generators;
 using System.Linq;
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace ONT_PROJECT.Controllers
@@ -53,30 +53,29 @@ namespace ONT_PROJECT.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult UpdateDetails(UserSettingsViewModel model)
         {
-            // Step 0: Debug ModelState
+            System.Diagnostics.Debug.WriteLine($"📌 ModelState.IsValid = {ModelState.IsValid}");
+
+            // Make ExistingProfilePicture optional
             if (!ModelState.IsValid)
             {
                 foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
                 {
-                    System.Diagnostics.Debug.WriteLine(error.ErrorMessage);
+                    System.Diagnostics.Debug.WriteLine($"❌ Validation Error: {error.ErrorMessage}");
                 }
-            }
 
-            var user = _context.TblUsers.FirstOrDefault(u => u.UserId == model.UserId);
+                // Keep existing profile picture if validation fails
+                var userForPicture = _context.TblUsers.FirstOrDefault(u => u.UserId == model.UserId);
+                if (userForPicture != null)
+                    model.ExistingProfilePicture = userForPicture.ProfilePicture;
 
-            // If user not found
-            if (user == null)
-            {
-                ModelState.AddModelError("", $"No user found with ID {model.UserId}. Please check the database.");
                 ViewBag.TitleList = new SelectList(new List<string> { "Mr", "Mrs", "Miss", "Dr" }, model.Title?.Trim());
-                model.ExistingProfilePicture = null;
                 return View("Details", model);
             }
 
-            // Always update user if ModelState is valid
-            if (!ModelState.IsValid)
+            var user = _context.TblUsers.FirstOrDefault(u => u.UserId == model.UserId);
+            if (user == null)
             {
-                model.ExistingProfilePicture = user.ProfilePicture;
+                ModelState.AddModelError("", $"No user found with ID {model.UserId}.");
                 ViewBag.TitleList = new SelectList(new List<string> { "Mr", "Mrs", "Miss", "Dr" }, model.Title?.Trim());
                 return View("Details", model);
             }
@@ -110,15 +109,16 @@ namespace ONT_PROJECT.Controllers
             }
         }
 
+
         public IActionResult Password()
         {
             ViewData["ActiveTab"] = "password";
-            return View();
+            return View(new ChangePasswordViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ChangePassword(UserSettingsViewModel model)
+        public IActionResult ChangePassword(ChangePasswordViewModel model)
         {
             if (!ModelState.IsValid)
                 return View("Password", model);

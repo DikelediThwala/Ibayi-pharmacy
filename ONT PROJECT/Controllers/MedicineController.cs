@@ -27,11 +27,15 @@ namespace ONT_PROJECT.Controllers
         public IActionResult Create()
         {
             ViewBag.Forms = new SelectList(
-                    _context.DosageForms.OrderBy(f => f.FormName),
+                    _context.DosageForms
+                     .Where(f => f.Status == "Active") 
+                    .OrderBy(f => f.FormName),
                     "FormId",
                     "FormName"
                 );
+
             ViewBag.Suppliers = _context.Suppliers
+                .Where(s => s.Status == "Active")
                  .OrderBy(s => s.Name)
                 .Select(s => new SelectListItem
                 {
@@ -40,6 +44,7 @@ namespace ONT_PROJECT.Controllers
                 }).ToList();
 
             ViewBag.Ingredients = _context.ActiveIngredient
+                 .Where(ai => ai.Status == "Active")
                 .OrderBy(i => i.Ingredients)
                 .Select(ai => new SelectListItem
                 {
@@ -57,7 +62,6 @@ namespace ONT_PROJECT.Controllers
             return View();
         }
 
-        // POST: Medicine/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Medicine medicine, List<int> selectedIngredients, List<string> strengths)
@@ -66,17 +70,20 @@ namespace ONT_PROJECT.Controllers
             {
                 TempData["ErrorMessage"] = "This medicine already exists!";
 
-                // Reload dropdowns and ingredient list
                 ViewBag.Forms = new SelectList(_context.DosageForms.OrderBy(f => f.FormName), "FormId", "FormName");
+
                 ViewBag.Suppliers = _context.Suppliers.OrderBy(s => s.Name)
                     .Select(s => new SelectListItem { Value = s.SupplierId.ToString(), Text = s.Name }).ToList();
+
                 ViewBag.Ingredients = _context.ActiveIngredient.OrderBy(i => i.Ingredients)
                     .Select(ai => new SelectListItem { Value = ai.ActiveIngredientId.ToString(), Text = ai.Ingredients }).ToList();
+
                 ViewBag.ScheduleList = Enumerable.Range(1, 8)
                     .Select(i => new SelectListItem { Value = i.ToString(), Text = $"Schedule {i}" }).ToList();
 
                 return View(medicine);
             }
+
             if (ModelState.IsValid)
             {
                 _context.Add(medicine);
@@ -144,22 +151,38 @@ namespace ONT_PROJECT.Controllers
             if (medicine == null)
                 return NotFound();
 
+            // Only active ingredients
             ViewBag.Ingredients = _context.ActiveIngredient
-                 .OrderBy(i => i.Ingredients)
-                .Select(i => new SelectListItem { Value = i.ActiveIngredientId.ToString(), Text = i.Ingredients })
-                .ToList();
+                .Where(ai => ai.Status == "Active")
+                .OrderBy(i => i.Ingredients)
+                .Select(i => new SelectListItem
+                {
+                    Value = i.ActiveIngredientId.ToString(),
+                    Text = i.Ingredients
+                }).ToList();
 
+            // Only active dosage forms
             ViewBag.Forms = new SelectList(
-                              _context.DosageForms.OrderBy(f => f.FormName),
-                              "FormId",
-                              "FormName"
-                          );
-            ViewBag.Suppliers = _context.Suppliers.OrderBy(s => s.Name)
-                .Select(s => new SelectListItem { Value = s.SupplierId.ToString(), Text = s.Name })
-                .ToList();
+                _context.DosageForms
+                    .Where(f => f.Status == "Active")
+                    .OrderBy(f => f.FormName),
+                "FormId",
+                "FormName"
+            );
+
+            // Only active suppliers
+            ViewBag.Suppliers = _context.Suppliers
+                .Where(s => s.Status == "Active")
+                .OrderBy(s => s.Name)
+                .Select(s => new SelectListItem
+                {
+                    Value = s.SupplierId.ToString(),
+                    Text = s.Name
+                }).ToList();
 
             return View(medicine);
         }
+
 
 
         [HttpPost]
@@ -226,6 +249,31 @@ namespace ONT_PROJECT.Controllers
             return View(medicine);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Deactivate(int id)
+        {
+            var medicine = await _context.Medicines.FindAsync(id);
+            if (medicine == null) return NotFound();
+
+            medicine.Status = "Deactivated";
+            _context.Update(medicine);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Activate(int id)
+        {
+            var medicine = await _context.Medicines.FindAsync(id);
+            if (medicine == null) return NotFound();
+
+            medicine.Status = "Active";
+            _context.Update(medicine);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
 
     }
 }

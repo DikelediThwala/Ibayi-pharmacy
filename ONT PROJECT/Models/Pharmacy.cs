@@ -20,6 +20,8 @@ public partial class Pharmacy
     public byte[]? Logo { get; set; }
     public string Address { get; set; } = null!;
     public double Vatrate { get; set; }
+    public string Status { get; set; } = "Active";
+
     public int? PharmacistId { get; set; }
     public virtual Pharmacist? Pharmacist { get; set; }
 }

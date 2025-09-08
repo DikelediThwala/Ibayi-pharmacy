@@ -245,16 +245,22 @@ namespace ONT_PROJECT.Controllers
             return PartialView("_AdjustStock", medicine);
         }
         [HttpPost]
-        public IActionResult AdjustStock(int medicineId, int addQuantity, int removeQuantity, int reorderLevel)
+        public IActionResult AdjustStock(int medicineId, int addQuantity = 0, int removeQuantity = 0, int resetQuantity = 0, int reorderLevel = 0)
         {
             var medicine = _context.Medicines.FirstOrDefault(m => m.MedicineId == medicineId);
             if (medicine == null)
                 return NotFound();
 
-            medicine.Quantity += addQuantity;
-            medicine.Quantity -= removeQuantity;
-            if (medicine.Quantity < 0)
-                medicine.Quantity = 0;
+            if (resetQuantity > 0)
+            {
+                medicine.Quantity = resetQuantity;
+            }
+            else
+            {
+                medicine.Quantity += addQuantity;
+                medicine.Quantity -= removeQuantity;
+                if (medicine.Quantity < 0) medicine.Quantity = 0;
+            }
 
             medicine.ReorderLevel = reorderLevel;
 
@@ -262,7 +268,6 @@ namespace ONT_PROJECT.Controllers
 
             return Json(new { success = true, newQuantity = medicine.Quantity, newReorderLevel = medicine.ReorderLevel });
         }
-
 
     }
 }

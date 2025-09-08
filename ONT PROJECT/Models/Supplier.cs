@@ -12,6 +12,8 @@ public partial class Supplier
     public string ContactNo { get; set; } = null!;
 
     public string Email { get; set; } = null!;
+    public string Status { get; set; } = "Active";
+
 
     public virtual ICollection<BOrder> BOrders { get; set; } = new List<BOrder>();
 }

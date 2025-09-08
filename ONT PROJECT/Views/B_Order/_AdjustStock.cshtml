@@ -1,34 +1,70 @@
-﻿@model ONT_PROJECT.Models.Medicine
+﻿@model ONT_PROJECT.Models.Medicine 
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"> 
 
-
-<!-- Font Awesome 6 CDN -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-
-<form id="adjustStockForm" class="p-3">
-    <input type="hidden" name="medicineId" value="@Model.MedicineId" />
-
-    <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title"><i class="fas fa-pills me-2"></i>Adjust Stock for <b>@Model.MedicineName</b></h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-    </div>
-
-    <div class="modal-body bg-light">
-        <div class="mb-3">
-            <label class="form-label fw-bold">Add Quantity</label>
-            <input type="number" name="addQuantity" class="form-control border-primary" value="0" min="0" />
+<form id="adjustStockForm" class="p-3"> 
+    <input type="hidden" name="medicineId" value="@Model.MedicineId" /> 
+    <div class="modal-header bg-primary text-white"> 
+        <h5 class="modal-title">
+            <i class="fas fa-pills me-2"></i>Adjust Stock for <b>@Model.MedicineName</b>
+        </h5>
+         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button> 
+    </div> <div class="modal-body bg-light"> 
+    <p><strong>Current Quantity:</strong> @Model.Quantity</p> 
+    <p><strong>Reorder Level:</strong> @Model.ReorderLevel</p>
+    <div class="mb-3"> <label class="form-label fw-bold">Select Action</label> 
+        <div class="form-check"> <input class="form-check-input stock-action" type="radio" name="stockAction" id="addStock" value="add">
+            <label class="form-check-label" for="addStock">Add Stock</label>
+        </div> 
+        <div class="form-check">
+            <input class="form-check-input stock-action" type="radio" name="stockAction" id="removeStock" value="remove">
+            <label class="form-check-label" for="removeStock">Remove Stock</label>
         </div>
-        <div class="mb-3">
-            <label class="form-label fw-bold">Remove Quantity</label>
-            <input type="number" name="removeQuantity" class="form-control border-danger" value="0" min="0" />
-        </div>
-        <div class="mb-3">
-            <label class="form-label fw-bold">Reorder Level</label>
-            <input type="number" name="reorderLevel" class="form-control border-warning" value="@Model.ReorderLevel" min="0" />
-        </div>
-    </div>
-
+        <div class="form-check">
+            <input class="form-check-input stock-action" type="radio" name="stockAction" id="resetStock" value="reset">
+            <label class="form-check-label" for="resetStock">Reset Stock</label>
+            </div>
+        </div> 
+        <div class="mb-3" id="quantityInputDiv" style="display:none;">
+            <label class="form-label fw-bold">Quantity</label>
+            <input type="number" name="quantity" class="form-control" value="0" min="0" /> 
+        </div> <div class="mb-3"> <label class="form-label fw-bold">Set Reorder Level (optional)</label>
+            <input type="number" name="reorderLevel" class="form-control border-warning" value="@Model.ReorderLevel" min="0" /> 
+    </div> </div>
     <div class="modal-footer">
         <button type="submit" class="btn btn-success"><i class="fas fa-check-circle me-1"></i>Update Stock</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times-circle me-1"></i>Cancel</button>
-    </div>
+    </div> 
 </form>
+<script>
+    $(document).ready(function () { 
+        $('.stock-action').on('change', function () { $('#quantityInputDiv').show(); }); 
+        $(document).on('submit', '#adjustStockForm', function (e) { e.preventDefault();
+            const medicineId = $('input[name="medicineId"]').val();
+            const action = $('input[name="stockAction"]:checked').val(); 
+            const qty = parseInt($('input[name="quantity"]').val()) || 0; 
+            const reorder = parseInt($('input[name="reorderLevel"]').val()) || 0; 
+
+        addQuantity = 0, removeQuantity = 0, resetQuantity = 0; if (action === 'add') addQuantity = qty; else if (action === 'remove') removeQuantity = qty; 
+        else if (action === 'reset') resetQuantity = qty; 
+        
+        $.post('/B_Order/AdjustStock', { medicineId: medicineId,
+            addQuantity: addQuantity, 
+            removeQuantity: removeQuantity, 
+            resetQuantity: resetQuantity, 
+            reorderLevel: reorder },
+            function (response) { if (response.success) { 
+        const modalEl = document.getElementById('adjustStockModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide(); 
+        
+        
+        $('#mainNotification') .text('Stock updated successfully!') .fadeIn(); 
+        
+        setTimeout(() => { $('#mainNotification').fadeOut(); location.reload(); 
+        }, 5000); }
+        else { 
+            $('#mainNotification') .removeClass('alert-success') .addClass('alert-danger') .text('Error updating stock. Please try again.') .fadeIn(); setTimeout(() => { 
+                $('#mainNotification').fadeOut(); }, 5000); } 
+            });
+         }); 
+    }); 
+            
+</script>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -15,8 +16,15 @@ namespace ONT_PROJECT.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var forms = await _context.DosageForms.ToListAsync();
-            return View(forms);
+            var activeForms = await _context.DosageForms
+                                    .Where(f => f.Status == "Active")
+                                    .ToListAsync();
+            var deactivatedForms = await _context.DosageForms
+                                         .Where(f => f.Status == "Inactive")
+                                         .ToListAsync();
+
+            ViewBag.DeactivatedForms = deactivatedForms;
+            return View(activeForms);
         }
 
         public IActionResult Create()
@@ -45,6 +53,7 @@ namespace ONT_PROJECT.Controllers
                     return RedirectToAction(nameof(Create));
                 }
 
+                form.Status = "Active";
                 _context.Add(form);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Dosage form added successfully.";
@@ -95,17 +104,28 @@ namespace ONT_PROJECT.Controllers
             return View(form);
         }
 
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost]
+        public IActionResult Deactivate(int id)
         {
-            var form = await _context.DosageForms.FindAsync(id);
-            if (form != null)
-            {
-                _context.DosageForms.Remove(form);
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Dosage form deleted.";
-            }
+            var form = _context.DosageForms.FirstOrDefault(f => f.FormId == id);
+            if (form == null) return NotFound();
 
-            return RedirectToAction(nameof(Index));
+            form.Status = "Inactive";
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = $"Dosage form '{form.FormName}' deactivated.";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult Activate(int id)
+        {
+            var form = _context.DosageForms.FirstOrDefault(f => f.FormId == id);
+            if (form == null) return NotFound();
+
+            form.Status = "Active";
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = $"Dosage form '{form.FormName}' activated.";
+            return RedirectToAction("Index");
         }
     }
 }

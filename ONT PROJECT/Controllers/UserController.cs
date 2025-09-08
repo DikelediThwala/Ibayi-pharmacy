@@ -19,13 +19,19 @@ namespace ONT_PROJECT.Controllers
 
         public IActionResult Index()
         {
-            var managers = _context.TblUsers.Where(u => u.Role == "PharmacyManager").ToList();
-            var pharmacists = _context.TblUsers.Where(u => u.Role == "Pharmacist").ToList();
-            var customers = _context.TblUsers.Where(u => u.Role == "Customer").ToList();
+            var managers = _context.TblUsers.Where(u => u.Role == "PharmacyManager" && u.Status == "Active").ToList();
+            var pharmacists = _context.TblUsers.Where(u => u.Role == "Pharmacist" && u.Status == "Active").ToList();
+            var customers = _context.TblUsers.Where(u => u.Role == "Customer" && u.Status == "Active"   ).ToList();
+
+
+            var deactivatedUsers = _context.TblUsers
+       .Where(u => u.Status == "Inactive")
+       .ToList();
 
             ViewBag.Managers = managers;
             ViewBag.Pharmacists = pharmacists;
             ViewBag.Customers = customers;
+            ViewBag.DeactivatedUsers = deactivatedUsers; 
 
             return View();
         }
@@ -197,6 +203,8 @@ namespace ONT_PROJECT.Controllers
                 var titles = new List<string> { "Mr", "Mrs", "Miss", "Dr" }; // start with Mr
                 ViewBag.Titles = new SelectList(titles, existingUser.Title?.Trim());
                 _context.SaveChanges();
+                TempData["SuccessMessage"] = "Updated successfully!";
+
                 return RedirectToAction("Index");
             }
 
@@ -234,5 +242,32 @@ namespace ONT_PROJECT.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public IActionResult SoftDelete(int id)
+        {
+            var user = _context.TblUsers.FirstOrDefault(u => u.UserId == id);
+            if (user == null) return NotFound();
+
+            user.Status = "Inactive";
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = $"User {user.FirstName} {user.LastName} deactivated successfully.";
+
+            return RedirectToAction("Index"); 
+        }
+
+        [HttpPost]
+        public IActionResult Activate(int id)
+        {
+            var user = _context.TblUsers.FirstOrDefault(u => u.UserId == id);
+            if (user == null) return NotFound();
+
+            user.Status = "Active";
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = $"User {user.FirstName} {user.LastName} activated successfully.";
+            return RedirectToAction("Index");
+        }
+
     }
 }

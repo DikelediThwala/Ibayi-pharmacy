@@ -16,6 +16,7 @@ public partial class Doctor
     public string ContactNo { get; set; } = null!;
 
     public string Email { get; set; } = null!;
+    public string Status { get; set; } = "Active";
 
     public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
 }
