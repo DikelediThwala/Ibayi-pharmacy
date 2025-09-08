@@ -25,7 +25,7 @@ namespace ONT_PROJECT.Controllers
             SeedMedicines();  
         }
 
-        public IActionResult Index(string tab)  // <-- accept tab from query string
+        public IActionResult Index(string tab)  
         {
             var vm = new NewOrderViewModel
             {
@@ -37,7 +37,7 @@ namespace ONT_PROJECT.Controllers
                 NewOrder = new BOrder()
             };
 
-            ViewData["ActiveTab"] = tab ?? "stock"; // default to "stock"
+            ViewData["ActiveTab"] = tab ?? "stock"; 
             return View(vm);
         }
 
@@ -72,25 +72,23 @@ namespace ONT_PROJECT.Controllers
 
         public IActionResult Create()
         {
-            var meds = _context.Medicines
-                .Select(m => new SelectListItem
-                {
-                    Value = m.MedicineId.ToString(),
-                    Text = m.MedicineName
-                })
-                .ToList();
+            var medications = _context.Medicines
+                                      .Where(m => m.Status == "Active")
+                                      .Select(m => new SelectListItem
+                                      {
+                                          Value = m.MedicineId.ToString(),
+                                          Text = m.MedicineName
+                                      })
+                                      .ToList();
 
-            ViewBag.Medications = meds;
+            ViewBag.Medications = medications;
 
-            var prices = _context.Medicines
-                .ToDictionary(m => m.MedicineId, m => m.SalesPrice);
-            Console.WriteLine($"Prices count: {prices.Count}");  
-
-            ViewBag.MedicationPrices = prices;
+            ViewBag.MedicationPrices = _context.Medicines
+                                               .Where(m => m.Status == "Active")
+                                               .ToDictionary(m => m.MedicineId, m => m.SalesPrice);
 
             return View(new BOrder());
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -109,8 +107,16 @@ namespace ONT_PROJECT.Controllers
 
             if (order == null || order.BOrderLines == null || !order.BOrderLines.Any())
             {
-                return BadRequest(new { success = false, message = "Please add at least one medication." });
+                return Json(new { success = false, message = "Please add at least one medication." });
             }
+
+            // Filter only selected medications before saving
+            order.BOrderLines = order.BOrderLines
+                .Where(ol => ol.IsSelected && ol.Quantity > 0)
+                .ToList();
+
+            if (!order.BOrderLines.Any())
+                return BadRequest(new { success = false, message = "Please select at least one medication." });
 
             order.DatePlaced = DateOnly.FromDateTime(DateTime.Now);
             order.Status = "Pending";
@@ -118,6 +124,7 @@ namespace ONT_PROJECT.Controllers
             _context.BOrders.Add(order);
             await _context.SaveChangesAsync();
 
+            // Load saved order with related Medicines
             var savedOrder = await _context.BOrders
                 .Include(o => o.BOrderLines!)
                     .ThenInclude(ol => ol.Medicine!)
@@ -125,7 +132,11 @@ namespace ONT_PROJECT.Controllers
 
             if (savedOrder != null)
             {
-                var supplierIds = savedOrder.BOrderLines
+                // Group by supplier for email notifications
+                var selectedOrderLines = savedOrder.BOrderLines;
+                var groupsBySupplier = selectedOrderLines.GroupBy(ol => ol.Medicine!.SupplierId);
+
+                var supplierIds = selectedOrderLines
                     .Select(ol => ol.Medicine!.SupplierId)
                     .Distinct()
                     .ToList();
@@ -134,9 +145,7 @@ namespace ONT_PROJECT.Controllers
                     .Where(s => supplierIds.Contains(s.SupplierId))
                     .ToListAsync();
 
-                var groupsBySupplier = savedOrder.BOrderLines
-                    .GroupBy(ol => ol.Medicine!.SupplierId);
-
+                // SMTP settings
                 var smtpHost = _configuration["SmtpSettings:Host"];
                 var smtpPort = int.Parse(_configuration["SmtpSettings:Port"]);
                 var smtpUser = _configuration["SmtpSettings:User"];
@@ -156,49 +165,50 @@ namespace ONT_PROJECT.Controllers
                     if (supplier == null || string.IsNullOrEmpty(supplier.Email))
                         continue;
 
+                    // Build email body
                     var emailBody = $@"
-                       <div style='font-family: Arial, sans-serif; color: #333;'>
-                       <div style='text-align: center; margin-bottom: 20px;'>
-                       <img src='https://i.imgur.com/fohBBIa.png' alt='Pharmacy Logo' style='max-width: 150px;' />
-                       <h2 style='margin: 10px 0;'>Ibayi Pharmacy</h2>
-                       </div>
-                       <p>Dear {supplier.Name},</p>
-                       <p>You have a new medication order:</p>
-                       <p><strong>Order Number: {savedOrder.BOrderId}</strong>.</p>
-                       <p>Medications ordered:</p>
-                       <table style='width: 100%; border-collapse: collapse;'>
-                       <thead>
-                           <tr style='background-color: #f2f2f2;'>
-                           <th style='border: 1px solid #ddd; padding: 8px;'>Medication</th>
-                           <th style='border: 1px solid #ddd; padding: 8px;'>Quantity</th>
-                           </tr>
-                       </thead>
-                       <tbody>"
-                    ;
+                <div style='font-family: Arial, sans-serif; color: #333;'>
+                    <div style='text-align: center; margin-bottom: 20px;'>
+                        <img src='https://i.imgur.com/fohBBIa.png' alt='Pharmacy Logo' style='max-width: 150px;' />
+                        <h2 style='margin: 10px 0;'>Ibayi Pharmacy</h2>
+                    </div>
+                    <p>Dear {supplier.Name},</p>
+                    <p>You have a new medication order:</p>
+                    <p><strong>Order Number: {savedOrder.BOrderId}</strong>.</p>
+                    <p>Medications ordered:</p>
+                    <table style='width: 100%; border-collapse: collapse;'>
+                        <thead>
+                            <tr style='background-color: #f2f2f2;'>
+                                <th style='border: 1px solid #ddd; padding: 8px;'>Medication</th>
+                                <th style='border: 1px solid #ddd; padding: 8px;'>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>";
 
                     foreach (var ol in group)
                     {
                         emailBody += $@"
-                        <tr>
-                           <td style='border: 1px solid #ddd; padding: 8px;'>{ol.Medicine!.MedicineName}</td>
-                           <td style='border: 1px solid #ddd; padding: 8px;'>{ol.Quantity}</td>
-                        </tr>";
+                    <tr>
+                        <td style='border: 1px solid #ddd; padding: 8px;'>{ol.Medicine!.MedicineName}</td>
+                        <td style='border: 1px solid #ddd; padding: 8px;'>{ol.Quantity}</td>
+                    </tr>";
                     }
 
                     emailBody += @"
-                       </tbody>
-                      </table>
-                      <p>Please process this order as soon as possible.</p>
-                      <p>Regards,<br />Ibayi Pharmacy</p>
+                        </tbody>
+                    </table>
+                    <p>Please process this order as soon as possible.</p>
+                    <p>Regards,<br />Ibayi Pharmacy</p>
                     <hr style='margin-top: 40px;' />
-                    <small style='color: #888;'>400 Jam St.,Gqeberha, Summerstrand,SA | 083 754 5485 | Ibayipharmacy24@gmail.com</small></div>";
+                    <small style='color: #888;'>400 Jam St.,Gqeberha, Summerstrand,SA | 083 754 5485 | Ibayipharmacy24@gmail.com</small>
+                </div>";
 
                     var mailMessage = new MailMessage
                     {
                         From = new MailAddress(smtpUser),
                         Subject = $"Medication Order #{savedOrder.BOrderId}",
                         Body = emailBody,
-                        IsBodyHtml = true,  
+                        IsBodyHtml = true,
                     };
 
                     mailMessage.To.Add(supplier.Email);
@@ -207,15 +217,17 @@ namespace ONT_PROJECT.Controllers
                     {
                         await smtpClient.SendMailAsync(mailMessage);
                     }
-                    catch (Exception ex)
+                    catch
                     {
-                        
+                        // Optional: log the exception
                     }
                 }
             }
+            return Json(new { success = true, message = "Order placed successfully!" });
 
-            return Ok(new { success = true, message = "Order placed successfully!" });
         }
+
+
 
         private void SeedMedicines()
         {
@@ -271,72 +283,3 @@ namespace ONT_PROJECT.Controllers
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//public IActionResult Create()
-//{
-//    ViewBag.Medications = _context.Medicines
-//        .Select(m => new SelectListItem
-//        {
-//            Value = m.MedicineId.ToString(),
-//            Text = m.MedicineName
-//        })
-//        .ToList();
-
-//    return View(new BOrder());
-//}
-
-//[HttpPost]
-//[ValidateAntiForgeryToken]
-//public async Task<IActionResult> Create(BOrder order)
-//{
-//    ModelState.Remove("Status");
-
-//    if (!ModelState.IsValid)
-//    {
-//        var allErrors = ModelState
-//            .SelectMany(kvp => kvp.Value.Errors.Select(e => new { Field = kvp.Key, Error = e.ErrorMessage }))
-//            .ToList();
-
-//        return BadRequest(new { success = false, message = "Validation errors occurred.", errors = allErrors });
-//    }
-
-//    if (order == null || order.BOrderLines == null || !order.BOrderLines.Any())
-//    {
-//        return BadRequest(new { success = false, message = "Please add at least one medication." });
-//    }
-
-//    order.DatePlaced = DateOnly.FromDateTime(DateTime.Now);
-//    order.Status = "Pending";
-
-//    _context.BOrders.Add(order);
-//    await _context.SaveChangesAsync();
-
-//    return Ok(new { success = true, message = "Order placed successfully!" });
-//}

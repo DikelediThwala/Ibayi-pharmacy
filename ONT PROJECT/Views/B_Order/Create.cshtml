@@ -1,13 +1,127 @@
 ﻿@model ONT_PROJECT.Models.BOrder
 @using Microsoft.AspNetCore.Mvc.Rendering
 
-
 @{
     var medications = ViewBag.Medications as List<SelectListItem> ?? new List<SelectListItem>();
     var medList = medications.Select(m => new { m.Value, m.Text }).ToList();
 }
 
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Varela+Round">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
+<style>
+    .table-wrapper {
+        background: #fff;
+        padding: 20px 25px;
+        border-radius: 3px;
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        font-family: 'Varela Round', sans-serif;
+        font-size: 13px;
+    }
+
+    .table-title {
+        color: #fff;
+        background: #4b5366;
+        padding: 16px 25px;
+        margin: -20px -25px 10px;
+        border-radius: 3px 3px 0 0;
+    }
+
+    table.table tr th, table.table tr td {
+        border-color: #e9e9e9;
+        padding: 12px 15px;
+        vertical-align: middle;
+    }
+
+    table.table-striped tbody tr:nth-of-type(odd) {
+        background-color: #fcfcfc;
+    }
+
+    table.table-striped.table-hover tbody tr:hover {
+        background: #f5f5f5;
+    }
+
+    table.table td input.form-control {
+        font-size: 13px;
+        padding: 4px 8px;
+        height: 30px;
+    }
+
+    .table-warning {
+        background-color: #ffe5b4 !important;
+    }
+
+    .table-primary {
+        background-color: #dbe9f7 !important;
+    }
+
+    /* Scrollable table wrapper */
+    #orderTableWrapper {
+        max-height: 540px; /* approx 8 rows */
+        overflow-y: auto;
+        display: block;
+    }
+
+    /* Sticky header */
+    #orderTable thead th {
+        position: sticky;
+        top: 0;
+        background: #4b5366;
+        color: white;
+        z-index: 1;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<div class="container-xl">
+    <div class="table-wrapper">
+        <div class="table-title">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h2><i class="fas fa-pills"></i> Create <b>Medication Order</b></h2>
+                </div>
+            </div>
+        </div>
+
+        <form asp-action="Create" asp-controller="B_Order" method="post" id="orderForm">
+            @Html.AntiForgeryToken()
+            <div id="orderTableWrapper">
+                <table id="orderTable" class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" /></th>
+                            <th>Medication</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < medications.Count; i++)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <input type="checkbox" name="BOrderLines[@i].IsSelected" value="true" class="medCheck" />
+                                    <input type="hidden" name="BOrderLines[@i].MedicineId" value="@medications[i].Value" />
+                                </td>
+                                <td>@medications[i].Text</td>
+                                <td>
+                                    <input type="number" name="BOrderLines[@i].Quantity" class="form-control qtyInput" value="1" min="1" disabled />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+                <button type="button" id="openOrderSummaryBtn" class="btn btn-success">Submit Order</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Order Summary Modal -->
 <div class="modal fade" id="orderSummaryModal" tabindex="-1" aria-labelledby="orderSummaryLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -25,8 +139,7 @@
                             <th>Subtotal</th>
                         </tr>
                     </thead>
-                    <tbody id="orderSummaryBody">
-                    </tbody>
+                    <tbody id="orderSummaryBody"></tbody>
                     <tfoot>
                         <tr>
                             <th colspan="3" class="text-end">Total:</th>
@@ -42,204 +155,108 @@
         </div>
     </div>
 </div>
-
-
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger">
-        <ul>
-            @foreach (var entry in ViewData.ModelState)
-            {
-                foreach (var error in entry.Value.Errors)
-                {
-                    <li>@entry.Key: @error.ErrorMessage</li>
-                }
-            }
-        </ul>
-    </div>
-}
-
-<h4>Create Medication Order</h4>
-<hr style="height: 4px; background-color: #011425; border: none;" />
-
-<div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
-    <i class="bi bi-info-circle-fill"></i>
-    Please ensure all details are accurate before saving. Fields marked with <span class="text-danger">*</span> are required.
-</div>
-
-<div class="card shadow p-4">
-    <div class="card-body">
-        <form asp-action="Create" asp-controller="B_Order" method="post" id="orderForm">
-            @Html.AntiForgeryToken()
-            @if (!medications.Any())
-            {
-                <div class="alert alert-warning">
-                    No medications found. Please add medications before creating an order.
-                </div>
-            }
-            else
-            {
-                <h5 class="mt-4">Order Lines</h5>
-                <table class="table table-bordered" id="medicationTable">
-                    <thead>
-                        <tr>
-                            <th>Medication</th>
-                            <th>Quantity</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="medicationTableBody">
-                        <tr>
-                            <td>
-                                <select class="form-select" name="BOrderLines[0].MedicineId" required>
-                                    <option disabled selected>-- Select Medication --</option>
-                                    @foreach (var med in medications)
-                                    {
-                                        <option value="@med.Value">@med.Text</option>
-                                    }
-                                </select>
-                            </td>
-                            <td>
-                                <input type="number" name="BOrderLines[0].Quantity" class="form-control" value="1" min="1" required />
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="d-flex justify-content-between">
-                    <button type="button" class="btn btn-outline-primary" onclick="addMedicationRow()">Add Medication</button>
-                    <button type="button" id="openOrderSummaryBtn" class="btn btn-success">Submit Order</button>
-                </div>
-            }
-        </form>
-    </div>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    let rowIndex = 1;
-    const medicationOptions = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(medList));
+    // Convert C# MedicationPrices dictionary to JS object
+    const medicationPrices = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                ViewBag.MedicationPrices ?? new Dictionary<int, double>()
+        ));
 
-    function addMedicationRow() {
-        const tableBody = document.getElementById("medicationTableBody");
-        let optionsHtml = '<option disabled selected>-- Select Medication --</option>';
-        medicationOptions.forEach(med => {
-            optionsHtml += `<option value="${med.Value}">${med.Text}</option>`;
-        });
-
-        const newRow = document.createElement("tr");
-        newRow.innerHTML = `
-            <td>
-                <select class="form-select" name="BOrderLines[${rowIndex}].MedicineId" required>
-                    ${optionsHtml}
-                </select>
-            </td>
-            <td>
-                <input type="number" name="BOrderLines[${rowIndex}].Quantity" class="form-control" value="1" min="1" required />
-            </td>
-            <td>
-                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
-            </td>
-        `;
-        tableBody.appendChild(newRow);
-        rowIndex++;
-    }
-
-    function removeRow(button) {
-        const row = button.closest("tr");
-        if (row) {
-            row.remove();
-        }
-    }
-
-        document.getElementById("orderForm").addEventListener("submit", function (e) {
-        e.preventDefault();
-        const form = this;
-
-        fetch(form.action, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "RequestVerificationToken": form.querySelector('input[name="__RequestVerificationToken"]').value
-            },
-            body: new URLSearchParams(new FormData(form))
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message); // success message
-                window.location.href = '/B_Order/Index?tab=orders';
-                } else {
-                alert(data.message); // error message from controller
-            }
-        })
-        .catch(() => alert("Something went wrong. Please try again."));
+    // Select/Deselect all checkboxes
+    $('#selectAll').click(function () {
+        const checked = $(this).prop('checked');
+        $('.medCheck').prop('checked', checked).trigger('change');
     });
 
+    // Enable quantity input only if checkbox is checked
+    $('.medCheck').change(function () {
+        $(this).closest('tr').find('.qtyInput').prop('disabled', !this.checked);
+    });
 
-       
-
-    const medicationPrices = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.MedicationPrices ?? new Dictionary<int, double>()));
-
-    // Function to get medication name from medList by Id
-    function getMedicationName(medId) {
-        const med = medicationOptions.find(m => m.Value === medId.toString());
-        return med ? med.Text : 'Unknown';
-    }
-
-    document.getElementById('openOrderSummaryBtn').addEventListener('click', function() {
-        const tbody = document.getElementById('orderSummaryBody');
-        tbody.innerHTML = ''; // Clear previous
-
+    // Open order summary modal
+    $('#openOrderSummaryBtn').click(function () {
+        const tbody = $('#orderSummaryBody');
+        tbody.empty();
         let totalPrice = 0;
-        const form = document.getElementById('orderForm');
+        const selectedRows = $('.medCheck:checked');
 
-        // Collect all selected medications and quantities
-        const meds = [];
-        const selects = form.querySelectorAll('select[name^="BOrderLines"][name$="MedicineId"]');
-           selects.forEach((select, index) => {
-        const medId = select.value;
-        const qtyInput = form.querySelector(`input[name="BOrderLines[${index}].Quantity"]`);
-        if (medId && qtyInput && qtyInput.value > 0) {
-            const qty = parseInt(qtyInput.value);
-                const price = medicationPrices[String(medId)] || 0;
-                const subtotal = qty * price;
-            totalPrice += subtotal;
-
-            meds.push({ medId, qty, price, subtotal });
-        }
-    });
-
-        if (meds.length === 0) {
-            alert('Please add at least one medication with quantity.');
+        if (selectedRows.length === 0) {
+            Swal.fire({
+                icon: "warning",
+                title: "No Medications Selected",
+                text: "Please select at least one medication."
+            });
             return;
         }
 
-        // Build modal rows
-        meds.forEach(med => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${getMedicationName(med.medId)}</td>
-                <td>${med.qty}</td>
-                <td>${med.price.toFixed(2)}</td>
-                <td>${med.subtotal.toFixed(2)}</td>
-            `;
-            tbody.appendChild(tr);
+        selectedRows.each(function () {
+            const tr = $(this).closest('tr');
+            const medId = tr.find('input[name$=".MedicineId"]').val();
+            const qty = parseInt(tr.find('.qtyInput').val());
+            const medName = tr.children().eq(1).text();
+            const price = medicationPrices[medId] || 0;
+            const subtotal = qty * price;
+            totalPrice += subtotal;
+
+            tbody.append(`
+                <tr>
+                    <td>${medName}</td>
+                    <td>${qty}</td>
+                    <td>${price.toFixed(2)}</td>
+                    <td>${subtotal.toFixed(2)}</td>
+                </tr>
+            `);
         });
 
-        document.getElementById('orderTotalPrice').textContent = totalPrice.toFixed(2);
+        $('#orderTotalPrice').text(totalPrice.toFixed(2));
 
-        // Show the modal
-        const orderModal = new bootstrap.Modal(document.getElementById('orderSummaryModal'));
+        var orderModal = new bootstrap.Modal(document.getElementById('orderSummaryModal'));
         orderModal.show();
 
-        // Handle Confirm button inside modal
-        document.getElementById('confirmOrderBtn').onclick = function() {
+        // Confirm order with AJAX + SweetAlert
+        $('#confirmOrderBtn').off('click').on('click', function () {
             orderModal.hide();
-            form.submit();  // Actually submit the form now
-        };
-    });
 
+            // 🔹 Show loading state before AJAX request
+            Swal.fire({
+                title: "Submitting Order...",
+                text: "Please wait while we process your order.",
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            $.ajax({
+                url: $('#orderForm').attr('action'),
+                type: "POST",
+                data: $('#orderForm').serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Success!",
+                            text: response.message
+                        }).then(() => {
+                            window.location.href = "/B_Order/Index?tab=orders";
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Warning",
+                            text: response.message
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    let errorMsg = xhr.responseJSON?.message || "An unexpected error occurred.";
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: errorMsg
+                    });
+                }
+            });
+        });
+    });
 </script>
