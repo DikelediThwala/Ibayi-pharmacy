@@ -4,6 +4,8 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ONT_PROJECT.Models;
+
 //using ONT_PROJECT.Models;
 //using iText.Kernel.Pdf;
 //using iText.Layout;
@@ -71,7 +73,7 @@ namespace ONT_PROJECT.Controllers
                 var role = prescription;
                 role.PharmacistID = 1009;
                 var status = prescription;
-                status.Status = "Proccessed";
+                status.Status = "Walk'ins";
                 var repLeft = prescription;
                 repLeft.RepeatsLeft = repLeft.Repeats;
                 bool addPerson = await _prescriptionRepository.AddAsync(prescription);
@@ -116,8 +118,9 @@ namespace ONT_PROJECT.Controllers
 
         public async Task<IActionResult> CreatePrescriptions()
         {
+
             var prescLine = await _prescriptionLineRepository.GetMedicineName();
-            ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");      
+            ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
             return View();
         }
 
@@ -168,31 +171,32 @@ namespace ONT_PROJECT.Controllers
                 {
                     TempData["msg"] = "Could not add";
                 }
-                //var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
-                //var lastRow = result.FirstOrDefault();
+                var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
+                var lastRow = result.FirstOrDefault();
 
-                //int prescriptionID = lastRow?.PrescriptionID ?? 0;
-                //prescription.PrescriptionID = prescriptionID;
-                //bool addPrescLine = await _prescriptionRepository.AddPrescLineAsync(prescription);
+                int prescriptionID = lastRow?.PrescriptionID ?? 0;
+                prescription.PrescriptionID = prescriptionID;
+                bool addPrescLine = await _prescriptionRepository.AddPrescLineAsync(prescription);
 
-                //if (addPrescLine)
-                //{
-                //    TempData["msg"] = "Sucessfully Added";
-                //}
-                //else
-                //{
-                //    TempData["msg"] = "Could not add";
-                //}
-                //
+                if (addPrescLine)
+                {
+                    TempData["msg"] = "Sucessfully Added";
+                }
+                else
+                {
+                    TempData["msg"] = "Could not add";
+                }
+
                 var prescLine = await _prescriptionLineRepository.GetMedicineName();
                 ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
+
             }
 
             catch (Exception ex)
             {
                 TempData["msg"] = " Something went wrong!!!";
             }
-            return RedirectToAction("CreateUser", "Pharmacist");
+            return RedirectToAction("DispensePrescription", "Dispense");
         }
         public async Task<IActionResult> DownloadPrescription(int id)
         {

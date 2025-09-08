@@ -343,18 +343,28 @@
         </form>
     </div>
 
+
+
     <div class="form-container sign-in-container">
         <form asp-action="Login" method="post">
             <h1>Sign in</h1>
             <span>or use your account</span>
-            <input asp-for="Email" type="email" placeholder="Email" />
+
+            <input asp-for="Email" type="email" placeholder="Email" class="form-control" />
             <span asp-validation-for="Email" class="text-danger small"></span>
-            <input asp-for="Password" type="password" placeholder="Password" />
+
+            <input asp-for="Password" type="password" placeholder="Password" class="form-control" />
             <span asp-validation-for="Password" class="text-danger small"></span>
+
             <a href="#">Forgot your password?</a>
-            <button type="submit">Sign In</button>
+            <button type="submit" class="btn btn-primary mt-2">Sign In</button>
         </form>
     </div>
+
+@* @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} *@
+
 
     <div class="overlay-container">
         <div class="overlay">

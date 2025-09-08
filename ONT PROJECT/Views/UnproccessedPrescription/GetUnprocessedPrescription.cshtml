@@ -389,8 +389,8 @@
                 data: { id: id },
                 success: function (response) {
                     if (response.success) {
-                        // Update status column
-                        row.find('.status-cell span').text('Processed');
+                        // Update status column                       
+                        row.find('.status-cell span').text('Unprocessed');
 
                         // Disable and change Process button
                         button.replaceWith('<span class="text-success">Processed</span>');

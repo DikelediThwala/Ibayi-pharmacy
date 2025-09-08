@@ -1,0 +1,50 @@
+﻿@model IEnumerable<ONT_PROJECT.Models.PrescriptionLine>
+
+@{
+    ViewData["Title"] = "My Prescription Lines";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<h2 class="mb-3">My Prescription Lines</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">
+        No prescription lines available yet. Once the pharmacist adds items to your prescription, they’ll appear here.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Prescription #</th>
+                    <th>Medication</th>
+                    <th>Instructions</th>
+                    <th>Quantity</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var line in Model)
+                {
+                    <tr>
+                        <td>@line.Prescription?.PrescriptionId ?? 0</td>
+                        <td>@line.Medicine</td>
+                        <td>@line.Instructions</td>
+                        <td>@line.Quantity</td>
+                        <td class="text-right">
+                            <a asp-controller="Order"
+                               asp-action="Create"
+                               asp-route-prescriptionLineId="@line.PrescriptionLineId"
+                               class="btn btn-primary btn-sm">
+                                Order
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

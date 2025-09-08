@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using System.Linq;
 
 namespace ONT_PROJECT.Controllers
@@ -14,138 +16,52 @@ namespace ONT_PROJECT.Controllers
         {
             _context = context;
         }
-
-        // GET: List all prescription lines
-        // GET: List all prescription lines for a specific prescription
-        public IActionResult Index(int? prescriptionId)
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> MyPrescriptionLines()
         {
-            List<PrescriptionLine> prescriptionLines = new List<PrescriptionLine>();
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdStr)) return Unauthorized();
 
-            if (prescriptionId.HasValue && prescriptionId.Value > 0)
-            {
-                prescriptionLines = _context.PrescriptionLines
-                    .Where(pl => pl.PrescriptionId == prescriptionId.Value)
-                    .ToList();
-            }
+            var userId = int.Parse(userIdStr);
 
-            ViewBag.PrescriptionId = prescriptionId ?? 0; // 0 or null means no selection
+            var customer = await _context.Customers
+                .Include(c => c.CustomerNavigation)
+                .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
 
-            return View(prescriptionLines);
+            if (customer == null) return NotFound();
+
+            var lines = await _context.PrescriptionLines
+                .Include(pl => pl.Prescription)
+                .Where(pl => pl.Prescription.CustomerId == customer.CustomerId)
+                .ToListAsync();
+
+            return View(lines);
         }
 
 
-
-
-        // GET: Create view
-
-
-        public IActionResult Create(int prescriptionId)
+        // New action to get the number of prescription lines for dashboard
+        [Authorize(Roles = "Customer")]
+        public async Task<int> GetPrescriptionLineCount()
         {
-            ViewBag.Medicines = new SelectList(_context.Medicines, "MedicineId", "MedicineName");
-            var model = new PrescriptionLine { PrescriptionId = prescriptionId };
-            return View(model);
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdStr))
+                return 0;
+
+            int userId = int.Parse(userIdStr);
+
+            var customer = await _context.Customers
+                .Include(c => c.CustomerNavigation)
+                .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
+
+            if (customer == null)
+                return 0;
+
+            int lineCount = await _context.PrescriptionLines
+                .Include(pl => pl.Prescription)
+                .Where(pl => pl.Prescription.CustomerId == customer.CustomerId)
+                .CountAsync();
+
+            return lineCount;
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(PrescriptionLine prescriptionLine)
-        {
-            if (prescriptionLine.PrescriptionId == 0)
-            {
-                ModelState.AddModelError("PrescriptionId", "Prescription ID is required.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                ViewBag.Medicines = new SelectList(_context.Medicines, "MedicineId", "MedicineName", prescriptionLine.MedicineId);
-                return View(prescriptionLine);
-            }
-
-            _context.PrescriptionLines.Add(prescriptionLine);
-            _context.SaveChanges();
-
-            TempData["SuccessMessage"] = "Prescription line added successfully!";
-
-            // Redirect to Index and pass the prescriptionId to show correct prescription lines
-            return RedirectToAction(nameof(Index), new { prescriptionId = prescriptionLine.PrescriptionId });
-        }
-
-
-
-        // GET: Edit view
-        public IActionResult Edit(int id)
-        {
-            var prescriptionLine = _context.PrescriptionLines.FirstOrDefault(pl => pl.PrescriptionLineId == id);
-            if (prescriptionLine == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.Medicines = new SelectList(_context.Medicines, "MedicineId", "MedicineName", prescriptionLine.MedicineId);
-
-            return View(prescriptionLine);
-        }
-
-        // POST Edit
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(PrescriptionLine prescriptionLine)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.PrescriptionLines.Update(prescriptionLine);
-                    _context.SaveChanges();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateException ex)
-                {
-                    ModelState.AddModelError("", "Unable to save changes. Try again.");
-                    // optionally log ex
-                }
-            }
-
-            // repopulate dropdown on failure
-            ViewBag.Medicines = new SelectList(_context.Medicines, "MedicineId", "MedicineName", prescriptionLine.MedicineId);
-
-            return View(prescriptionLine);
-        }
-        // GET: Delete confirmation page
-        public IActionResult Delete(int id)
-        {
-            var prescriptionLine = _context.PrescriptionLines.FirstOrDefault(pl => pl.PrescriptionLineId == id);
-            if (prescriptionLine == null)
-            {
-                return NotFound();
-            }
-            return View(prescriptionLine);
-        }
-        // POST: Delete the prescription line
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
-        {
-            var prescriptionLine = _context.PrescriptionLines.Find(id);
-            if (prescriptionLine == null)
-            {
-                return NotFound();
-            }
-
-            _context.PrescriptionLines.Remove(prescriptionLine);
-            _context.SaveChanges();
-            TempData["SuccessMessage"] = "Prescription line deleted successfully!";
-            return RedirectToAction(nameof(Index));
-        }
-        public IActionResult SelectPrescription()
-        {
-            // Get all prescriptions to list for user to choose
-            var prescriptions = _context.Prescriptions.ToList();  // Adjust your db context accordingly
-            return View(prescriptions);
-        }
-
-
-
     }
 }
-

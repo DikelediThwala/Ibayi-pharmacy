@@ -1,12 +1,17 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Elfie.Serialization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -20,6 +25,7 @@ namespace ONT_PROJECT.Controllers
             _context = context;
             _environment = environment;
         }
+
         [HttpGet]
         public IActionResult Settings()
         {
@@ -29,9 +35,9 @@ namespace ONT_PROJECT.Controllers
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
             if (user == null) return NotFound();
 
-            return View(user); // This is the Settings.cshtml view with 3 buttons
+            return View(user);
         }
-        // Show list of all customers (report)
+
         [HttpGet]
         public IActionResult Index(bool? edit)
         {
@@ -62,13 +68,10 @@ namespace ONT_PROJECT.Controllers
 
             ViewBag.SelectedAllergies = selectedAllergies;
             ViewBag.ActiveIngredients = allAllergies;
-
-            // Toggle edit mode
             ViewBag.EditMode = edit ?? false;
 
             return View(user);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -80,30 +83,26 @@ namespace ONT_PROJECT.Controllers
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
             if (user == null) return NotFound();
 
-            // Update user fields
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
             user.Idnumber = model.Idnumber;
             user.PhoneNumber = model.PhoneNumber;
 
-            // Update allergies
             var customer = _context.Customers.FirstOrDefault(c => c.CustomerNavigation.UserId == user.UserId);
             if (customer != null)
             {
-                // Remove all existing allergies
                 var existingAllergies = _context.CustomerAllergies
                     .Where(ca => ca.CustomerId == customer.CustomerId)
                     .ToList();
                 _context.CustomerAllergies.RemoveRange(existingAllergies);
 
-                // Add selected allergies
                 if (SelectedAllergyIds != null)
                 {
                     foreach (var allergyId in SelectedAllergyIds)
                     {
                         _context.CustomerAllergies.Add(new CustomerAllergy
                         {
-                            CustomerId = customer.CustomerId,    // important!
+                            CustomerId = customer.CustomerId,
                             ActiveIngredientId = allergyId
                         });
                     }
@@ -111,7 +110,6 @@ namespace ONT_PROJECT.Controllers
             }
 
             _context.SaveChanges();
-
             TempData["SuccessMessage"] = "Your profile was updated successfully.";
 
             return RedirectToAction("Index");
@@ -124,14 +122,10 @@ namespace ONT_PROJECT.Controllers
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null) return RedirectToAction("Index", "Home");
 
-            // Delete user from DB
-            // _dbContext.TblUser.Remove(user);
-            // _dbContext.SaveChanges();
-
-            // Clear session and redirect
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
+
         [HttpGet]
         public IActionResult ChangePassword()
         {
@@ -141,7 +135,7 @@ namespace ONT_PROJECT.Controllers
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
             if (user == null) return NotFound();
 
-            return View(user); // Return the ChangePassword.cshtml view
+            return View(user);
         }
 
         [HttpPost]
@@ -169,8 +163,115 @@ namespace ONT_PROJECT.Controllers
             TempData["SuccessMessage"] = "Password updated successfully!";
             return RedirectToAction("Index");
         }
+        [HttpGet]
+        public IActionResult DownloadProfilePdf()
+        {
+            QuestPDF.Settings.License = LicenseType.Community; // Ensure Community license is set
+
+            var email = HttpContext.Session.GetString("UserEmail");
+            if (email == null) return RedirectToAction("Login", "CustomerRegister");
+
+            var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
+            if (user == null) return NotFound();
+
+            var customer = _context.Customers.FirstOrDefault(c => c.CustomerNavigation.UserId == user.UserId);
+            var selectedAllergies = new List<string>();
+            if (customer != null)
+            {
+                selectedAllergies = _context.CustomerAllergies
+                    .Where(ca => ca.CustomerId == customer.CustomerId)
+                    .Join(_context.ActiveIngredient,
+                          ca => ca.ActiveIngredientId,
+                          ai => ai.ActiveIngredientId,
+                          (ca, ai) => ai.Ingredients)
+                    .ToList();
+            }
+
+            // Path to logo image
+            var logoPath = Path.Combine(_environment.WebRootPath, "images", "Logo_2-removebg-preview.png");
+
+            var pdfBytes = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(2, Unit.Centimetre);
+                    page.DefaultTextStyle(x => x.FontSize(12));
+
+                    // Header with logo and pharmacy name
+                    page.Header()
+                        .Column(headerCol =>
+                        {
+                            if (System.IO.File.Exists(logoPath))
+                            {
+                                headerCol.Item().Element(imgContainer =>
+                                {
+                                    imgContainer
+                                        .AlignCenter()
+                                        .MaxWidth(80)       // maximum width
+                                        .MaxHeight(80)      // maximum height
+                                        .Image(logoPath);
+                                });
 
 
+                            }
+
+                            headerCol.Item().Text("IBHAYI PHARMACY")
+                                .Bold()
+                                .FontSize(20)
+                                .FontColor(Colors.Blue.Darken1)
+                                .AlignCenter();
+
+                            headerCol.Item().Text("My Profile")
+                                .SemiBold()
+                                .FontSize(18)
+                                .FontColor(Colors.Black)
+                                .AlignCenter();
+
+                            // Separator line
+                            headerCol.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                        });
+
+                    // Profile details
+                    page.Content()
+                        .Column(col =>
+                        {
+                            void AddDetail(string label, string value)
+                            {
+                                col.Item().Row(row =>
+                                {
+                                    row.RelativeItem().Text(label).SemiBold();
+                                    row.RelativeItem().Text(value);
+                                });
+                            }
+
+                            AddDetail("First Name:", user.FirstName);
+                            AddDetail("Last Name:", user.LastName);
+                            AddDetail("ID Number:", user.Idnumber);
+                            AddDetail("Phone Number:", user.PhoneNumber);
+                            AddDetail("Email:", user.Email);
+
+                            col.Item().PaddingTop(10).Text("Allergies:").SemiBold();
+                            if (selectedAllergies.Any())
+                            {
+                                foreach (var allergy in selectedAllergies)
+                                {
+                                    col.Item().Text($"• {allergy}");
+                                }
+                            }
+                            else
+                            {
+                                col.Item().Text("No allergies listed.");
+                            }
+                        });
+                });
+            }).GeneratePdf();
+
+            return File(pdfBytes, "application/pdf", "ProfileDetails.pdf");
+        }
 
     }
+
 }
+
+

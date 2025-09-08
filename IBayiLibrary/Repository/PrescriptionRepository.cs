@@ -81,22 +81,19 @@ namespace IBayiLibrary.Repository
         }
 
 
-        //public async Task<PrescriptionModel> GetPrescriptionByID(int id)
-        //{
-        //    var result = await _db.GetData<PrescriptionModel, dynamic>(
-        //        "spGetPrescriptionByID",
-        //        new { PrescriptionID = id }
-        //    );
-            
-        //    return result.FirstOrDefault();
-        //}
-        //public async Task<Person> GetByIdAsync(int id)
-        //{
-        //    IEnumerable<Person> result = await _db.GetData<Person, dynamic>("sp_Get_Person", new { ID = id });
-        //    return result.FirstOrDefault();
-        //}
-
-
+        public async Task<bool> UpdateDispnse(PrescriptionModel prescriptions)
+        {
+            try
+            {
+                await _db.SaveData("spUpdateDispense",
+                    new { PrescriptionID = prescriptions.PrescriptionID });
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
         public async Task<bool> UpdatePrescription(Prescriptions prescriptions)
         {
             try
@@ -135,6 +132,15 @@ namespace IBayiLibrary.Repository
             {
                 return false; // Something went wrong
             }
+        }
+        public async Task<PrescriptionModel> GetDispenseById(int prescriptionId)
+        {
+            string query = "spDispenseByID";
+            var result = await _db.GetData<PrescriptionModel, dynamic>(
+                query,
+                new { PrescriptionID = prescriptionId }
+            );
+            return result.FirstOrDefault();
         }
     }
 }
