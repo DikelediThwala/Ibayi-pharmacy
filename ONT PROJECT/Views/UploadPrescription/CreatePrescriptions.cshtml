@@ -222,10 +222,11 @@
 
 
 
+
 <div class="card shadow p-4">
     <div class="card-body">
 
-        <form asp-action="CreatePrescriptions" enctype="multipart/form-data" method="post">
+        <form asp-action="CreatePrescriptions" asp-controller="UploadPrescription" enctype="multipart/form-data" method="post">
 
             <div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
                 <i class="bi bi-info-circle-fill"></i>
@@ -253,7 +254,7 @@
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label asp-for="Date" class="form-label">Date</label>
-                    <input asp-for="Date" type="datetime" class="form-control" name="name" value="@Model.Date" />
+                    <input asp-for="Date" type="datetime" class="form-control"value ="@Model.Date" />
                     <span asp-validation-for="Date" class="text-danger small"></span>
                 </div>
             </div>
@@ -265,7 +266,10 @@
                         <select asp-for="MedicineID" class="form-select" asp-items="@ViewBag.MedicineID">
                             <option value="">-- Select Medication --</option>
                         </select>
+                        
                     </div>
+                    
+
                     <!-- Quantity -->
                     <div class="col-md-2">
                         <label class="form-label">Quantity</label>

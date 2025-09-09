@@ -8,6 +8,7 @@ using System.Linq;
 
 namespace ONT_PROJECT.Controllers
 {
+    [Authorize(Roles = "Customer")]
     public class CustomerPrescriptionLineController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -16,31 +17,35 @@ namespace ONT_PROJECT.Controllers
         {
             _context = context;
         }
-        [Authorize(Roles = "Customer")]
+
         public async Task<IActionResult> MyPrescriptionLines()
         {
+            // Get logged-in user Id
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdStr)) return Unauthorized();
+            if (string.IsNullOrEmpty(userIdStr))
+                return Unauthorized();
 
-            var userId = int.Parse(userIdStr);
+            int userId = int.Parse(userIdStr);
 
+            // Get the customer for this user
             var customer = await _context.Customers
-                .Include(c => c.CustomerNavigation)
+                .Include(c => c.CustomerNavigation) // optional if you need navigation data
                 .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
 
-            if (customer == null) return NotFound();
+            if (customer == null)
+                return NotFound();
 
+            // Get all prescription lines for this customer and include the Medicine
             var lines = await _context.PrescriptionLines
-                .Include(pl => pl.Prescription)
+                .Include(pl => pl.Medicine)        // load Medicine
+                .Include(pl => pl.Prescription)    // load Prescription if needed
                 .Where(pl => pl.Prescription.CustomerId == customer.CustomerId)
                 .ToListAsync();
 
             return View(lines);
         }
 
-
-        // New action to get the number of prescription lines for dashboard
-        [Authorize(Roles = "Customer")]
+        // Action to get the number of prescription lines for dashboard
         public async Task<int> GetPrescriptionLineCount()
         {
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

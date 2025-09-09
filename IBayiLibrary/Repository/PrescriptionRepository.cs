@@ -33,7 +33,7 @@ namespace IBayiLibrary.Repository
         {
             try
             {
-                await _db.SaveData("spInsertPrescription", new { prescription.Date, prescription.CustomerID, prescription.PharmacistID, prescription.PrescriptionPhoto, prescription.DoctorID });
+                await _db.SaveData("spInsertPrescription", new { prescription.CustomerID, prescription.PharmacistID, prescription.PrescriptionPhoto, prescription.DoctorID, prescription.Date });
                 return true;
             }
 

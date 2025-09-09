@@ -41,13 +41,24 @@ namespace ONT_PROJECT.Controllers
 
             return View();
         }
+        public async Task<IActionResult> CreatePrescriptions()
+        {
+
+            //var prescLine = await _prescriptionLineRepository.GetMedicineName();
+            //var medList = prescLine.ToList();
+
+            //// 🔍 Put a breakpoint here and check medList content
+            //ViewBag.MedicineID = new SelectList(medList, "MedicineID", "MedicineName");
+            //TempData["Debug"] = string.Join(", ", medList.Select(m => $"{m.MedicineID}:{m.MedicineName}"));
+            return View();
+
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePrescForWalkins(PrescriptionViewModel prescription)
         {
             try
             {
-
                 if (prescription.PescriptionFile != null && prescription.PescriptionFile.Length > 0)
                 {
                     // Open stream and validate PDF header
@@ -108,6 +119,7 @@ namespace ONT_PROJECT.Controllers
                 ViewBag.DoctorID = new SelectList(doc.Select(c => new { c.DoctorID, FullName = c.Name + " " + c.Surname }), "DoctorID", "FullName");
                 var prescLine = await _prescriptionLineRepository.GetMedicineName();
                 ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
+
             }
             catch (Exception ex)
             {
@@ -116,14 +128,7 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("CreateUser", "Pharmacist");
         }
 
-        public async Task<IActionResult> CreatePrescriptions()
-        {
-
-            var prescLine = await _prescriptionLineRepository.GetMedicineName();
-            ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
-            return View();
-        }
-
+      
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -131,7 +136,6 @@ namespace ONT_PROJECT.Controllers
         {
             try
             {
-
                 if (prescription.PescriptionFile != null && prescription.PescriptionFile.Length > 0)
                 {
                     // Open stream and validate PDF header
@@ -187,8 +191,11 @@ namespace ONT_PROJECT.Controllers
                     TempData["msg"] = "Could not add";
                 }
 
-                var prescLine = await _prescriptionLineRepository.GetMedicineName();
-                ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
+                //var prescLine = await _prescriptionLineRepository.GetMedicineName();
+                //var medList = prescLine.ToList();
+
+                //// 🔍 Put a breakpoint here and check medList content
+                //ViewBag.MedicineID = new SelectList(medList, "MedicineID", "MedicineName");
 
             }
 

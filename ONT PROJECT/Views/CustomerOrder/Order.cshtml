@@ -1,4 +1,89 @@
-﻿@{
-    ViewData["Title"] = "My Orders";
-    Layout = "_CustomerLayout";
+﻿@model List<ONT_PROJECT.Models.PrescriptionLine>
+
+@{
+    ViewData["Title"] = "Place Order";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container-xl mt-4">
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <h2>My <b>Prescription Lines</b></h2>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <p class="text-muted">No prescription lines available yet.</p>
+            }
+            else
+            {
+                <form asp-controller="CustomerOrder" asp-action="PlaceOrder" method="post">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-primary">
+                            <tr>
+                                <th style="width: 40px;">
+                                    <input type="checkbox" id="selectAll" title="Select All" />
+                                </th>
+                                <th>Medication</th>
+                                <th>Instructions / Dosage</th>
+                                <th>Quantity</th>
+                                <th>Total Repeats</th>
+                                <th>Repeats Left</th>
+                                <th>Repeat Request</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var line in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">
+                                        <input type="checkbox" name="selectedLines" value="@line.PrescriptionLineId" class="line-checkbox" />
+                                    </td>
+                                    <td>@(line.Medicine?.MedicineName ?? "Unknown Medicine")</td>
+                                    <td>@line.Instructions</td>
+                                    <td>@line.Quantity</td>
+                                    <td class="text-center">@line.Repeats</td>
+                                    <td class="text-center">@line.RepeatsLeft</td>
+                                    <td class="text-center">
+                                        @if (line.RepeatsLeft > 0)
+                                        {
+                                            <form asp-controller="RepeatRequest" asp-action="RequestRepeat" method="post" class="d-inline">
+                                                <input type="hidden" name="PrescriptionLineId" value="@line.PrescriptionLineId" />
+                                                <button class="btn btn-warning btn-sm" title="Request Repeat">
+                                                    <i class="material-icons">&#xE863;</i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No repeats left</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <button type="submit" class="btn btn-success mt-2">Place Order</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+
+@* @section Scripts { *@
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Select/Deselect all checkboxes
+            $('#selectAll').click(function() {
+                $('.line-checkbox').prop('checked', this.checked);
+            });
+
+            $('.line-checkbox').change(function() {
+                $('#selectAll').prop('checked', $('.line-checkbox:checked').length === $('.line-checkbox').length);
+            });
+        });
+    </script>
 }
