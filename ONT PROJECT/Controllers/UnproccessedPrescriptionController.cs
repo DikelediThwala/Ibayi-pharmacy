@@ -1,6 +1,7 @@
 ﻿using IBayiLibrary.Models.Domain;
 using IBayiLibrary.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using NuGet.Protocol.Core.Types;
 using System.Text;
 
@@ -10,12 +11,13 @@ namespace ONT_PROJECT.Controllers
     {
         private readonly IUnproccessedPrescriptionRepository _unproccessedprescriptionRepository;
         private readonly IPrescriptionRepository _prescriptionRepository;
-
-        public UnproccessedPrescriptionController(IUnproccessedPrescriptionRepository unproccessedprescriptionRepository,IPrescriptionRepository prescriptionRepository)
+        private readonly IPrescriptionLineRepository _prescriptionLineRepository;
+        public UnproccessedPrescriptionController(IUnproccessedPrescriptionRepository unproccessedprescriptionRepository,IPrescriptionRepository prescriptionRepository, IPrescriptionLineRepository prescriptionLineRepository)
         {
             _unproccessedprescriptionRepository = unproccessedprescriptionRepository;
             _prescriptionRepository = prescriptionRepository;
-        }         
+            _prescriptionLineRepository = prescriptionLineRepository;
+        }
 
         public IActionResult Index()
         {
@@ -29,6 +31,9 @@ namespace ONT_PROJECT.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPrescByID(int id)
         {
+            var prescLine = await _prescriptionLineRepository.GetMedicineName();
+            ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
+
             var prescription = await _unproccessedprescriptionRepository.GetPrescriptionByID(id);
             if (prescription == null)
             {
