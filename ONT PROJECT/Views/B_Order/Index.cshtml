@@ -2,11 +2,9 @@
 
 @{
     ViewData["Title"] = "Manage Medication";
-    
     Layout = "~/Views/Shared/_ManagerLayout.cshtml";
-
-
 }
+
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -20,13 +18,14 @@
 }
 
 <style>
-     .content-area .table-wrapper {
+    .content-area .table-wrapper {
         color: #566787;
         font-family: 'Varela Round', sans-serif;
         font-size: 13px;
         background: #f5f5f5;
     }
 </style>
+
 <h2 class="text-dark fw-bold mb-4"><i class="fas fa-capsules"></i> Medication Management</h2>
 
 <ul class="nav nav-tabs" id="medicationTabs" role="tablist">
@@ -34,28 +33,36 @@
         <button class="nav-link @(activeTab == "stock" ? "active" : "")" id="stock-tab" data-bs-toggle="tab" data-bs-target="#stock" type="button" role="tab">Current Stock</button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link @(activeTab == "orders" ? "active" : "")" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">Orders</button>
-    </li>
-    <li class="nav-item" role="presentation">
         <button class="nav-link @(activeTab == "neworder" ? "active" : "")" id="neworder-tab" data-bs-toggle="tab" data-bs-target="#neworder" type="button" role="tab">Order Medication</button>
     </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(activeTab == "orders" ? "active" : "")" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">Orders</button>
+    </li>
+   
 </ul>
+
 <div class="tab-content mt-4" id="medicationTabsContent">
     <div class="tab-pane fade @(activeTab == "stock" ? "show active" : "")" id="stock" role="tabpanel">
         @await Html.PartialAsync("_CurrentStock", Model.Medicines)
     </div>
+    <div class="tab-pane fade @(activeTab == "neworder" ? "show active" : "")" id="neworder" role="tabpanel">
+        @{
+            var viewData = new ViewDataDictionary(ViewData)
+                {
+                { "Medications", Model.Medicines.Select(m => new SelectListItem
+                {
+                Value = m.MedicineId.ToString(),
+                Text = m.MedicineName
+                }).ToList()
+                },
+                { "MedicationDetails", Model.Medicines },
+                { "MedicationPrices", Model.Medicines.ToDictionary(m => m.MedicineId, m => m.SalesPrice) }
+                };
+        }
+        @await Html.PartialAsync("Create", Model.NewOrder, viewData)
+    </div>
     <div class="tab-pane fade @(activeTab == "orders" ? "show active" : "")" id="orders" role="tabpanel">
         @await Html.PartialAsync("_Orders", Model.BOrders)
     </div>
-    <div class="tab-pane fade @(activeTab == "neworder" ? "show active" : "")" id="neworder" role="tabpanel">
-        @await Html.PartialAsync("Create", Model.NewOrder, new ViewDataDictionary(ViewData)
-        {
-        { "Medications", Model.Medicines.Select(m => new SelectListItem
-        {
-        Value = m.MedicineId.ToString(),
-        Text = m.MedicineName
-        }).ToList()
-        }
-        })
-    </div>
+   
 </div>

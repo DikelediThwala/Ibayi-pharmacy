@@ -39,6 +39,7 @@ namespace ONT_PROJECT.Controllers
 
             ViewData["ActiveTab"] = tab ?? "stock"; 
             return View(vm);
+
         }
 
 
@@ -70,26 +71,29 @@ namespace ONT_PROJECT.Controllers
             return View("Index", viewModel);
         }
 
+
         public IActionResult Create()
         {
             var medications = _context.Medicines
-                                      .Where(m => m.Status == "Active")
-                                      .Select(m => new SelectListItem
-                                      {
-                                          Value = m.MedicineId.ToString(),
-                                          Text = m.MedicineName
-                                      })
-                                      .ToList();
+                          .Where(m => m.Status == "Active")
+                          .Select(m => new SelectListItem
+                          {
+                              Value = m.MedicineId.ToString(),
+                              Text = m.MedicineName
+                          })
+                          .ToList();
 
             ViewBag.Medications = medications;
 
+            ViewBag.MedicationDetails = _context.Medicines
+                                                .Where(m => m.Status == "Active")
+                                                .ToList();
             ViewBag.MedicationPrices = _context.Medicines
                                                .Where(m => m.Status == "Active")
                                                .ToDictionary(m => m.MedicineId, m => m.SalesPrice);
 
             return View(new BOrder());
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(BOrder order)

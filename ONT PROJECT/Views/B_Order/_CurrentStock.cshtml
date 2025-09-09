@@ -28,6 +28,11 @@
         box-shadow: 0 1px 1px rgba(0,0,0,.05);
     }
 
+    #orderTableWrapper {
+        max-height: 540px; /* approx 8 rows */
+        overflow-y: auto;
+        display: block;
+    }
     .table-title {
         color: #fff;
         background: #4b5366;
@@ -77,6 +82,13 @@
     .table-primary {
         background-color: #dbe9f7 !important;
     }
+
+    #medicationTable thead th {
+        position: sticky;
+        top: 0;
+        background: #4b5366; /* same dark color */
+        color: white;
+        z-index: 1;
 </style>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -97,57 +109,53 @@
                     <div class="col-sm-6">
                         <h2><i class="fas fa-pills"></i> Manage <b>Medication Stock</b></h2>
                     </div>
-                    <div class="col-sm-6 text-end">
-                        <button type="button" class="btn btn-primary">
-                            <i class="material-icons">&#xE147;</i> <span>Order Selected</span>
-                        </button>
-                        <button type="button" class="btn btn-primary" onclick="selectLowStockAndSubmit()">
-                            <i class="material-icons">&#xE147;</i> <span>Order Low stock </span>
-                        </button>
-                    </div>
+                   
                 </div>
             </div>
 
            
 
             <form method="post" action="/B_Order/Selected" id="medForm">
-                <table id="medicationTable" class="table table-hover">
+                <div id="orderTableWrapper">
 
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)" /></th>
-                            <th>Name</th>
-                            <th>Quantity</th>
-                            <th>Reorder Level</th>
-                            <th>Stock Control</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < Model.Count; i++)
-                        {
-                            var med = Model[i];
-                            var rowClass = med.Quantity <= med.ReorderLevel ? "table-warning"
-                            : med.Quantity <= med.ReorderLevel + 5 ? "table-primary"
-                            : "";
+                    <table id="medicationTable" class="table table-hover">
 
-                            <tr class="@rowClass">
-                                <td><input type="checkbox" name="selectedMedIds" value="@med.MedicineId" class="med-checkbox @(med.Quantity <= med.ReorderLevel ? "low-stock" : "")" /></td>
-                                <td>@med.MedicineName</td>
-                                <td>
-                                    <input type="number" name="quantities" value="@med.Quantity" class="form-control" readonly />
-                                </td>
-                                <td>
-                                    <input type="number" class="form-control text-center" value="@med.ReorderLevel" readonly />
-                                </td>
-                                <td>
-                                    <div class="d-flex">
-                                        <button type="button" class="btn btn-sm btn-success" onclick="updateStock(@med.MedicineId, this)">Modify</button>
-                                    </div>
-                                </td>
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Name</th>
+                                <th>Quantity in Hand</th>
+                                <th>Reorder Level</th>
+                                <th>Stock Control</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                var med = Model[i];
+                                var rowClass = med.Quantity <= med.ReorderLevel ? "table-warning"
+                                : med.Quantity <= med.ReorderLevel + 5 ? "table-primary"
+                                : "";
+
+                                <tr class="@rowClass">
+                                   <td>@med.MedicineName</td>
+                                    <td>
+                                        <input type="number" name="quantities" value="@med.Quantity" class="form-control" readonly />
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control text-center" value="@med.ReorderLevel" readonly />
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <button type="button" class="btn btn-sm btn-success" onclick="updateStock(@med.MedicineId, this)">Modify</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+               
             </form>
         </div>
     </div>

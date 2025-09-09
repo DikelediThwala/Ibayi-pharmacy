@@ -217,6 +217,7 @@ namespace ONT_PROJECT.Controllers
             var model = new ResetPasswordViewModel { Email = email };
             return View(model);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ResetPassword(ResetPasswordViewModel model)
@@ -226,14 +227,24 @@ namespace ONT_PROJECT.Controllers
 
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == model.Email);
             if (user == null)
-                return NotFound();
+            {
+                ModelState.AddModelError("", "User not found.");
+                return View(model);
+            }
+
+            if (model.NewPassword != model.ConfirmPassword)
+            {
+                ModelState.AddModelError("", "Passwords do not match.");
+                return View(model);
+            }
 
             user.Password = HashPassword(model.NewPassword);
             _context.SaveChanges();
 
-            TempData["Message"] = "Password reset successful!";
-            return RedirectToAction("Login", "Login"); 
+            TempData["SuccessMessage"] = "Password reset successfully!";
+            return RedirectToAction("Login", "User"); // redirect to login or wherever
         }
+
         public IActionResult Register()
         {
             return View();
