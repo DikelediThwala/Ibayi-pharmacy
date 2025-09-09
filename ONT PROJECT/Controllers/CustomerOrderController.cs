@@ -60,18 +60,9 @@ namespace ONT_PROJECT.Controllers
 
             if (customer == null) return NotFound();
 
-            // Assign a pharmacist dynamically (pick the first available)
-            var pharmacist = await _context.Pharmacists.FirstOrDefaultAsync();
-            if (pharmacist == null)
-            {
-                TempData["Error"] = "No pharmacist available to assign the order.";
-                return RedirectToAction("Order");
-            }
-
             var order = new Order
             {
                 CustomerId = customer.CustomerId,
-                PharmacistId = pharmacist.PharmacistId,
                 Status = "Pending",
                 DatePlaced = DateOnly.FromDateTime(DateTime.Now),
                 TotalDue = 0,
@@ -107,9 +98,13 @@ namespace ONT_PROJECT.Controllers
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
+            // Set TempData for success message
             TempData["Success"] = "Order placed successfully!";
+
+            // Redirect back to Order view so toast shows
             return RedirectToAction("OrderedMedication");
         }
+
 
         // Show all customer orders
         public async Task<IActionResult> OrderedMedication()

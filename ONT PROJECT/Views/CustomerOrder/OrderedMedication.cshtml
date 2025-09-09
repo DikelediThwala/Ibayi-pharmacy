@@ -91,16 +91,16 @@
                     @foreach (var line in order.OrderLines)
                     {
                         <div class="order-line-card">
-                            <div class="order-line-header">@line.Medicine.MedicineName</div>
+                            <div class="order-line-header">@line.Medicine?.MedicineName</div>
                             <div>Quantity: @line.Quantity</div>
-                            <div>Price: R@line.Price.ToString("0.00")</div>
-                            <div>Line Total: R@line.LineTotal.ToString("0.00")</div>
+                            <div>Price: @($"R{line.Price:0.00}")</div>
+                            <div>Line Total: @($"R{line.LineTotal:0.00}")</div>
                         </div>
                     }
 
                     <div class="order-total">
-                        Total: R@(order.TotalDue.ToString("0.00")) |
-                        VAT (15%): R@(order.Vat.ToString("0.00"))
+                        Total: @($"R{order.TotalDue:0.00}") |
+                        VAT (15%): @($"R{order.Vat:0.00}")
                     </div>
                 </div>
             </div>
@@ -114,7 +114,7 @@
             var targetId = $(this).data('target');
             var target = $(targetId);
 
-            target.slideToggle(); // smooth toggle
+            target.slideToggle();
 
             if (target.is(':visible')) {
                 $(this).text('Hide Order');

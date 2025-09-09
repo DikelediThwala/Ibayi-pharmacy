@@ -9,7 +9,7 @@ public partial class Order
 
     public int CustomerId { get; set; }
 
-    public int PharmacistId { get; set; }
+    public int? PharmacistId { get; set; }  // make it nullable
 
     public string Status { get; set; } = null!;
 
