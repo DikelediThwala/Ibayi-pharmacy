@@ -8,38 +8,91 @@
     bool isEditMode = ViewBag.EditMode != null && (bool)ViewBag.EditMode;
 }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-<div class="container mt-5">
-    <h2 class="mb-4 text-center">My Profile</h2>
+<style>
+    body {
+        font-family: 'Varela Round', sans-serif;
+        font-size: 13px;
+        color: #566787;
+        background: #f5f5f5;
+    }
 
-    @if (!isEditMode)
+    .profile-card {
+        background: #fff;
+        border-radius: 5px;
+        padding: 20px;
+        margin-top: 30px;
+        box-shadow: 0 1px 5px rgba(0,0,0,.1);
+    }
+
+        .profile-card h2 {
+            color: #4b5366;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+    .profile-dt {
+        font-weight: bold;
+        color: #4b5366;
+    }
+
+    .btn-custom {
+        min-width: 120px;
+    }
+
+    .list-group-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .toast-success {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1055;
+    }
+</style>
+
+<div class="container">
+    @if (TempData["SuccessMessage"] != null)
     {
-        <!-- VIEW MODE -->
-        <div class="card p-4 shadow-sm">
+        <div id="profileToast" class="toast toast-success align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="material-icons">&#xE876;</i> @TempData["SuccessMessage"]
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+
+    <div class="profile-card">
+        <h2>My Profile</h2>
+
+        @if (!isEditMode)
+        {
+            <!-- VIEW MODE -->
             <dl class="row">
-                <dt class="col-sm-3">First Name</dt>
+                <dt class="col-sm-3 profile-dt">First Name</dt>
                 <dd class="col-sm-9">@Model.FirstName</dd>
 
-                <dt class="col-sm-3">Last Name</dt>
+                <dt class="col-sm-3 profile-dt">Last Name</dt>
                 <dd class="col-sm-9">@Model.LastName</dd>
 
-                <dt class="col-sm-3">ID Number</dt>
+                <dt class="col-sm-3 profile-dt">ID Number</dt>
                 <dd class="col-sm-9">@Model.Idnumber</dd>
 
-                <dt class="col-sm-3">Phone Number</dt>
+                <dt class="col-sm-3 profile-dt">Phone Number</dt>
                 <dd class="col-sm-9">@Model.PhoneNumber</dd>
 
-                <dt class="col-sm-3">Email</dt>
+                <dt class="col-sm-3 profile-dt">Email</dt>
                 <dd class="col-sm-9">@Model.Email</dd>
 
-                <dt class="col-sm-3">Allergies</dt>
+                <dt class="col-sm-3 profile-dt">Allergies</dt>
                 <dd class="col-sm-9">
                     @if (selectedAllergies.Any())
                     {
@@ -56,58 +109,54 @@
                     }
                     else
                     {
-                        <span>No allergies listed.</span>
+                        <span class="text-muted">No allergies listed.</span>
                     }
                 </dd>
             </dl>
 
             <div class="text-center mt-4">
-                <a asp-action="Index" asp-route-edit="true" class="btn btn-primary">Edit Profile</a>
-                <a asp-controller="ProfileSettings" asp-action="Settings" class="btn btn-secondary ms-2">
+                <a asp-action="Index" asp-route-edit="true" class="btn btn-primary btn-custom">Edit Profile</a>
+                <a asp-controller="ProfileSettings" asp-action="Settings" class="btn btn-secondary btn-custom ms-2">
                     <i class="bi bi-arrow-left me-1"></i> Back to Settings
                 </a>
-
-                <!-- Download PDF button -->
-                <a asp-action="DownloadProfilePdf" asp-controller="ProfileSettings" class="btn btn-danger ms-2">
+                <a asp-action="DownloadProfilePdf" asp-controller="ProfileSettings" class="btn btn-danger btn-custom ms-2">
                     <i class="bi bi-file-earmark-pdf me-1"></i> Download PDF
                 </a>
             </div>
-        </div>
-    }
-    else
-    {
-        <!-- EDIT MODE -->
-        <form asp-action="Index" method="post">
-            <div class="card p-4 shadow-sm">
+        }
+        else
+        {
+            <!-- EDIT MODE -->
+            <form asp-action="Index" method="post">
                 <dl class="row">
-                    <dt class="col-sm-3">First Name</dt>
+                    <dt class="col-sm-3 profile-dt">First Name</dt>
                     <dd class="col-sm-9">
                         <input asp-for="FirstName" class="form-control" />
                         <span asp-validation-for="FirstName" class="text-danger"></span>
                     </dd>
 
-                    <dt class="col-sm-3">Last Name</dt>
+                    <dt class="col-sm-3 profile-dt">Last Name</dt>
                     <dd class="col-sm-9">
                         <input asp-for="LastName" class="form-control" />
                         <span asp-validation-for="LastName" class="text-danger"></span>
                     </dd>
 
-                    <dt class="col-sm-3">ID Number</dt>
+                    <dt class="col-sm-3 profile-dt">ID Number</dt>
                     <dd class="col-sm-9">
                         <input asp-for="Idnumber" class="form-control" />
                         <span asp-validation-for="Idnumber" class="text-danger"></span>
                     </dd>
 
-                    <dt class="col-sm-3">Phone Number</dt>
+                    <dt class="col-sm-3 profile-dt">Phone Number</dt>
                     <dd class="col-sm-9">
                         <input asp-for="PhoneNumber" class="form-control" />
                         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                     </dd>
 
-                    <dt class="col-sm-3">Email</dt>
+                    <dt class="col-sm-3 profile-dt">Email</dt>
                     <dd class="col-sm-9">@Model.Email</dd>
 
-                    <dt class="col-sm-3">Allergies</dt>
+                    <dt class="col-sm-3 profile-dt">Allergies</dt>
                     <dd class="col-sm-9">
                         <div class="d-flex gap-2 mb-2">
                             <select id="allergySelect" class="form-control form-control-sm">
@@ -138,38 +187,43 @@
                 </dl>
 
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success">Save Changes</button>
-                    <a asp-controller="ProfileSettings" asp-action="Settings" class="btn btn-secondary ms-2">
+                    <button type="submit" class="btn btn-success btn-custom">Save Changes</button>
+                    <a asp-controller="ProfileSettings" asp-action="Settings" class="btn btn-secondary btn-custom ms-2">
                         <i class="bi bi-arrow-left me-1"></i> Back to Settings
                     </a>
                 </div>
-            </div>
-        </form>
-
-        <script>
-            const addBtn = document.getElementById('addAllergyBtn');
-            addBtn.addEventListener('click', function () {
-                const select = document.getElementById('allergySelect');
-                const selectedValue = select.value;
-                const selectedText = select.options[select.selectedIndex]?.text;
-
-                if (!selectedValue) { alert('Please select an allergy.'); return; }
-                if ([...document.querySelectorAll('#selectedAllergiesList input')].some(i => i.value === selectedValue)) {
-                    alert('Allergy already added.'); return;
-                }
-
-                const li = document.createElement('li');
-                li.className = "list-group-item d-flex justify-content-between align-items-center";
-                li.innerHTML = `${selectedText} <button type="button" class="btn btn-sm btn-danger remove-btn">Remove</button><input type="hidden" name="SelectedAllergyIds" value="${selectedValue}" />`;
-
-                li.querySelector('.remove-btn').addEventListener('click', function () { li.remove(); });
-                document.getElementById('selectedAllergiesList').appendChild(li);
-                select.value = "";
-            });
-
-            document.querySelectorAll('.remove-btn').forEach(btn => {
-                btn.addEventListener('click', function () { btn.parentElement.remove(); });
-            });
-        </script>
-    }
+            </form>
+        }
+    </div>
 </div>
+
+<script>
+    // Toast display
+    const toastEl = document.getElementById('profileToast');
+    if (toastEl) {
+        const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+        toast.show();
+    }
+
+    // Allergy add/remove
+    const addBtn = document.getElementById('addAllergyBtn');
+    addBtn.addEventListener('click', function () {
+        const select = document.getElementById('allergySelect');
+        const selectedValue = select.value;
+        const selectedText = select.options[select.selectedIndex]?.text;
+        if (!selectedValue) { alert('Please select an allergy.'); return; }
+        if ([...document.querySelectorAll('#selectedAllergiesList input')].some(i => i.value === selectedValue)) {
+            alert('Allergy already added.'); return;
+        }
+        const li = document.createElement('li');
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.innerHTML = `${selectedText} <button type="button" class="btn btn-sm btn-danger remove-btn">Remove</button><input type="hidden" name="SelectedAllergyIds" value="${selectedValue}" />`;
+        li.querySelector('.remove-btn').addEventListener('click', function () { li.remove(); });
+        document.getElementById('selectedAllergiesList').appendChild(li);
+        select.value = "";
+    });
+
+    document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', function () { btn.parentElement.remove(); });
+    });
+</script>
