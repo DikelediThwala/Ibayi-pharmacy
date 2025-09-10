@@ -101,10 +101,8 @@ namespace ONT_PROJECT.Controllers
             // Set TempData for success message
             TempData["Success"] = "Order placed successfully!";
 
-            // Redirect back to Order view so toast shows
             return RedirectToAction("OrderedMedication");
         }
-
 
         // Show all customer orders
         public async Task<IActionResult> OrderedMedication()
@@ -126,5 +124,36 @@ namespace ONT_PROJECT.Controllers
 
             return View(orders);
         }
+
+        // Delete a specific order line
+        [HttpPost]
+        public async Task<IActionResult> DeleteOrder(int orderId)
+        {
+            // Find the order including all its lines
+            var order = await _context.Orders
+                .Include(o => o.OrderLines)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            if (order == null)
+            {
+                TempData["Error"] = "Order not found.";
+                return RedirectToAction("OrderedMedication");
+            }
+
+            // Remove all order lines
+            _context.OrderLines.RemoveRange(order.OrderLines);
+
+            // Remove the order itself
+            _context.Orders.Remove(order);
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Order deleted successfully!";
+            return RedirectToAction("OrderedMedication");
+        }
+
+
     }
+
 }
+
