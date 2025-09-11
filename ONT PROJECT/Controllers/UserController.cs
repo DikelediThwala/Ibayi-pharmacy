@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IBayiLibrary.Models.Domain;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ONT_PROJECT.Helpers;
 using ONT_PROJECT.Models;
 using System.Security.Cryptography;
 using System.Text;
@@ -104,12 +106,15 @@ namespace ONT_PROJECT.Controllers
             user.Password = HashPassword(plainPassword);
 
             _context.TblUsers.Add(user);
+
             _context.SaveChanges();
+
+            ActivityLogger.LogActivity(_context, "Create User", $" {user.FirstName} was added to the system");
 
             int newUserId = user.UserId;
 
             if (user.Role == "Customer")
-                _context.Customers.Add(new Customer { CustomerId = newUserId });
+                _context.Customers.Add(new ONT_PROJECT.Models.Customer { CustomerId = newUserId });
             else if (user.Role == "Pharmacist")
             {
                 var regNo = Request.Form["HealthCounsilRegNo"].ToString();
@@ -148,7 +153,7 @@ namespace ONT_PROJECT.Controllers
             if (user == null)
                 return NotFound();
 
-            var titles = new List<string> { "Mr", "Mrs", "Miss", "Dr" }; // start with Mr
+            var titles = new List<string> { "Mr", "Mrs", "Miss", "Dr" }; 
             ViewBag.Titles = new SelectList(titles, user.Title?.Trim());
 
 
@@ -263,6 +268,7 @@ namespace ONT_PROJECT.Controllers
             _context.SaveChanges();
 
             TempData["SuccessMessage"] = $"User {user.FirstName} {user.LastName} deactivated successfully.";
+            ActivityLogger.LogActivity(_context, "Deactivate user", $"Medicine {user.FirstName} was deactivated.");
 
             return RedirectToAction("Index"); 
         }
@@ -277,6 +283,8 @@ namespace ONT_PROJECT.Controllers
             _context.SaveChanges();
 
             TempData["SuccessMessage"] = $"User {user.FirstName} {user.LastName} activated successfully.";
+            ActivityLogger.LogActivity(_context, "Activate User", $"Medicine {user.FirstName} was activated.");
+
             return RedirectToAction("Index");
         }
 

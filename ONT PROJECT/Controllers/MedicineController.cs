@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using ONT_PROJECT.Helpers;
 using ONT_PROJECT.Models;
 
 namespace ONT_PROJECT.Controllers
@@ -101,6 +102,9 @@ namespace ONT_PROJECT.Controllers
                 }
 
                 await _context.SaveChangesAsync();
+
+                ActivityLogger.LogActivity(_context, "Create Medicine", $"Medicine {medicine.MedicineName} was added.");
+ 
                 // Set success message
                 TempData["SuccessMessage"] = "Medicine created successfully!";
                 return RedirectToAction(nameof(Index));
@@ -259,6 +263,9 @@ namespace ONT_PROJECT.Controllers
             _context.Update(medicine);
             await _context.SaveChangesAsync();
 
+            ActivityLogger.LogActivity(_context, "Deactivate Medicine", $"Medicine {medicine.MedicineName} was deactivated.");
+
+
             return Json(new { success = true });
         }
 
@@ -271,6 +278,8 @@ namespace ONT_PROJECT.Controllers
             medicine.Status = "Active";
             _context.Update(medicine);
             await _context.SaveChangesAsync();
+
+            ActivityLogger.LogActivity(_context, "Activate Medicine", $"Medicine {medicine.MedicineName} was activated.");
 
             return Json(new { success = true });
         }

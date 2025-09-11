@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IBayiLibrary.Models.Domain;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ONT_PROJECT.Helpers;
 using ONT_PROJECT.Models;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
@@ -57,6 +59,9 @@ namespace ONT_PROJECT.Controllers
                 _context.Add(form);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Dosage form added successfully.";
+
+                ActivityLogger.LogActivity(_context, "Create Dosage Form", $"Dosage form {form.FormName} was added.");
+
                 return RedirectToAction(nameof(Index));
             }
             else
@@ -113,6 +118,9 @@ namespace ONT_PROJECT.Controllers
             form.Status = "Inactive";
             _context.SaveChanges();
             TempData["SuccessMessage"] = $"Dosage form '{form.FormName}' deactivated.";
+
+            ActivityLogger.LogActivity(_context, "Deactivate Dosage Form", $"Dosage form {form.FormName} was deactivated.");
+
             return RedirectToAction("Index");
         }
 
@@ -125,6 +133,9 @@ namespace ONT_PROJECT.Controllers
             form.Status = "Active";
             _context.SaveChanges();
             TempData["SuccessMessage"] = $"Dosage form '{form.FormName}' activated.";
+
+            ActivityLogger.LogActivity(_context, "Activate Dosage Form", $"Dosage form {form.FormName} was activated.");
+
             return RedirectToAction("Index");
         }
     }

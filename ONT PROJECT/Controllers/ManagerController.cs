@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ONT_PROJECT.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ONT_PROJECT.Controllers;
+using ONT_PROJECT.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-
 
 namespace ONT_PROJECT.Controllers
 {
@@ -17,22 +13,45 @@ namespace ONT_PROJECT.Controllers
         public ManagerController(ApplicationDbContext context)
         {
             _context = context;
-           
         }
+
         public IActionResult Dashboard()
         {
-            var recentOrders = _context.BOrders
+            var viewModel = new ManagerDashboardViewModel
+            {
+                RecentOrders = GetRecentOrders(),
+                RecentActivities = GetRecentActivities(),
+                TotalMedicines = GetTotalMedicines(),
+                TotalSuppliers = GetTotalSuppliers(),
+                TotalPharmacists = GetTotalPharmacists(),
+                TotalDoctors = GetTotalDoctors()
+            };
+
+            return View(viewModel);
+        }
+
+        // Private helper methods
+        private List<BOrder> GetRecentOrders()
+        {
+            return _context.BOrders
                 .Include(o => o.BOrderLines)
                     .ThenInclude(ol => ol.Medicine)
                 .OrderByDescending(o => o.DatePlaced)
                 .Take(5)
                 .ToList();
+        }
 
-            return View(recentOrders);
-        }
-        public IActionResult Report()
+        private List<ActivityLog> GetRecentActivities()
         {
-            return View();
+            return _context.ActivityLogs
+                .OrderByDescending(a => a.DatePerformed)
+                .Take(5)
+                .ToList();
         }
+
+        private int GetTotalMedicines() => _context.Medicines.Count(m => m.Status == "Active");
+        private int GetTotalSuppliers() => _context.Suppliers.Count(s => s.Status == "Active");
+        private int GetTotalPharmacists() => _context.TblUsers.Count(u => u.Role == "Pharmacist");
+        private int GetTotalDoctors() => _context.Doctors.Count();
     }
 }

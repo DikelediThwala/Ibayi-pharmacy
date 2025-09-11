@@ -50,6 +50,7 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Supplier> Suppliers { get; set; }
 
     public virtual DbSet<TblUser> TblUsers { get; set; }
+    public virtual DbSet<ActivityLog> ActivityLogs { get; set; }
 
     public virtual DbSet<UnprocessedPrescription> UnprocessedPrescriptions { get; set; }
 

@@ -117,34 +117,38 @@
         </tbody>
     </table>
 </div>
+
+<!-- Include jQuery and DataTables scripts -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
 <script>
-    $('#ordersTable').DataTable({
-            pageLength: 8,        // Show 8 rows per page
-        lengthChange: false,  // Disable changing page length by user
-        searching: true,      // Enable search box
-        ordering: true,       // Enable column sorting
-        language: {
-            search: "Search table:",
-            paginate: {
-                previous: "← Previous",
-                next: "Next →"
+    $(document).ready(function () {
+        // Initialize DataTable for orders table
+        $('#ordersTable').DataTable({
+            pageLength: 8,        // Show only 8 rows per page
+            lengthChange: false,  // Disable changing page length
+            searching: true,      // Enable search box
+            ordering: true,       // Enable column sorting
+            language: {
+                search: "Search table:",
+                paginate: {
+                    previous: "← Previous",
+                    next: "Next →"
+                }
             }
-        }
+        });
     });
 
-</script>
-<script>
+    // Filter orders by status
     function filterOrdersByStatus() {
         const filterValue = document.getElementById('statusFilter').value;
         const rows = document.querySelectorAll('#ordersTable tbody tr');
 
         rows.forEach(row => {
             const status = row.getAttribute('data-status');
-            if (!filterValue || status === filterValue) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+            row.style.display = (!filterValue || status === filterValue) ? '' : 'none';
         });
     }
 </script>

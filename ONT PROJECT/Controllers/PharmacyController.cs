@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IBayiLibrary.Models.Domain;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using ONT_PROJECT.Helpers;
 using ONT_PROJECT.Models;
 using System.IO;
 
@@ -18,8 +20,8 @@ namespace ONT_PROJECT.Controllers
         public IActionResult Index()
         {
             var pharmacy = _context.Pharmacies
-                .Include(p => p.Pharmacist) // load pharmacist entity
-                    .ThenInclude(ph => ph.PharmacistNavigation) // load TblUser navigation
+                .Include(p => p.Pharmacist) 
+                    .ThenInclude(ph => ph.PharmacistNavigation) 
                 .FirstOrDefault();
 
             if (pharmacy == null)
@@ -42,7 +44,7 @@ namespace ONT_PROJECT.Controllers
         {
             var pharmacy = _context.Pharmacies
                 .Include(p => p.Pharmacist)
-                    .ThenInclude(ph => ph.PharmacistNavigation) // include the related User
+                    .ThenInclude(ph => ph.PharmacistNavigation) 
                 .FirstOrDefault();
 
             if (pharmacy == null)
@@ -51,10 +53,9 @@ namespace ONT_PROJECT.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Only active pharmacists
             var activePharmacists = _context.Pharmacists
-                .Include(p => p.PharmacistNavigation) // include User
-                .Where(p => p.PharmacistNavigation.Status == "Active") // filter by User.Status
+                .Include(p => p.PharmacistNavigation)
+                .Where(p => p.PharmacistNavigation.Status == "Active") 
                 .Select(p => new
                 {
                     PharmacistId = p.PharmacistId,
@@ -67,7 +68,7 @@ namespace ONT_PROJECT.Controllers
                 activePharmacists,
                 "PharmacistId",
                 "FullName",
-                pharmacy.PharmacistId // selected value
+                pharmacy.PharmacistId 
             );
 
             return View(pharmacy);
@@ -75,7 +76,7 @@ namespace ONT_PROJECT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Pharmacy pharmacyModel, IFormFile? logoFile)  // nullable here
+        public IActionResult Edit(Pharmacy pharmacyModel, IFormFile? logoFile)  
         {
             if (ModelState.IsValid)
             {
@@ -102,7 +103,10 @@ namespace ONT_PROJECT.Controllers
                 }
 
                 _context.SaveChanges();
+                ActivityLogger.LogActivity(_context, "Activate Pharmacy", $"Pharmacy details were updated.");
+
                 return RedirectToAction("Index");
+
             }
 
             

@@ -1,6 +1,7 @@
 ﻿using IBayiLibrary.Models.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ONT_PROJECT.Helpers;
 using ONT_PROJECT.Models;
 
 namespace ONT_PROJECT.Controllers
@@ -44,6 +45,9 @@ namespace ONT_PROJECT.Controllers
                 _context.Suppliers.Add(supplier);
                 _context.SaveChanges();
                 TempData["SuccessMessage"] = "Supplier added successfully!";
+
+                ActivityLogger.LogActivity(_context, "Create Supplier", $"Supplier {supplier.Name} was added to the system.");
+
                 return RedirectToAction(nameof(Index));
             }
             return View(supplier);
@@ -89,6 +93,8 @@ namespace ONT_PROJECT.Controllers
             supplier.Status = "Deactivated";
             _context.SaveChanges();
             TempData["SuccessMessage"] = "Supplier deactivated and medications reassigned!";
+            ActivityLogger.LogActivity(_context, "Deactivate Supplier", $"Supplier {supplier.Name} was deactivated.");
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -101,6 +107,8 @@ namespace ONT_PROJECT.Controllers
             supplier.Status = "Active";
             _context.SaveChanges();
             TempData["SuccessMessage"] = "Supplier activated successfully!";
+            ActivityLogger.LogActivity(_context, "Activate Supplier", $"Supplier {supplier.Name} was activated.");
+
             return RedirectToAction(nameof(Index));
         }
 

@@ -1,8 +1,10 @@
-﻿using iText.Layout.Element;
+﻿using IBayiLibrary.Models.Domain;
+using iText.Layout.Element;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Controllers;
+using ONT_PROJECT.Helpers;
 using ONT_PROJECT.Models;
 using System.Collections.Generic;
 using System.Configuration;
@@ -66,6 +68,9 @@ namespace ONT_PROJECT.Controllers
                 NewOrder = new BOrder()
             };
 
+
+            ActivityLogger.LogActivity(_context, "Deactivate Order", $"Order number {order.BOrderId} was received.");
+
             ViewData["ActiveTab"] = "orders";
 
             return View("Index", viewModel);
@@ -127,6 +132,8 @@ namespace ONT_PROJECT.Controllers
 
             _context.BOrders.Add(order);
             await _context.SaveChangesAsync();
+
+            ActivityLogger.LogActivity(_context, "Deactivate Order", $"Order {order.BOrderId} was placed.");
 
             // Load saved order with related Medicines
             var savedOrder = await _context.BOrders
@@ -223,7 +230,7 @@ namespace ONT_PROJECT.Controllers
                     }
                     catch
                     {
-                        // Optional: log the exception
+                        
                     }
                 }
             }
@@ -237,10 +244,10 @@ namespace ONT_PROJECT.Controllers
         {
             if (!_context.Medicines.Any())
             {
-                _context.Medicines.AddRange(new List<Medicine>
+                _context.Medicines.AddRange(new List<ONT_PROJECT.Models.Medicine>
                 {
-                    new Medicine { MedicineName = "Paracetamol" },
-                    new Medicine { MedicineName = "Ibuprofen" }
+                    new ONT_PROJECT.Models.Medicine { MedicineName = "Paracetamol" },
+                    new ONT_PROJECT.Models.Medicine { MedicineName = "Ibuprofen" }
                 });
                 _context.SaveChanges();
             }

@@ -15,21 +15,28 @@ public partial class TblUser
 
     [Required(ErrorMessage = "Email is required")]
     [EmailAddress(ErrorMessage = "Invalid email address")]
+    [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Invalid email address")]
     public string Email { get; set; } = null!;
+
 
     [Required]
     public string Password { get; set; } = null!;
 
     [Required(ErrorMessage = "ID Number is required")]
     [Display(Name = "ID Number")]
+    [RegularExpression(@"^\d{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])\d{7}$",
+     ErrorMessage = "Invalid ID Number ")]
     public string Idnumber { get; set; } = null!;
+
 
     [Required(ErrorMessage = "Role is required")]
     public string Role { get; set; } = null!;
 
     [Required(ErrorMessage = "Phone Number is required")]
-    [Display(Name = "Phone Number")] 
+    [Display(Name = "Phone Number")]
+    [RegularExpression(@"^(?:0|\+27)\d{9}$", ErrorMessage = "Invalid contact number")]
     public string PhoneNumber { get; set; } = null!;
+
 
     [Required(ErrorMessage = "Title is required")]
     public string Title { get; set; } = null!;

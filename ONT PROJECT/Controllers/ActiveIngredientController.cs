@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IBayiLibrary.Models.Domain;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ONT_PROJECT.Helpers;
 using ONT_PROJECT.Models;
 using System.Linq;
 
@@ -52,6 +54,9 @@ namespace ONT_PROJECT.Controllers
                 _context.Add(ingredient);
                 _context.SaveChanges();
                 TempData["SuccessMessage"] = "Ingredient added successfully.";
+
+                ActivityLogger.LogActivity(_context, "Create Ingredient", $"Ingredient {ingredient.Ingredients} added.");
+
                 return RedirectToAction(nameof(Index));
             }
             return View(ingredient);
@@ -100,6 +105,9 @@ namespace ONT_PROJECT.Controllers
             ingredient.Status = "Inactive";
             _context.SaveChanges();
             TempData["SuccessMessage"] = $"Ingredient '{ingredient.Ingredients}' deactivated.";
+
+            ActivityLogger.LogActivity(_context, "Deactivate Ingredient", $"Ingredient {ingredient.Ingredients} was deactivated.");
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -112,6 +120,9 @@ namespace ONT_PROJECT.Controllers
             ingredient.Status = "Active";
             _context.SaveChanges();
             TempData["SuccessMessage"] = $"Ingredient '{ingredient.Ingredients}' activated.";
+
+            ActivityLogger.LogActivity(_context, "Activate Ingredient", $"Ingredient {ingredient.Ingredients} was activated.");
+
             return RedirectToAction(nameof(Index));
         }
 

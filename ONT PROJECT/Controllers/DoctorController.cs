@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IBayiLibrary.Models.Domain;
+using Microsoft.AspNetCore.Mvc;
+using ONT_PROJECT.Helpers;
 using ONT_PROJECT.Models; 
 using System.Linq;
 
@@ -23,12 +25,12 @@ namespace ONT_PROJECT.Controllers
 
         public IActionResult Create()
         {
-            var doctor = new Doctor();
+            var doctor = new ONT_PROJECT.Models.Doctor();
             return View(doctor);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Doctor doctor)
+        public IActionResult Create(ONT_PROJECT.Models.Doctor doctor)
         {
             if (ModelState.IsValid)
             {
@@ -49,6 +51,8 @@ namespace ONT_PROJECT.Controllers
 
                 TempData["SuccessMessage"] = "Doctor added successfully!";
 
+                ActivityLogger.LogActivity(_context, "Create Doctor", $"Doctor {doctor.Name} was added to the system.");
+
                 return RedirectToAction(nameof(Index));
             }
             return View(doctor);
@@ -65,7 +69,7 @@ namespace ONT_PROJECT.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Doctor doctor)
+        public IActionResult Edit(ONT_PROJECT.Models.Doctor doctor)
         {
             if (ModelState.IsValid)
             {
@@ -89,6 +93,9 @@ namespace ONT_PROJECT.Controllers
             {
                 doctor.Status = "Deactivated";
                 _context.SaveChanges();
+
+                ActivityLogger.LogActivity(_context, "Deactivate doctor", $"Doctor {doctor.Name} was deactivated.");
+
                 return Ok();
             }
             return BadRequest();
@@ -102,6 +109,8 @@ namespace ONT_PROJECT.Controllers
             {
                 doctor.Status = "Active";
                 _context.SaveChanges();
+                ActivityLogger.LogActivity(_context, "Activate Doctor", $"Doctor {doctor.Name} was activated.");
+
                 return Ok();
             }
             return BadRequest();
