@@ -42,16 +42,8 @@ namespace ONT_PROJECT.Controllers
             return View();
         }
         public async Task<IActionResult> CreatePrescriptions()
-        {
-
-            //var prescLine = await _prescriptionLineRepository.GetMedicineName();
-            //var medList = prescLine.ToList();
-
-            //// 🔍 Put a breakpoint here and check medList content
-            //ViewBag.MedicineID = new SelectList(medList, "MedicineID", "MedicineName");
-            //TempData["Debug"] = string.Join(", ", medList.Select(m => $"{m.MedicineID}:{m.MedicineName}"));
+        {           
             return View();
-
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -258,5 +250,43 @@ namespace ONT_PROJECT.Controllers
             return View("CreatePrescriptions","UploadPrescription");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Search(string searchTerm)
+        {
+            if (string.IsNullOrEmpty(searchTerm))
+            {
+                return Json(new { success = false, message = "No search term provided." });
+            }
+
+            var results = await _prescriptionRepository.SearchCustomer(searchTerm);
+
+            var customer = results
+                .GroupBy(r => new { r.FirstName, r.IDNumber })
+                .Select(g => new PrescriptionViewModel
+                {
+                    FirstName = g.Key.FirstName,
+                    IDNumber = g.Key.IDNumber
+                })
+                .FirstOrDefault();
+
+            if (customer == null)
+                return Json(new { success = false, message = "Customer not found." });
+
+            return Json(new { success = true, data = customer });
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetCustomerDetails(int id)
+        {
+            var customer = await _prescriptionRepository.SelectCustomerName(id);
+            if (customer == null)
+            {
+                return Json(new { success = false });
+            }
+            return Json(new
+            {
+                success = true,
+                data = new { firstName = customer.FirstName,idNumber = customer.IDNumber }
+            });
+        }
     }
 }

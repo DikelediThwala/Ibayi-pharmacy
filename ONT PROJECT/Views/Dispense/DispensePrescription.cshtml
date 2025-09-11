@@ -65,6 +65,7 @@
             <table class="table table-bordered table-hover mt-3">
                 <thead class="table-light">
                     <tr>
+                        <th></th>
                         <th>Medications</th>                                  
                         <th>Repeats</th>
                         <th>Repeats Left</th>
@@ -80,6 +81,10 @@
                         foreach (var item in Model)
                         {
                             <tr id="prescription-@item.PrescriptionID">
+                                <td>
+                                    <input type="checkbox" class="form-check-input prescription-checkbox"
+                                           value="@item.PrescriptionID" />
+                                </td>
                                 <td>@item.MedicineName</td>
                                 <td>@item.Repeats</td>
                                 <td>@item.RepeatsLeft</td>
