@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Generate Report";
+    Layout = "_CustomerLayout";  // same layout you use on other pages
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm rounded-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Generate Dispensed Prescriptions Report</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="CustomerReport" asp-action="GenerateReport" method="get">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="startDate" class="form-label">Start Date</label>
+                                <input type="date" id="startDate" name="startDate" class="form-control" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="date" id="endDate" name="endDate" class="form-control" required />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="groupBy" class="form-label">Group Records By</label>
+                            <select id="groupBy" name="groupBy" class="form-select">
+                                <option value="Doctor">Doctor</option>
+                                <option value="Medication">Medication</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="material-icons align-middle" style="font-size:18px;">picture_as_pdf</i>
+                                Generate PDF Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-muted text-center" style="font-size: 0.85rem;">
+                    Select the date range and grouping type, then click “Generate PDF Report”
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

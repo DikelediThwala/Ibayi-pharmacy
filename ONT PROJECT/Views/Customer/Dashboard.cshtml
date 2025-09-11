@@ -8,101 +8,122 @@
 
 <h2 class="text-primary">Customer Dashboard</h2>
 <hr style="height: 4px; background-color: #011425; border: none;" />
+
 <div class="container py-4">
-    <div class="container mt-4">
-        <div class="row g-3">
 
-            <style>
-                .info-card {
-                    background-color: #f8f9fa;
-                    padding: 1.5rem;
-                    border-radius: 12px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-                    transition: transform 0.2s;
-                    height: 100%;
-                    text-align: center;
+    <div class="row g-3">
+        <style>
+            .info-card {
+                background-color: #f8f9fa;
+                padding: 1.5rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                transition: transform 0.2s;
+                height: 100%;
+                text-align: center;
+            }
+
+                .info-card:hover {
+                    transform: translateY(-4px);
                 }
 
-                    .info-card:hover {
-                        transform: translateY(-4px);
-                    }
+            .info-icon {
+                font-size: 1.8rem;
+                margin-bottom: 0.5rem;
+            }
 
-                .info-icon {
-                    font-size: 1.8rem;
-                    margin-bottom: 0.5rem;
-                }
+            .info-context {
+                font-size: 0.85rem;
+                color: #6c757d;
+            }
 
-                .info-context {
-                    font-size: 0.85rem;
-                    color: #6c757d;
-                }
+            .bg-soft-primary {
+                background-color: #e3f2fd;
+            }
 
-                .bg-soft-primary {
-                    background-color: #e3f2fd;
-                }
+            .bg-soft-success {
+                background-color: #e6f4ea;
+            }
 
-                .bg-soft-success {
-                    background-color: #e6f4ea;
-                }
+            .bg-soft-info {
+                background-color: #e5f6fd;
+            }
 
-                .bg-soft-info {
-                    background-color: #e5f6fd;
-                }
+            .bg-soft-warning {
+                background-color: #fff4e5;
+            }
+        </style>
 
-                .bg-soft-warning {
-                    background-color: #fff4e5;
-                }
-
-                .bg-soft-secondary {
-                    background-color: #f0f0f0;
-                }
-            </style>
-
-
-            <div class="row gx-3 gy-4">
-                <div class="col-md">
-                    <a asp-controller="Prescription" asp-action="Upload" style="text-decoration: none;">
-                        <div class="info-card bg-soft-primary text-dark">
-                            <div class="info-icon text-primary"><i class="bi bi-capsule-pill"></i></div>
-                            <strong>Prescriptions</strong>
-                            <div class="fs-4 fw-bold">8</div>
-                            <div class="info-context">My Prescriptions</div>
-                        </div>
-                    </a>
+        <div class="col-md">
+            <a asp-controller="Prescription" asp-action="Upload" style="text-decoration: none;">
+                <div class="info-card bg-soft-primary text-dark">
+                    <div class="info-icon text-primary"><i class="bi bi-capsule-pill"></i></div>
+                    <strong>Prescriptions</strong>
+                    <div class="fs-4 fw-bold">8</div>
+                    <div class="info-context">My Prescriptions</div>
                 </div>
+            </a>
+        </div>
 
-                <div class="col-md">
-                    <a asp-controller="Supplier" asp-action="Index" style="text-decoration: none;">
-                        <div class="info-card bg-soft-success text-dark">
-                            <div class="info-icon text-success"><i class="bi bi-truck"></i></div>
-                            <strong>Repeats</strong>
-                            <div class="fs-4 fw-bold">7</div>
-                            <div class="info-context">Total Repeats</div>
-                        </div>
-                    </a>
+        <div class="col-md">
+            <a asp-controller="Supplier" asp-action="Index" style="text-decoration: none;">
+                <div class="info-card bg-soft-success text-dark">
+                    <div class="info-icon text-success"><i class="bi bi-truck"></i></div>
+                    <strong>Repeats</strong>
+                    <div class="fs-4 fw-bold">7</div>
+                    <div class="info-context">Total Repeats</div>
                 </div>
-                <div class="col-md">
-                    <a asp-controller="CustomerPrescriptionLine" asp-action="MyPrescriptionLines" style="text-decoration: none;">
-                        <div class="info-card bg-soft-warning text-dark">
-                            <div class="info-icon text-warning"><i class="bi bi-list-check"></i></div>
-                            <strong>Prescription Lines</strong>
-                            <div class="fs-4 fw-bold">@ViewBag.PrescriptionLineCount</div>
-                            <div class="info-context">Ready to Order</div>
-                        </div>
-                    </a>
-                </div>
+            </a>
+        </div>
 
-                <div class="col-md">
-                    <a asp-controller="CustomerOrder" asp-action="OrderedMedication" style="text-decoration: none;">
-                        <div class="info-card bg-soft-info text-dark">
-                            <div class="info-icon text-info"><i class="bi bi-person-badge"></i></div>
-                            <strong>Orders</strong>
-                            <div class="fs-4 fw-bold">3</div>
-                            <div class="info-context">Orders</div>
-                        </div>
-                    </a>
+        <div class="col-md">
+            <a asp-controller="CustomerPrescriptionLine" asp-action="MyPrescriptionLines" style="text-decoration: none;">
+                <div class="info-card bg-soft-warning text-dark">
+                    <div class="info-icon text-warning"><i class="bi bi-list-check"></i></div>
+                    <strong>Prescription Lines</strong>
+                    <div class="fs-4 fw-bold">@ViewBag.PrescriptionLineCount</div>
+                    <div class="info-context">Ready to Order</div>
                 </div>
-            </div>
+            </a>
+        </div>
+
+        <div class="col-md">
+            <a asp-controller="CustomerOrder" asp-action="OrderedMedication" style="text-decoration: none;">
+                <div class="info-card bg-soft-info text-dark">
+                    <div class="info-icon text-info"><i class="bi bi-person-badge"></i></div>
+                    <strong>Orders</strong>
+                    <div class="fs-4 fw-bold">3</div>
+                    <div class="info-context">Orders</div>
+                </div>
+            </a>
         </div>
     </div>
+
+    <!-- 📝 REPORT GENERATOR CARD -->
+    <div class="card shadow-sm mt-5 p-4">
+        <h4 class="mb-3 text-center text-primary">Generate Dispensed Prescriptions Report</h4>
+        <form asp-controller="Reports" asp-action="CustomerDispensedReport" method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Start Date</label>
+                <input type="date" class="form-control" name="startDate" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">End Date</label>
+                <input type="date" class="form-control" name="endDate" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Group By</label>
+                <select class="form-select" name="groupBy">
+                    <option value="Doctor">Doctor</option>
+                    <option value="Medication">Medication</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Generate PDF
+                </button>
+            </div>
+        </form>
+    </div>
+
 </div>

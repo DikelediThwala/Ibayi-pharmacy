@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -18,39 +16,11 @@ namespace ONT_PROJECT.Controllers
             _context = context;
         }
 
+        // Show prescription lines for the logged-in customer
         public async Task<IActionResult> MyPrescriptionLines()
         {
-            // Get logged-in user Id
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdStr))
-                return Unauthorized();
-
-            int userId = int.Parse(userIdStr);
-
-            // Get the customer for this user
-            var customer = await _context.Customers
-                .Include(c => c.CustomerNavigation) // optional if you need navigation data
-                .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
-
-            if (customer == null)
-                return NotFound();
-
-            // Get all prescription lines for this customer and include the Medicine
-            var lines = await _context.PrescriptionLines
-                .Include(pl => pl.Medicine)        // load Medicine
-                .Include(pl => pl.Prescription)    // load Prescription if needed
-                .Where(pl => pl.Prescription.CustomerId == customer.CustomerId)
-                .ToListAsync();
-
-            return View(lines);
-        }
-
-        // Action to get the number of prescription lines for dashboard
-        public async Task<int> GetPrescriptionLineCount()
-        {
-            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdStr))
-                return 0;
+            if (string.IsNullOrEmpty(userIdStr)) return Unauthorized();
 
             int userId = int.Parse(userIdStr);
 
@@ -58,15 +28,78 @@ namespace ONT_PROJECT.Controllers
                 .Include(c => c.CustomerNavigation)
                 .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
 
-            if (customer == null)
-                return 0;
+            if (customer == null) return NotFound();
 
-            int lineCount = await _context.PrescriptionLines
+            var lines = await _context.PrescriptionLines
+                .Include(pl => pl.Medicine)
                 .Include(pl => pl.Prescription)
                 .Where(pl => pl.Prescription.CustomerId == customer.CustomerId)
-                .CountAsync();
+                .ToListAsync();
 
-            return lineCount;
+            return View(lines);
+        }
+
+        // Place order for selected prescription lines
+        [HttpPost]
+        public async Task<IActionResult> PlaceOrder(int[] selectedLines)
+        {
+            if (selectedLines == null || selectedLines.Length == 0)
+            {
+                TempData["Error"] = "No medications selected.";
+                return RedirectToAction("MyPrescriptionLines");
+            }
+
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int userId = int.Parse(userIdStr);
+
+            var customer = await _context.Customers
+                .Include(c => c.CustomerNavigation)
+                .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
+
+            if (customer == null) return NotFound();
+
+            var order = new Order
+            {
+                CustomerId = customer.CustomerId,
+                Status = "Pending",
+                DatePlaced = DateOnly.FromDateTime(DateTime.Now),
+                TotalDue = 0,
+                Vat = 0,
+                OrderLines = new List<OrderLine>()
+            };
+
+            foreach (var lineId in selectedLines)
+            {
+                var pl = await _context.PrescriptionLines
+                    .Include(p => p.Medicine)
+                    .FirstOrDefaultAsync(x => x.PrescriptionLineId == lineId);
+
+                if (pl != null && pl.Medicine != null)
+                {
+                    double price = pl.Medicine.SalesPrice;
+                    order.OrderLines.Add(new OrderLine
+                    {
+                        LineId = pl.PrescriptionLineId,
+                        MedicineId = pl.MedicineId,
+                        Quantity = pl.Quantity,
+                        Price = price,
+                        LineTotal = price * pl.Quantity,
+                        Status = "Pending"
+                    });
+
+                    order.TotalDue += price * pl.Quantity;
+                }
+            }
+
+            order.Vat = order.TotalDue * 0.15; // 15% VAT
+
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Order placed successfully!";
+
+            // Redirect to the existing OrderedMedication view from CustomerOrderController
+            return RedirectToAction("OrderedMedication", "CustomerOrder");
         }
     }
 }

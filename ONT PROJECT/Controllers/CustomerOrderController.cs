@@ -60,18 +60,9 @@ namespace ONT_PROJECT.Controllers
 
             if (customer == null) return NotFound();
 
-            // Assign a pharmacist dynamically (pick the first available)
-            var pharmacist = await _context.Pharmacists.FirstOrDefaultAsync();
-            if (pharmacist == null)
-            {
-                TempData["Error"] = "No pharmacist available to assign the order.";
-                return RedirectToAction("Order");
-            }
-
             var order = new Order
             {
                 CustomerId = customer.CustomerId,
-                PharmacistId = pharmacist.PharmacistId,
                 Status = "Pending",
                 DatePlaced = DateOnly.FromDateTime(DateTime.Now),
                 TotalDue = 0,
@@ -107,7 +98,9 @@ namespace ONT_PROJECT.Controllers
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
+            // Set TempData for success message
             TempData["Success"] = "Order placed successfully!";
+
             return RedirectToAction("OrderedMedication");
         }
 
@@ -131,5 +124,36 @@ namespace ONT_PROJECT.Controllers
 
             return View(orders);
         }
+
+        // Delete a specific order line
+        [HttpPost]
+        public async Task<IActionResult> DeleteOrder(int orderId)
+        {
+            // Find the order including all its lines
+            var order = await _context.Orders
+                .Include(o => o.OrderLines)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            if (order == null)
+            {
+                TempData["Error"] = "Order not found.";
+                return RedirectToAction("OrderedMedication");
+            }
+
+            // Remove all order lines
+            _context.OrderLines.RemoveRange(order.OrderLines);
+
+            // Remove the order itself
+            _context.Orders.Remove(order);
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Order deleted successfully!";
+            return RedirectToAction("OrderedMedication");
+        }
+
+
     }
+
 }
+

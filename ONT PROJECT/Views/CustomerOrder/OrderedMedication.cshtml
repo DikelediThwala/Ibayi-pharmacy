@@ -84,23 +84,34 @@
                 <div class="card-header-order">
                     <span>Order #@order.OrderId - @order.DatePlaced.ToString("yyyy-MM-dd")</span>
                     <span>Status: <b>@order.Status</b></span>
-                    <span class="toggle-btn ms-3" data-target="#orderLines-@order.OrderId">Show Order</span>
+
+                    <div>
+                        <span class="toggle-btn me-2" data-target="#orderLines-@order.OrderId">Show Order</span>
+
+                        <!-- Delete Order Button -->
+                        <form asp-action="DeleteOrder" asp-controller="CustomerOrder" method="post" class="d-inline">
+                            <input type="hidden" name="orderId" value="@order.OrderId" />
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this order?');">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
                 <div id="orderLines-@order.OrderId" style="display:none; margin-top:10px;">
                     @foreach (var line in order.OrderLines)
                     {
                         <div class="order-line-card">
-                            <div class="order-line-header">@line.Medicine.MedicineName</div>
+                            <div class="order-line-header">@line.Medicine?.MedicineName</div>
                             <div>Quantity: @line.Quantity</div>
-                            <div>Price: R@line.Price.ToString("0.00")</div>
-                            <div>Line Total: R@line.LineTotal.ToString("0.00")</div>
+                            <div>Price: @($"R{line.Price:0.00}")</div>
+                            <div>Line Total: @($"R{line.LineTotal:0.00}")</div>
                         </div>
                     }
 
                     <div class="order-total">
-                        Total: R@(order.TotalDue.ToString("0.00")) |
-                        VAT (15%): R@(order.Vat.ToString("0.00"))
+                        Total: @($"R{order.TotalDue:0.00}") |
+                        VAT (15%): @($"R{order.Vat:0.00}")
                     </div>
                 </div>
             </div>
@@ -108,13 +119,26 @@
     }
 </div>
 
+<!-- Success Toast -->
+@if (TempData["Success"] != null)
+{
+    <div id="orderSuccessToast" class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="material-icons">&#xE876;</i> @TempData["Success"]
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+}
+
 <script>
     $(document).ready(function () {
         $('.toggle-btn').click(function () {
             var targetId = $(this).data('target');
             var target = $(targetId);
 
-            target.slideToggle(); // smooth toggle
+            target.slideToggle();
 
             if (target.is(':visible')) {
                 $(this).text('Hide Order');
@@ -122,5 +146,12 @@
                 $(this).text('Show Order');
             }
         });
+
+        // Show toast if success message exists
+        var toastEl = document.getElementById('orderSuccessToast');
+        if (toastEl) {
+            var toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            toast.show();
+        }
     });
 </script>
