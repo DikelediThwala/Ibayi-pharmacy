@@ -19,6 +19,8 @@ namespace IBayiLibrary.Models.Domain
         public int PrescriptionID { get; set; }
         public int UnprocessedPrescriptionID { get; set; }
         public string Instructions { get; set; }
+        public string IDNumber { get; set; }
+        public string LastName { get; set; }
         public int Quantity { get; set; }
         public int Repeats { get; set; }
         public int RepeatsLeft { get; set; }

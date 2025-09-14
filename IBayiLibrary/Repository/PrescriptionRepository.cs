@@ -33,7 +33,7 @@ namespace IBayiLibrary.Repository
         {
             try
             {
-                await _db.SaveData("spInsertPrescription", new { prescription.CustomerID, prescription.PharmacistID, prescription.PrescriptionPhoto, prescription.DoctorID, prescription.Date });
+                await _db.SaveData("spInsertPrescription", new { prescription.CustomerID, prescription.PharmacistID, prescription.PrescriptionPhoto, prescription.DoctorID,prescription.Status, prescription.Date });
                 return true;
             }
 
@@ -140,6 +140,16 @@ namespace IBayiLibrary.Repository
                 query,
                 new { PrescriptionID = prescriptionId }
             );
+            return result.FirstOrDefault();
+        }
+        public async Task<IEnumerable<PrescriptionViewModel>> SearchCustomer(string searchTerm)
+        {
+            string query = "spSearchCustomer";
+            return await _db.GetData<PrescriptionViewModel, dynamic>(query, new { SearchTerm = searchTerm });
+        }
+        public async Task<PrescriptionViewModel> SelectCustomerName(int userID)
+        {
+            IEnumerable<PrescriptionViewModel> result = await _db.GetData<PrescriptionViewModel, dynamic>("spSelectCustomerName", new { UserID = userID });
             return result.FirstOrDefault();
         }
     }

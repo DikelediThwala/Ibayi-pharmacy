@@ -18,11 +18,12 @@ namespace IBayiLibrary.Repository
         Task<IEnumerable<PrescriptionLines>> GetLastPrescriptioRow();
         Task<IEnumerable<PrescriptionModel>> GetLastPrescriptions();
         Task<tblUser> GetCustomerByIDs(int UserID);
+        Task<PrescriptionViewModel> SelectCustomerName(int userID);
         Task<PrescriptionViewModel> GetPrescriptionByID(int id);
         Task<bool> UpdatePrescription(Prescriptions prescriptions);
         Task<bool> UpdateDispnse(PrescriptionModel prescriptions);
         Task<Prescriptions> FindPrescription(int PrescriptionID);
         Task<PrescriptionModel> GetDispenseById(int prescriptionId);
-
+        Task<IEnumerable<PrescriptionViewModel>> SearchCustomer(string searchTerm);
     }
 }
