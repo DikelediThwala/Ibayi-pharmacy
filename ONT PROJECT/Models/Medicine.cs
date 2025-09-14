@@ -15,13 +15,13 @@ public partial class Medicine
 
     public double SalesPrice { get; set; }
 
-    public int SupplierId { get; set; }
+    [Required(ErrorMessage = "The Supplier field is required.")]
+    public int? SupplierId { get; set; }
 
     public int ReorderLevel { get; set; }
 
     public int Quantity { get; set; }
     public string Status { get; set; } = "Active";
-
 
     [Required(ErrorMessage = "Please select a Form.")]
     public int? FormId { get; set; }
@@ -34,6 +34,6 @@ public partial class Medicine
     public virtual ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
 
     public virtual ICollection<PrescriptionLine> PrescriptionLines { get; set; } = new List<PrescriptionLine>();
-    public virtual Supplier Supplier { get; set; } = null!;
+    //public virtual Supplier Supplier { get; set; } = null!;
 
 }

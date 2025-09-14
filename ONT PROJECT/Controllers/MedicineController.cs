@@ -116,13 +116,19 @@ namespace ONT_PROJECT.Controllers
                               "FormId",
                               "FormName"
                           );
+
             ViewBag.Suppliers = _context.Suppliers
-                .OrderBy(s => s.Name) 
-                .Select(s => new SelectListItem
-                {
-                    Value = s.SupplierId.ToString(),
-                    Text = s.Name
-                }).ToList();
+     .Where(s => s.Status == "Active")
+     .OrderBy(s => s.Name)
+     .Select(s => new SelectListItem
+     {
+         Value = s.SupplierId.ToString(),
+         Text = s.Name,
+         Selected = s.SupplierId == medicine.SupplierId
+     }).ToList();
+
+
+
 
             ViewBag.Ingredients = _context.ActiveIngredient
                  .OrderBy(i => i.Ingredients)

@@ -6,10 +6,13 @@
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
 
 <style>
     body {
         background-color: #f5f7fa;
+        font-family: 'Inter', sans-serif;
     }
 
     h2.dashboard-header {
@@ -26,47 +29,7 @@
         margin-bottom: 30px;
     }
 
-    /* Keep your counting cards as-is */
-    .info-card {
-        background-color: #fff;
-        padding: 1.5rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        transition: transform 0.2s;
-        text-align: center;
-        height: 100%;
-    }
-
-        .info-card:hover {
-            transform: translateY(-4px);
-        }
-
-    .info-icon {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .info-context {
-        font-size: 0.85rem;
-        color: #6c757d;
-    }
-
-    .bg-soft-primary {
-        background-color: #e3f2fd;
-    }
-
-    .bg-soft-success {
-        background-color: #e6f4ea;
-    }
-
-    .bg-soft-info {
-        background-color: #e5f6fd;
-    }
-
-    .bg-soft-warning {
-        background-color: #fff4e5;
-    }
-
+    /* Section titles */
     .dashboard-section-title {
         font-size: 1.25rem;
         font-weight: 700;
@@ -86,15 +49,91 @@
             color: #6c5ce7;
         }
 
+    /* Unified card style */
+    .dashboard-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        height: 150px;
+        text-align: center;
+        font-weight: 600;
+        color: #011425;
+    }
+
+        .dashboard-card i {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+    /* Background colors for count cards */
+    .bg-soft-primary {
+        background-color: #e3f2fd;
+    }
+
+    .bg-soft-success {
+        background-color: #e6f4ea;
+    }
+
+    .bg-soft-info {
+        background-color: #e5f6fd;
+    }
+
+    .bg-soft-warning {
+        background-color: #fff4e5;
+    }
+
+    .dashboard-card .fs-4 {
+        margin: 6px 0;
+    }
+
+    /* Quick action cards */
+    .quick-action-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+        transition: all 0.2s ease-in-out;
+        height: 110px;
+        text-align: center;
+        font-weight: 600;
+        color: #011425;
+    }
+
+        .quick-action-card i {
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+        }
+
+        .quick-action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+            background: #f9f9f9;
+        }
+
+    /* Table wrapper */
     .table-wrapper {
         overflow-x: auto;
-        max-height: 320px;
+        ax-height: 5200px;
     }
 
     table.table {
         width: 100%;
         border-collapse: separate;
-        border-spacing: 0 8px; /* space between rows for a card-like look */
+        border-spacing: 0 8px;
     }
 
         table.table thead th {
@@ -112,7 +151,6 @@
             transition: transform 0.2s, box-shadow 0.2s;
             border-radius: 8px;
             margin-bottom: 6px;
-            display: table-row;
         }
 
             table.table tbody tr:hover {
@@ -160,102 +198,139 @@
         color: #636e72;
     }
 
+    /* Recent activities table */
     .activity-table td {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-size: 0.9rem;
-        color: #011425; /* main dark color */
+        color: #011425;
     }
-
-
-        .activity-table td .activity-desc {
-            color: #6c5ce7;
-            /* purple for activity type */
-            /* darker gray for description */
-        }
-
-        .activity-table td .activity-date {
-            font-size: 0.8rem;
-            color: #636e72; /* muted gray for date */
-            text-align: right;
-        }
 
         .activity-table td .activity-desc {
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #6c5ce7; /* nice purple for description */
+            color: #6c5ce7;
             font-weight: 500;
             font-size: 0.95rem;
             font-style: italic;
         }
 
-        
-
         .activity-table td .activity-date {
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: 0.85rem;
-            color: #636e72; /* muted gray for date */
+            color: #636e72;
             text-align: right;
         }
-
-  </style>
+</style>
 
 <h2 class="dashboard-header">Pharmacy Manager Dashboard</h2>
 <hr class="dashboard-separator" />
 
 <div class="container py-3">
-    <!-- Info Cards Row (keep your styling) -->
-    <div class="row gx-3 gy-3 dashboard-cards">
+    <!-- Counts Section -->
+    <div class="row gx-3 gy-3 mb-4">
         <div class="col-md-3">
-            <a asp-controller="Medicine" asp-action="Index" style="text-decoration:none;">
-                <div class="info-card bg-soft-primary text-dark">
-                    <div class="info-icon text-primary"><i class="bi bi-capsule-pill"></i></div>
-                    <strong>Total Medications</strong>
-                    <div class="fs-4 fw-bold">8</div>
-                    <div class="info-context">Active medicines in stock</div>
+            <a asp-controller="Medicine" asp-action="Index" class="text-decoration-none">
+                <div class="dashboard-card bg-soft-primary">
+                    <i class="bi bi-capsule-pill text-primary"></i>
+                    <div class="fs-4 fw-bold">@Model.TotalMedicines</div>
+                    <span>Active Medications</span>
                 </div>
             </a>
         </div>
-
         <div class="col-md-3">
-            <a asp-controller="Supplier" asp-action="Index" style="text-decoration:none;">
-                <div class="info-card bg-soft-success text-dark">
-                    <div class="info-icon text-success"><i class="bi bi-truck"></i></div>
-                    <strong>Suppliers</strong>
-                    <div class="fs-4 fw-bold">7</div>
-                    <div class="info-context">Partners delivering stock</div>
+            <a asp-controller="Supplier" asp-action="Index" class="text-decoration-none">
+                <div class="dashboard-card bg-soft-success">
+                    <i class="bi bi-truck text-success"></i>
+                    <div class="fs-4 fw-bold">@Model.TotalSuppliers</div>
+                    <span>Active Suppliers</span>
                 </div>
             </a>
         </div>
-
         <div class="col-md-3">
-            <a asp-controller="User" asp-action="Index" style="text-decoration:none;">
-                <div class="info-card bg-soft-info text-dark">
-                    <div class="info-icon text-info"><i class="bi bi-person-badge"></i></div>
-                    <strong>Pharmacists</strong>
-                    <div class="fs-4 fw-bold">3</div>
-                    <div class="info-context">Registered system pharmacists</div>
+            <a asp-controller="User" asp-action="Index" class="text-decoration-none">
+                <div class="dashboard-card bg-soft-info">
+                    <i class="bi bi-person-badge text-info"></i>
+                    <div class="fs-4 fw-bold">@Model.TotalPharmacists</div>
+                    <span>Active Pharmacists</span>
                 </div>
             </a>
         </div>
-
         <div class="col-md-3">
-            <a asp-controller="Doctor" asp-action="Index" style="text-decoration:none;">
-                <div class="info-card bg-soft-warning text-dark">
-                    <div class="info-icon text-warning"><i class="bi bi-stethoscope"></i></div>
-                    <strong>Doctors</strong>
-                    <div class="fs-4 fw-bold">4</div>
-                    <div class="info-context">Doctors with prescription rights</div>
+            <a asp-controller="Doctor" asp-action="Index" class="text-decoration-none">
+                <div class="dashboard-card bg-soft-warning">
+                    <i class="fas fa-stethoscope text-warning"></i>
+                    <div class="fs-4 fw-bold">@Model.TotalDoctors</div>
+                    <span>Active Doctors</span>
                 </div>
             </a>
         </div>
     </div>
 
 
-
     <!-- Dashboard Sections Row -->
     <div class="row gx-4 gy-4 mt-4">
-
+        <!-- Quick Actions (Left side, wide) -->
         <div class="col-lg-8">
-            <div class="card p-3" style="height: 100%;">
+           
+            <div class="row gx-3 gy-3">
+                <div class="dashboard-section-title">
+                    <i class="fas fa-bolt"></i> Quick Actions
+                </div>
+                <!-- Existing 4 Quick Actions -->
+                <div class="col-md-3">
+                    <a asp-controller="Medicine" asp-action="Create" class="quick-action-card text-decoration-none">
+                        <i class="bi bi-capsule text-primary"></i>
+                        <span>Add Medicine</span>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a asp-controller="Supplier" asp-action="Create" class="quick-action-card text-decoration-none">
+                        <i class="bi bi-building text-success"></i>
+                        <span>Add Supplier</span>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a asp-controller="BOrder" asp-action="Create" class="quick-action-card text-decoration-none">
+                        <i class="bi bi-cart-plus text-warning"></i>
+                        <span>Order Medication</span>
+                    </a>
+                </div>
+                <!-- NEW 4 Quick Actions -->
+                <div class="col-md-3">
+                    <a asp-controller="User" asp-action="Create" class="quick-action-card text-decoration-none">
+                        <i class="bi bi-person-plus text-info"></i>
+                        <span>Add Pharmacist</span>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a asp-controller="DosageForm" asp-action="Create" class="quick-action-card text-decoration-none">
+                        <i class="bi bi-journal-medical text-primary"></i>
+                        <span>Add Dosage Form</span>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a asp-controller="ActiveIngredient" asp-action="Create" class="quick-action-card text-decoration-none">
+                        <i class="bi bi-box-seam text-success"></i>
+                        <span>Add Ingredient</span>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a asp-controller="Doctor" asp-action="Create" class="quick-action-card text-decoration-none">
+                        <i class="bi bi-person-plus text-warning"></i>
+                        <span>Add Doctor</span>
+                    </a>
+                </div>
+
+                <div class="col-md-3">
+                    <a asp-controller="ManagerReport" asp-action="Index" class="quick-action-card text-decoration-none">
+                        <i class="bi bi-file-earmark-pdf text-danger"></i>
+                        <span>Generate Report</span>
+                    </a>
+                </div>
+            </div>
+
+
+            <!-- Recent Orders (below Quick Actions, same column) -->
+            <div class="card p-3 mt-4 ">
                 <div class="dashboard-section-title"><i class="fas fa-clipboard-list"></i> Recent Orders</div>
                 <div class="d-flex justify-content-end mb-2">
                     <select id="statusFilter" class="form-select form-select-sm w-auto" onchange="filterOrdersByStatus()">
@@ -302,19 +377,16 @@
                                     </td>
                                 </tr>
                             }
-
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Activities (Tall) -->
+        <!-- Recent Activities (Right side, full height) -->
         <div class="col-lg-4">
-
-            <div class="card" style="height: 100%;">
+            <div class="card h-100">
                 <div class="dashboard-section-title"><i class="fas fa-history"></i> Recent Activities</div>
-
                 <div class="table-wrapper">
                     <table class="table table-borderless mb-0 activity-table">
                         <tbody>
@@ -323,9 +395,7 @@
                                 @foreach (var activity in Model.RecentActivities)
                                 {
                                     <tr>
-                                        <td>
-                                            <span class="activity-desc">@activity.Description</span>
-                                        </td>
+                                        <td><span class="activity-desc">@activity.Description</span></td>
                                         <td class="activity-date">@activity.DatePerformed.ToString("dd/MM/yyyy HH:mm")</td>
                                     </tr>
                                 }
@@ -338,13 +408,11 @@
                             }
                         </tbody>
                     </table>
-
                 </div>
-
             </div>
-       
         </div>
     </div>
+
 </div>
 
 @section Scripts {
@@ -352,7 +420,6 @@
         function filterOrdersByStatus() {
             const filterValue = document.getElementById('statusFilter').value;
             const rows = document.querySelectorAll('table tbody tr');
-
             rows.forEach(row => {
                 const status = row.getAttribute('data-status');
                 row.style.display = (!filterValue || status === filterValue) ? '' : 'none';

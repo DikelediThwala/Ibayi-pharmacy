@@ -45,13 +45,17 @@ namespace ONT_PROJECT.Controllers
         {
             return _context.ActivityLogs
                 .OrderByDescending(a => a.DatePerformed)
-                .Take(5)
+                .Take(7)
                 .ToList();
         }
 
         private int GetTotalMedicines() => _context.Medicines.Count(m => m.Status == "Active");
         private int GetTotalSuppliers() => _context.Suppliers.Count(s => s.Status == "Active");
-        private int GetTotalPharmacists() => _context.TblUsers.Count(u => u.Role == "Pharmacist");
-        private int GetTotalDoctors() => _context.Doctors.Count();
+        private int GetTotalPharmacists()
+        {
+            int varOcg = _context.TblUsers.Count(u => u.Role == "Pharmacist" && u.Status == "Active");
+            return varOcg;
+        }
+        private int GetTotalDoctors() => _context.Doctors.Count(d=> d.Status == "Active");
     }
 }
