@@ -25,16 +25,25 @@ namespace ONT_PROJECT.Controllers
 
             int userId = int.Parse(userIdStr);
 
+            // Get customer including allergies
             var customer = await _context.Customers
                 .Include(c => c.CustomerNavigation)
+                .Include(c => c.CustomerAllergies)
+                    .ThenInclude(ca => ca.ActiveIngredient)
                 .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
 
             if (customer == null)
                 return NotFound();
 
+            // Get prescription lines including medicine ingredients and active ingredients
             var lines = await _context.PrescriptionLines
                 .Include(pl => pl.Medicine)
+                    .ThenInclude(m => m.MedIngredients)
+                        .ThenInclude(mi => mi.ActiveIngredient)
                 .Include(pl => pl.Prescription)
+                    .ThenInclude(p => p.Customer)
+                        .ThenInclude(c => c.CustomerAllergies)
+                            .ThenInclude(ca => ca.ActiveIngredient)
                 .Where(pl => pl.Prescription.CustomerId == customer.CustomerId)
                 .ToListAsync();
 
@@ -55,13 +64,42 @@ namespace ONT_PROJECT.Controllers
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             int userId = int.Parse(userIdStr);
 
+            // Get customer with allergies
             var customer = await _context.Customers
                 .Include(c => c.CustomerNavigation)
+                .Include(c => c.CustomerAllergies)
+                    .ThenInclude(ca => ca.ActiveIngredient)
                 .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
 
             if (customer == null)
                 return NotFound();
 
+            // Get all selected prescription lines with medicines and ingredients
+            var lines = await _context.PrescriptionLines
+                .Include(pl => pl.Medicine)
+                    .ThenInclude(m => m.MedIngredients)
+                        .ThenInclude(mi => mi.ActiveIngredient)
+                .Where(pl => selectedLines.Contains(pl.PrescriptionLineId))
+                .ToListAsync();
+
+            // Check for allergy conflicts
+            foreach (var line in lines)
+            {
+                var medicineIngredients = line.Medicine.MedIngredients
+                    .Select(mi => mi.ActiveIngredient.Ingredients)
+                    .ToList();
+
+                var allergyConflict = customer.CustomerAllergies
+                    .Any(ca => medicineIngredients.Contains(ca.ActiveIngredient.Ingredients));
+
+                if (allergyConflict)
+                {
+                    TempData["ErrorMessage"] = $"Cannot order {line.Medicine.MedicineName}. It contains ingredients you are allergic to.";
+                    return RedirectToAction("MyPrescriptionLines");
+                }
+            }
+
+            // Create order
             var order = new Order
             {
                 CustomerId = customer.CustomerId,
@@ -72,27 +110,20 @@ namespace ONT_PROJECT.Controllers
                 OrderLines = new List<OrderLine>()
             };
 
-            foreach (var lineId in selectedLines)
+            foreach (var line in lines)
             {
-                var pl = await _context.PrescriptionLines
-                    .Include(p => p.Medicine)
-                    .FirstOrDefaultAsync(x => x.PrescriptionLineId == lineId);
-
-                if (pl != null && pl.Medicine != null)
+                double price = line.Medicine.SalesPrice;
+                order.OrderLines.Add(new OrderLine
                 {
-                    double price = pl.Medicine.SalesPrice;
-                    order.OrderLines.Add(new OrderLine
-                    {
-                        LineId = pl.PrescriptionLineId,
-                        MedicineId = pl.MedicineId,
-                        Quantity = pl.Quantity,
-                        Price = price,
-                        LineTotal = price * pl.Quantity,
-                        Status = "Pending"
-                    });
+                    LineId = line.PrescriptionLineId,
+                    MedicineId = line.MedicineId,
+                    Quantity = line.Quantity,
+                    Price = price,
+                    LineTotal = price * line.Quantity,
+                    Status = "Pending"
+                });
 
-                    order.TotalDue += price * pl.Quantity;
-                }
+                order.TotalDue += price * line.Quantity;
             }
 
             order.Vat = order.TotalDue * 0.15; // 15% VAT
@@ -101,8 +132,6 @@ namespace ONT_PROJECT.Controllers
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Order placed successfully!";
-
-            // Redirect to the OrderedMedication view in CustomerOrderController
             return RedirectToAction("OrderedMedication", "CustomerOrder");
         }
     }
