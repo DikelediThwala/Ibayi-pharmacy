@@ -5,80 +5,12 @@
     Layout = "~/Views/Shared/_CustomerLayout.cshtml";
 }
 
-<div class="container-xl mt-4">
-    <div class="table-wrapper shadow-sm">
-        <div class="table-title d-flex justify-content-between align-items-center">
-            <h2><i class="material-icons me-2">&#xE863;</i> Collected <b>Medications</b></h2>
-        </div>
-
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert alert-danger mt-2">@TempData["ErrorMessage"]</div>
-        }
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div class="alert alert-success mt-2">@TempData["SuccessMessage"]</div>
-        }
-
-        @if (Model == null || !Model.Any())
-        {
-            <div class="alert alert-info mt-3 text-center">No collected medications found.</div>
-        }
-        else
-        {
-            <form asp-controller="CustomerPrescriptionLine" asp-action="PlaceOrder" method="post" id="collectedMedForm">
-                @Html.AntiForgeryToken()
-
-                <div class="table-responsive mt-3">
-                    <table class="table table-striped table-hover align-middle">
-                        <thead class="table-primary">
-                            <tr>
-                                <th><input type="checkbox" id="selectAll" title="Select All" /></th>
-                                <th>Medication</th>
-                                <th>Instructions / Dosage</th>
-                                <th>Quantity</th>
-                                <th>Total Repeats</th>
-                                <th>Repeats Left</th>
-                                <th>Repeat Request</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var line in Model)
-                            {
-                                var rowClass = line.RepeatsLeft == 0 ? "table-danger" : "";
-                                <tr class="@rowClass">
-                                    <td class="text-center">
-                                        <input type="checkbox" name="selectedLines" value="@line.PrescriptionLineId" class="line-checkbox" @(line.RepeatsLeft == 0 ? "disabled" : "") />
-                                    </td>
-                                    <td>@(line.Medicine?.MedicineName ?? "Unknown Medicine")</td>
-                                    <td>@line.Instructions</td>
-                                    <td>@line.Quantity</td>
-                                    <td class="text-center">@line.Repeats</td>
-                                    <td class="text-center">@line.RepeatsLeft</td>
-                                    <td class="text-center">
-                                        @if (line.RepeatsLeft > 0)
-                                        {
-                                            <a asp-controller="RepeatRequest" asp-action="RequestRepeat" asp-route-PrescriptionLineId="@line.PrescriptionLineId"
-                                               class="btn btn-warning btn-sm" title="Request Repeat">
-                                                <i class="material-icons">&#xE863;</i>
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">No repeats left</span>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                <button type="submit" class="btn btn-success mt-2">Place Order</button>
-            </form>
-        }
-    </div>
-</div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <style>
     body {
@@ -92,9 +24,9 @@
         min-width: 900px;
         background: #fff;
         padding: 20px 25px;
-        border-radius: 0.5rem;
+        border-radius: 3px;
         box-shadow: 0 1px 1px rgba(0,0,0,.05);
-        margin-top: 20px;
+        margin-top: 30px;
     }
 
     .table-title {
@@ -103,43 +35,120 @@
         padding: 16px 25px;
         margin: -20px -25px 10px;
         border-radius: 3px 3px 0 0;
-        font-size: 1.25rem;
-        font-weight: 500;
     }
 
-    .table td, .table th {
-        text-align: center;
+        .table-title h2 {
+            margin: 5px 0 0;
+            font-size: 24px;
+        }
+
+    table.table tr th, table.table tr td {
+        border-color: #e9e9e9;
+        padding: 12px 15px;
         vertical-align: middle;
+        text-align: center;
     }
 
-    .table-striped tbody tr:nth-of-type(odd) {
+    table.table-striped tbody tr:nth-of-type(odd) {
         background-color: #fff;
     }
 
-    .table-hover tbody tr:hover {
-        background-color: #f5f5f5;
-    }
-
-    .table-danger {
-        background-color: #f8d7da !important;
-    }
-
-    .btn-sm i {
-        margin-right: 5px;
+    table.table-striped.table-hover tbody tr:hover {
+        background: #f5f5f5;
     }
 </style>
 
+<div class="container-xl">
+    <div class="table-wrapper">
+        <div class="table-title">
+            <h2>Collected <b>Medications</b></h2>
+        </div>
+
+        @Html.AntiForgeryToken() <!-- Needed for AJAX token -->
+        @if (!Model.Any())
+        {
+            <p class="text-muted">No collected medications found.</p>
+        }
+        else
+        {
+            <table class="table table-striped table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Medication</th>
+                        <th>Instructions</th>
+                        <th>Quantity</th>
+                        <th>Repeats Left</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var line in Model)
+                    {
+                        <tr>
+                            <td>@(line.Medicine?.MedicineName ?? "Unknown")</td>
+                            <td>@line.Instructions</td>
+                            <td>@line.Quantity</td>
+                            <td class="repeats-left">@line.RepeatsLeft</td>
+                            <td>
+                                @if (line.RepeatsLeft > 0)
+                                {
+                                    <button type="button"
+                                            class="btn btn-warning btn-sm request-repeat-btn"
+                                            data-line-id="@line.PrescriptionLineId">
+                                        <i class="material-icons">&#xE863;</i> Request
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No repeats left</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
 <script>
     $(document).ready(function () {
-        $('#selectAll').click(function () {
-            $('.line-checkbox').not(':disabled').prop('checked', this.checked);
-        });
+        $('.request-repeat-btn').click(function () {
+            var btn = $(this);
+            var lineId = btn.data('line-id');
 
-        $('#collectedMedForm').on('submit', function (e) {
-            if ($('.line-checkbox:checked').not(':disabled').length === 0) {
-                e.preventDefault();
-                alert('No medication selected. Please select at least one before placing an order.');
-            }
+            btn.prop('disabled', true).text('Requesting...');
+
+            $.ajax({
+                url: '@Url.Action("AjaxRequestRepeat", "RepeatRequest")',
+                type: 'POST',
+                data: {
+                    prescriptionLineId: lineId,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (resp) {
+                    if (resp.success) {
+                        // Update RepeatsLeft cell in table
+                        var repeatsCell = btn.closest('tr').find('.repeats-left');
+                        repeatsCell.text(resp.repeatsLeft);
+
+                        if (resp.repeatsLeft <= 0) {
+                            btn.closest('td').html('<span class="text-muted">No repeats left</span>');
+                        } else {
+                            btn.prop('disabled', false).html('<i class="material-icons">&#xE863;</i> Request');
+                        }
+
+                        alert(resp.message);
+                    } else {
+                        alert(resp.message);
+                        btn.prop('disabled', false).html('<i class="material-icons">&#xE863;</i> Request');
+                    }
+                },
+                error: function () {
+                    alert('Something went wrong.');
+                    btn.prop('disabled', false).html('<i class="material-icons">&#xE863;</i> Request');
+                }
+            });
         });
     });
 </script>

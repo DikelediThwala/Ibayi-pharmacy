@@ -32,7 +32,6 @@ namespace ONT_PROJECT.Controllers
             if (customer == null)
                 return NotFound();
 
-            // Fetch prescription lines safely with null check
             var collectedLines = await _context.PrescriptionLines
                 .Include(pl => pl.Medicine)
                 .Include(pl => pl.Prescription)
@@ -44,12 +43,15 @@ namespace ONT_PROJECT.Controllers
             return View(collectedLines);
         }
 
-        // Request a repeat
+        // AJAX repeat request endpoint
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RequestRepeat(int prescriptionLineId)
+        public async Task<IActionResult> AjaxRequestRepeat(int prescriptionLineId)
         {
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdStr))
+                return Json(new { success = false, message = "User not logged in." });
+
             int userId = int.Parse(userIdStr);
 
             var customer = await _context.Customers
@@ -57,7 +59,7 @@ namespace ONT_PROJECT.Controllers
                 .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
 
             if (customer == null)
-                return NotFound();
+                return Json(new { success = false, message = "Customer not found." });
 
             var line = await _context.PrescriptionLines
                 .Include(pl => pl.Medicine)
@@ -65,21 +67,15 @@ namespace ONT_PROJECT.Controllers
                 .FirstOrDefaultAsync(pl => pl.PrescriptionLineId == prescriptionLineId);
 
             if (line == null)
-            {
-                TempData["ErrorMessage"] = "Prescription line not found.";
-                return RedirectToAction("CollectedMedications");
-            }
+                return Json(new { success = false, message = "Prescription line not found." });
 
             if (line.RepeatsLeft <= 0)
-            {
-                TempData["ErrorMessage"] = $"No repeats left for {line.Medicine?.MedicineName ?? "Unknown Medication"}.";
-                return RedirectToAction("CollectedMedications");
-            }
+                return Json(new { success = false, message = $"No repeats left for {line.Medicine?.MedicineName ?? "Unknown Medication"}." });
 
             // Decrement repeats
             line.RepeatsLeft -= 1;
 
-            // Optional: create repeat record if you want to track requests
+            // Optional: create repeat request record
             var repeatRequest = new RepeatRequest
             {
                 PrescriptionLineId = line.PrescriptionLineId,
@@ -90,8 +86,12 @@ namespace ONT_PROJECT.Controllers
             _context.RepeatRequests.Add(repeatRequest);
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = $"Repeat requested for {line.Medicine?.MedicineName ?? "Unknown Medication"}.";
-            return RedirectToAction("CollectedMedications");
+            return Json(new
+            {
+                success = true,
+                message = $"Repeat requested for {line.Medicine?.MedicineName ?? "Unknown Medication"}.",
+                repeatsLeft = line.RepeatsLeft
+            });
         }
     }
 }
