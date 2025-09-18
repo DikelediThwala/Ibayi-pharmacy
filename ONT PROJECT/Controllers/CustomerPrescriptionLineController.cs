@@ -20,7 +20,8 @@ namespace ONT_PROJECT.Controllers
         public async Task<IActionResult> MyPrescriptionLines()
         {
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdStr)) return Unauthorized();
+            if (string.IsNullOrEmpty(userIdStr))
+                return Unauthorized();
 
             int userId = int.Parse(userIdStr);
 
@@ -28,7 +29,8 @@ namespace ONT_PROJECT.Controllers
                 .Include(c => c.CustomerNavigation)
                 .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
 
-            if (customer == null) return NotFound();
+            if (customer == null)
+                return NotFound();
 
             var lines = await _context.PrescriptionLines
                 .Include(pl => pl.Medicine)
@@ -41,11 +43,12 @@ namespace ONT_PROJECT.Controllers
 
         // Place order for selected prescription lines
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> PlaceOrder(int[] selectedLines)
         {
             if (selectedLines == null || selectedLines.Length == 0)
             {
-                TempData["Error"] = "No medications selected.";
+                TempData["ErrorMessage"] = "No medications selected. Please select at least one.";
                 return RedirectToAction("MyPrescriptionLines");
             }
 
@@ -56,7 +59,8 @@ namespace ONT_PROJECT.Controllers
                 .Include(c => c.CustomerNavigation)
                 .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
 
-            if (customer == null) return NotFound();
+            if (customer == null)
+                return NotFound();
 
             var order = new Order
             {
@@ -96,9 +100,9 @@ namespace ONT_PROJECT.Controllers
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Order placed successfully!";
+            TempData["SuccessMessage"] = "Order placed successfully!";
 
-            // Redirect to the existing OrderedMedication view from CustomerOrderController
+            // Redirect to the OrderedMedication view in CustomerOrderController
             return RedirectToAction("OrderedMedication", "CustomerOrder");
         }
     }
