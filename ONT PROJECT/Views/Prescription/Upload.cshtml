@@ -94,6 +94,18 @@
         table.table td a:hover {
             color: #2196F3;
         }
+
+    /* Solid red delete button */
+    .btn-danger {
+        color: #fff;
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
 </style>
 
 <div class="container mt-5">
@@ -185,7 +197,7 @@
 
                                         <form asp-action="Delete" asp-route-id="@p.UnprocessedPrescriptionId" method="post" class="d-inline"
                                               onsubmit="return confirm('Are you sure you want to DELETE this prescription?');">
-                                            <button class="btn btn-outline-danger btn-sm" title="Delete">
+                                            <button class="btn btn-danger btn-sm" title="Delete">
                                                 <i class="material-icons">&#xE872;</i>
                                             </button>
                                         </form>
@@ -240,9 +252,7 @@
     </div>
 </div>
 
-<!-- Scripts -->
 <script>
-    // PDF preview for upload
     document.addEventListener("DOMContentLoaded", function () {
         const input = document.getElementById("PrescriptionFile");
         const iframe = document.getElementById("pdfPreview");
@@ -277,3 +287,13 @@
         });
     });
 </script>
+
+<!-- Success popup -->
+@if (TempData["UploadSuccess"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            alert("Uploaded successfully!");
+        });
+    </script>
+}

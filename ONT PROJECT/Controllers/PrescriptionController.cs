@@ -42,7 +42,6 @@ public class PrescriptionController : Controller
             using var memoryStream = new MemoryStream();
             await PrescriptionFile.CopyToAsync(memoryStream);
 
-            // FIX: check if the form values contain "true"
             bool isRequested = Request.Form["RequestDispense"].ToString().Contains("true");
 
             var prescription = new UnprocessedPrescription
@@ -56,11 +55,13 @@ public class PrescriptionController : Controller
 
             _context.UnprocessedPrescriptions.Add(prescription);
             await _context.SaveChangesAsync();
+
+            // ✅ Set TempData flag to show success message
+            TempData["UploadSuccess"] = true;
         }
 
         return RedirectToAction("Upload");
     }
-
 
     [HttpPost]
     public async Task<IActionResult> RequestDispenseAction(int id)
@@ -89,6 +90,7 @@ public class PrescriptionController : Controller
 
         return RedirectToAction("Upload");
     }
+
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
@@ -122,7 +124,6 @@ public class PrescriptionController : Controller
         return RedirectToAction("Upload");
     }
 
-
     public async Task<IActionResult> ViewPdf(int id)
     {
         var prescription = await _context.UnprocessedPrescriptions.FindAsync(id);
@@ -134,10 +135,8 @@ public class PrescriptionController : Controller
         return File(prescription.PrescriptionPhoto, "application/pdf");
     }
 
-
     private int GetLoggedInCustomerId()
     {
-        // Safely get UserId from session, return 0 if not found
         int? userId = HttpContext.Session.GetInt32("UserId");
         return userId ?? 0;
     }
