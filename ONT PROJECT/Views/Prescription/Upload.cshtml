@@ -178,6 +178,11 @@
                                         </a>
                                     </td>
                                     <td>
+                                        <!-- Edit Button -->
+                                        <button class="btn btn-outline-secondary btn-sm ms-1 edit-btn" data-id="@p.UnprocessedPrescriptionId" data-dispense="@p.Dispense" title="Edit">
+                                            <i class="material-icons">&#xE254;</i> Edit
+                                        </button>
+
                                         <form asp-action="Delete" asp-route-id="@p.UnprocessedPrescriptionId" method="post" class="d-inline"
                                               onsubmit="return confirm('Are you sure you want to DELETE this prescription?');">
                                             <button class="btn btn-outline-danger btn-sm" title="Delete">
@@ -199,8 +204,45 @@
     </div>
 </div>
 
-<!-- PDF Preview Script -->
+<!-- Edit Prescription Modal -->
+<div class="modal fade" id="editPrescriptionModal" tabindex="-1" aria-labelledby="editPrescriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editPrescriptionForm" method="post" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPrescriptionModalLabel">Edit Prescription</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" id="EditPrescriptionId" name="UnprocessedPrescriptionId" />
+
+                    <div class="mb-3">
+                        <label>Upload new PDF (optional)</label>
+                        <input type="file" name="PrescriptionFile" id="EditPrescriptionFile" class="form-control" accept="application/pdf" />
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input type="hidden" name="Dispense" value="Unpocessed" />
+                        <input class="form-check-input" type="checkbox" name="Dispense" id="EditDispense" value="Requested" />
+                        <label class="form-check-label" for="EditDispense">
+                            Request Dispense
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
 <script>
+    // PDF preview for upload
     document.addEventListener("DOMContentLoaded", function () {
         const input = document.getElementById("PrescriptionFile");
         const iframe = document.getElementById("pdfPreview");
@@ -219,6 +261,19 @@
                 iframe.src = "";
                 container.style.display = "none";
             }
+        });
+
+        // Edit button click
+        $('.edit-btn').click(function () {
+            var id = $(this).data('id');
+            var dispense = $(this).data('dispense');
+
+            $('#EditPrescriptionId').val(id);
+            $('#EditDispense').prop('checked', dispense === "Requested");
+            $('#editPrescriptionForm').attr('action', '/Prescription/Edit/' + id);
+
+            var modal = new bootstrap.Modal(document.getElementById('editPrescriptionModal'));
+            modal.show();
         });
     });
 </script>

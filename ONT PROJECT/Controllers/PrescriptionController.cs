@@ -30,33 +30,6 @@ public class PrescriptionController : Controller
         return View(prescriptions);
     }
 
-    //[HttpPost]
-    //public async Task<IActionResult> Upload(IFormFile PrescriptionFile, bool RequestDispense)
-    //{
-    //    int customerId = GetLoggedInCustomerId();
-    //    if (customerId == 0)
-    //        return RedirectToAction("Login", "CustomerRegister");
-
-    //    if (PrescriptionFile != null && PrescriptionFile.Length > 0)
-    //    {
-    //        using var memoryStream = new MemoryStream();
-    //        await PrescriptionFile.CopyToAsync(memoryStream);
-
-    //        var prescription = new UnprocessedPrescription
-    //        {
-    //            Date = DateOnly.FromDateTime(DateTime.Now),
-    //            CustomerId = customerId,
-    //            PrescriptionPhoto = memoryStream.ToArray(),
-    //            Dispense = RequestDispense ? "Requested" : "Uploaded",
-    //            Status = RequestDispense ? "Requested" : "Uploaded"
-    //        };
-
-    //        _context.UnprocessedPrescriptions.Add(prescription);
-    //        await _context.SaveChangesAsync();
-    //    }
-
-    //    return RedirectToAction("Upload");
-    //}
     [HttpPost]
     public async Task<IActionResult> Upload(IFormFile PrescriptionFile)
     {
@@ -116,6 +89,39 @@ public class PrescriptionController : Controller
 
         return RedirectToAction("Upload");
     }
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var prescription = await _context.UnprocessedPrescriptions.FindAsync(id);
+        if (prescription == null) return NotFound();
+        return View(prescription); // For modal, we won't use this GET view anymore
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(int id, IFormFile PrescriptionFile, string Dispense)
+    {
+        var prescription = await _context.UnprocessedPrescriptions.FindAsync(id);
+        if (prescription == null) return NotFound();
+
+        if (PrescriptionFile != null && PrescriptionFile.Length > 0)
+        {
+            using var ms = new MemoryStream();
+            await PrescriptionFile.CopyToAsync(ms);
+            prescription.PrescriptionPhoto = ms.ToArray();
+        }
+
+        if (!string.IsNullOrEmpty(Dispense))
+        {
+            prescription.Dispense = Dispense;
+            prescription.Status = Dispense;
+        }
+
+        _context.Update(prescription);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Upload");
+    }
+
 
     public async Task<IActionResult> ViewPdf(int id)
     {
@@ -128,19 +134,6 @@ public class PrescriptionController : Controller
         return File(prescription.PrescriptionPhoto, "application/pdf");
     }
 
-    //[HttpPost]
-    //public async Task<IActionResult> Request(int id)
-    //{
-    //    var prescription = await _context.UnprocessedPrescriptions.FindAsync(id);
-    //    if (prescription != null && prescription.Dispense == "Uploaded")
-    //    {
-    //        prescription.Dispense = "Requested";
-    //        _context.Update(prescription);
-    //        await _context.SaveChangesAsync();
-    //    }
-
-    //    return RedirectToAction("Upload");
-    //}
 
     private int GetLoggedInCustomerId()
     {
