@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-
 <style>
     body {
         background-color: #f5f7fa;
@@ -206,7 +205,6 @@
     }
 
         .activity-table td .activity-desc {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #6c5ce7;
             font-weight: 500;
             font-size: 0.95rem;
@@ -214,7 +212,6 @@
         }
 
         .activity-table td .activity-date {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: 0.85rem;
             color: #636e72;
             text-align: right;
@@ -265,17 +262,15 @@
         </div>
     </div>
 
-
     <!-- Dashboard Sections Row -->
     <div class="row gx-4 gy-4 mt-4">
-        <!-- Quick Actions (Left side, wide) -->
+        <!-- Quick Actions -->
         <div class="col-lg-8">
-           
             <div class="row gx-3 gy-3">
                 <div class="dashboard-section-title">
                     <i class="fas fa-bolt"></i> Quick Actions
                 </div>
-                <!-- Existing 4 Quick Actions -->
+                <!-- Quick Action Cards -->
                 <div class="col-md-3">
                     <a asp-controller="Medicine" asp-action="Create" class="quick-action-card text-decoration-none">
                         <i class="bi bi-capsule text-primary"></i>
@@ -289,12 +284,11 @@
                     </a>
                 </div>
                 <div class="col-md-3">
-                    <a asp-controller="BOrder" asp-action="Create" class="quick-action-card text-decoration-none">
+                    <a asp-controller="B_Order" asp-action="Index" asp-route-tab="neworder" class="quick-action-card text-decoration-none">
                         <i class="bi bi-cart-plus text-warning"></i>
                         <span>Order Medication</span>
                     </a>
                 </div>
-                <!-- NEW 4 Quick Actions -->
                 <div class="col-md-3">
                     <a asp-controller="User" asp-action="Create" class="quick-action-card text-decoration-none">
                         <i class="bi bi-person-plus text-info"></i>
@@ -319,7 +313,6 @@
                         <span>Add Doctor</span>
                     </a>
                 </div>
-
                 <div class="col-md-3">
                     <a asp-controller="ManagerReport" asp-action="Index" class="quick-action-card text-decoration-none">
                         <i class="bi bi-file-earmark-pdf text-danger"></i>
@@ -328,9 +321,8 @@
                 </div>
             </div>
 
-
-            <!-- Recent Orders (below Quick Actions, same column) -->
-            <div class="card p-3 mt-4 ">
+            <!-- Recent Orders -->
+            <div class="card p-3 mt-4">
                 <div class="dashboard-section-title"><i class="fas fa-clipboard-list"></i> Recent Orders</div>
                 <div class="d-flex justify-content-end mb-2">
                     <select id="statusFilter" class="form-select form-select-sm w-auto" onchange="filterOrdersByStatus()">
@@ -340,7 +332,7 @@
                     </select>
                 </div>
                 <div class="table-wrapper">
-                    <table class="table table-hover mb-0">
+                    <table id="recentOrdersTable" class="table table-hover mb-0">
                         <thead>
                             <tr>
                                 <th>Order ID</th>
@@ -383,7 +375,7 @@
             </div>
         </div>
 
-        <!-- Recent Activities (Right side, full height) -->
+        <!-- Recent Activities -->
         <div class="col-lg-4">
             <div class="card h-100">
                 <div class="dashboard-section-title"><i class="fas fa-history"></i> Recent Activities</div>
@@ -412,14 +404,13 @@
             </div>
         </div>
     </div>
-
 </div>
 
 @section Scripts {
     <script>
         function filterOrdersByStatus() {
             const filterValue = document.getElementById('statusFilter').value;
-            const rows = document.querySelectorAll('table tbody tr');
+            const rows = document.querySelectorAll('#recentOrdersTable tbody tr'); // only orders
             rows.forEach(row => {
                 const status = row.getAttribute('data-status');
                 row.style.display = (!filterValue || status === filterValue) ? '' : 'none';

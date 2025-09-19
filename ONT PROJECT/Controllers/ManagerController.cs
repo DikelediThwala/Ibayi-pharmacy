@@ -30,7 +30,6 @@ namespace ONT_PROJECT.Controllers
             return View(viewModel);
         }
 
-        // Private helper methods
         private List<BOrder> GetRecentOrders()
         {
             return _context.BOrders

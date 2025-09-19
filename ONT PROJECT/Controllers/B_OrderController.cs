@@ -49,32 +49,46 @@ namespace ONT_PROJECT.Controllers
         [HttpPost]
         public async Task<IActionResult> MarkAsReceived(int id)
         {
-            var order = await _context.BOrders.FindAsync(id);
+            var order = await _context.BOrders
+                .Include(o => o.BOrderLines)
+                .ThenInclude(ol => ol.Medicine)
+                .FirstOrDefaultAsync(o => o.BOrderId == id);
+
             if (order == null)
                 return NotFound();
 
+            // Update order
             order.DateRecieved = DateOnly.FromDateTime(DateTime.Now);
             order.Status = "Received";
 
+            foreach (var line in order.BOrderLines)
+            {
+                if (line.Medicine != null)
+                {
+                    line.Medicine.Quantity += line.Quantity; 
+                }
+            }
+
             await _context.SaveChangesAsync();
 
+            ActivityLogger.LogActivity(_context, "Order Received",$"Order #{order.BOrderId} was received and stock updated.");
+
+            // Refresh viewmodel
             var viewModel = new NewOrderViewModel
             {
                 Medicines = _context.Medicines.ToList(),
                 BOrders = _context.BOrders
-                  .Include(o => o.BOrderLines)
-                  .ThenInclude(ol => ol.Medicine)
-                  .ToList(),
+                    .Include(o => o.BOrderLines)
+                    .ThenInclude(ol => ol.Medicine)
+                    .ToList(),
                 NewOrder = new BOrder()
             };
-
-
-            ActivityLogger.LogActivity(_context, "Deactivate Order", $"Order number {order.BOrderId} was received.");
 
             ViewData["ActiveTab"] = "orders";
 
             return View("Index", viewModel);
         }
+
 
 
         public IActionResult Create()

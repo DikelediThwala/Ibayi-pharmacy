@@ -110,6 +110,7 @@
                             <th>Medication</th>
                             <th>Quantity in Hand</th>
                             <th>Reorder Level</th>
+                            <th>Price</th>
                             <th>Quantity</th>
                         </tr>
                     </thead>
@@ -127,8 +128,10 @@
                                 <td>@medications[i].Text</td>
                                 <td>@med?.Quantity</td>
                                 <td>@med?.ReorderLevel</td>
+                                <td>R @med?.SalesPrice ,00</td>
+
                                 <td>
-                                    <input type="number" name="BOrderLines[@i].Quantity" class="form-control qtyInput" value="1" min="1" disabled />
+                                    <input type="number" name="BOrderLines[@i].Quantity" class="form-control qtyInput" value="100" min="100" disabled />
                                 </td>
                             </tr>
                         }
@@ -284,4 +287,27 @@
             });
         });
     });
+
+           function selectLowStockAndSubmit() {
+        // Uncheck everything first
+        $('.medCheck').prop('checked', false).trigger('change');
+
+        // Select rows where quantity <= reorder level
+        $('#orderTable tbody tr').each(function () {
+            const qty = parseInt($(this).children().eq(2).text());   // Quantity in Hand
+            const reorder = parseInt($(this).children().eq(3).text()); // Reorder Level
+
+            if (!isNaN(qty) && !isNaN(reorder) && qty <= reorder) {
+                const checkbox = $(this).find('.medCheck');
+                const qtyInput = $(this).find('.qtyInput');
+
+                checkbox.prop('checked', true).trigger('change');
+                qtyInput.prop('disabled', false);   // ✅ enable input so it gets posted
+            }
+        });
+
+        // Trigger the same logic as "Submit Order" button
+        $('#openOrderSummaryBtn').trigger('click');
+    }
+
 </script>

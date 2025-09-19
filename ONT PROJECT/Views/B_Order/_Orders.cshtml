@@ -127,10 +127,11 @@
     $(document).ready(function () {
         // Initialize DataTable for orders table
         $('#ordersTable').DataTable({
-            pageLength: 8,        // Show only 8 rows per page
-            lengthChange: false,  // Disable changing page length
-            searching: true,      // Enable search box
-            ordering: true,       // Enable column sorting
+            pageLength: 8,       
+            lengthChange: false,  
+            searching: true,      
+            ordering: true,   
+            order: [[1, "desc"]], 
             language: {
                 search: "Search table:",
                 paginate: {
