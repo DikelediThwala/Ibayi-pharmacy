@@ -236,19 +236,19 @@
             <h2>Customer Prescription</h2>
             <hr />
             <div class="row mb-4">
-                <div class="col-md-4">
-                    <label asp-for="CustomerID" class="form-label">Customer Name:</label>
-                    <input asp-for="CustomerID" type="type" name="name" class="form-control" value="@Model.FirstName" />
-                    <span validation-for="CustomerID" class="text-danger small"></span>
+                <div class="col-md-4">                  
+                    <input asp-for="CustomerID" type="hidden" />
+                    <!-- Readonly display -->
+                    <input type="text" class="form-control" value="@Model.FirstName" readonly />
                 </div>
             </div>
 
             <div class="row mb-4">
                 <div class="col-md-4">
-                    <label asp-for="DoctorID" class="form-label">Doctor Name</label>
-                    <input asp-for="DoctorID" type="type" class="form-control" name="name" value=" @Model.Name" />
-
-                    <span asp-validation-for="DoctorID" class="text-danger small"></span>
+             
+                    <input asp-for="DoctorID" type="hidden" />
+                    <!-- Readonly display -->
+                    <input type="text" class="form-control" value="@Model.Name" readonly />
                 </div>
             </div>
             <div class="row mb-4">

@@ -44,6 +44,7 @@ builder.Services.AddTransient<IPrescriptionRepository, PrescriptionRepository>()
 builder.Services.AddTransient<IPrescriptionLineRepository, PrescriptionLineRepository>();
 builder.Services.AddTransient<IUnproccessedPrescriptionRepository, UnproccessedPrescriptionRepository>();
 builder.Services.AddTransient<IDoctorRepository, DoctorRepository>();
+builder.Services.AddTransient<IOrderRepository, OrderRepository>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
