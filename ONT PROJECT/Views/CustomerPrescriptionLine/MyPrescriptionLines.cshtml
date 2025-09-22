@@ -101,6 +101,7 @@
                     <thead class="table-primary">
                         <tr>
                             <th><input type="checkbox" id="selectAll" title="Select All" /></th>
+                            <th>Date</th>
                             <th>Medication</th>
                             <th>Instructions / Dosage</th>
                             <th>Quantity</th>
@@ -125,6 +126,7 @@
                                 <td class="text-center">
                                     <input type="checkbox" name="selectedLines" value="@line.PrescriptionLineId" class="line-checkbox" @(isAllergic ? "disabled" : "") />
                                 </td>
+                                <td>@line.Date.ToString("yyyy-MM-dd")</td>
                                 <td>
                                     @(line.Medicine?.MedicineName ?? "Unknown Medicine")
                                     @if (isAllergic)

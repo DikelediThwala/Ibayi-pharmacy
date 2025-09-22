@@ -79,8 +79,18 @@ namespace ONT_PROJECT.Controllers
                 .Include(pl => pl.Medicine)
                     .ThenInclude(m => m.MedIngredients)
                         .ThenInclude(mi => mi.ActiveIngredient)
+                .Include(pl => pl.Prescription)
                 .Where(pl => selectedLines.Contains(pl.PrescriptionLineId))
                 .ToListAsync();
+
+            // Ensure each prescription has a Date
+            foreach (var line in lines)
+            {
+                if (line.Prescription.Date == default)
+                {
+                    line.Prescription.Date = DateOnly.FromDateTime(DateTime.Now);
+                }
+            }
 
             // Check for allergy conflicts
             foreach (var line in lines)
