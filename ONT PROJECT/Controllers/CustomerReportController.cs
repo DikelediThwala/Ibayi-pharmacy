@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
 using QuestPDF.Fluent;
@@ -9,6 +10,7 @@ using System.Linq;
 
 namespace ONT_PROJECT.Controllers
 {
+    [Authorize(Roles = "Customer")]
     public class CustomerReportController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -16,8 +18,6 @@ namespace ONT_PROJECT.Controllers
         public CustomerReportController(ApplicationDbContext context)
         {
             _context = context;
-
-            // Set QuestPDF license to Community
             QuestPDF.Settings.License = LicenseType.Community;
         }
 
@@ -29,16 +29,24 @@ namespace ONT_PROJECT.Controllers
         [HttpGet]
         public IActionResult GenerateReport(DateTime startDate, DateTime endDate, string groupBy)
         {
-            var customerId = 1; // Replace with actual logged-in customer ID
+            // Get logged-in customer's email
+            var email = User.Identity.Name; // assumes email is username
+            var customer = _context.Customers
+                .Include(c => c.Prescriptions)
+                    .ThenInclude(p => p.PrescriptionLines)
+                        .ThenInclude(l => l.Medicine)
+                .Include(c => c.Prescriptions)
+                    .ThenInclude(p => p.Doctor)
+                .Include(c => c.CustomerNavigation)
+                .FirstOrDefault(c => c.CustomerNavigation.Email == email);
 
-            // Convert DateTime to DateOnly for comparison
-            var prescriptions = _context.Prescriptions
-                .Include(p => p.Doctor)
-                .Include(p => p.PrescriptionLines)
-                    .ThenInclude(l => l.Medicine)
-                .Where(p => p.CustomerId == customerId
-                            && p.Date >= DateOnly.FromDateTime(startDate)
-                            && p.Date <= DateOnly.FromDateTime(endDate))
+            if (customer == null)
+                return Unauthorized();
+
+            // Filter prescriptions by date range
+            var prescriptions = customer.Prescriptions
+                .Where(p => p.Date >= DateOnly.FromDateTime(startDate) &&
+                            p.Date <= DateOnly.FromDateTime(endDate))
                 .ToList();
 
             var report = Document.Create(container =>
@@ -50,38 +58,38 @@ namespace ONT_PROJECT.Controllers
                     // Header
                     page.Header().AlignCenter().Column(col =>
                     {
-                        col.Item().Text("Customer Report")
-                            .SemiBold().FontSize(16).FontColor(Colors.Blue.Darken1);
+                        col.Item().Text("CUSTOMER REPORT").SemiBold().FontSize(16).FontColor(Colors.Blue.Darken1);
                         col.Item().Text($"Date Range: {startDate:yyyy-MM-dd} - {endDate:yyyy-MM-dd}")
-                            .FontSize(12).FontColor(Colors.Black);
+                            .FontSize(12)
+                            .FontColor(Colors.Black);
                     });
 
                     // Content
                     page.Content().PaddingVertical(10).Column(col =>
                     {
-                        if (groupBy == "Doctor")
+                        if (!prescriptions.Any())
                         {
-                            var groupedByDoctor = prescriptions
-                                .GroupBy(p => p.Doctor)
-                                .ToList();
-
+                            col.Item().AlignCenter().Text("No prescriptions found for the selected date range.");
+                        }
+                        else if (groupBy == "Doctor")
+                        {
+                            var groupedByDoctor = prescriptions.GroupBy(p => p.Doctor).ToList();
                             foreach (var doctorGroup in groupedByDoctor)
                             {
                                 var doctor = doctorGroup.Key;
-                                col.Item().Text($"DOCTOR: {doctor.Name} {doctor.Surname}")
-                                    .Bold().FontSize(12).FontColor(Colors.Black);
+                                col.Item().Text($"DOCTOR: {doctor?.Name ?? "N/A"} {doctor?.Surname ?? ""}")
+                                    .Bold().FontSize(12);
 
                                 col.Item().Table(table =>
                                 {
                                     table.ColumnsDefinition(columns =>
                                     {
-                                        columns.RelativeColumn();
-                                        columns.RelativeColumn();
-                                        columns.RelativeColumn();
-                                        columns.RelativeColumn();
+                                        columns.RelativeColumn(); // Date
+                                        columns.RelativeColumn(); // Medication
+                                        columns.RelativeColumn(); // Qty
+                                        columns.RelativeColumn(); // Repeats
                                     });
 
-                                    // Header row
                                     table.Header(header =>
                                     {
                                         header.Cell().Element(CellStyle).Text("Date");
@@ -90,7 +98,6 @@ namespace ONT_PROJECT.Controllers
                                         header.Cell().Element(CellStyle).Text("Repeats");
                                     });
 
-                                    // Prescription rows
                                     foreach (var prescription in doctorGroup)
                                     {
                                         foreach (var line in prescription.PrescriptionLines)
@@ -102,7 +109,6 @@ namespace ONT_PROJECT.Controllers
                                         }
                                     }
 
-                                    // Subtotal row
                                     table.Footer(footer =>
                                     {
                                         footer.Cell().ColumnSpan(4)
@@ -134,30 +140,31 @@ namespace ONT_PROJECT.Controllers
                                 {
                                     table.ColumnsDefinition(columns =>
                                     {
-                                        columns.RelativeColumn();
-                                        columns.RelativeColumn();
-                                        columns.RelativeColumn();
+                                        columns.RelativeColumn(); // Date
+                                        columns.RelativeColumn(); // Doctor
+                                        columns.RelativeColumn(); // Qty
+                                        columns.RelativeColumn(); // Repeats
                                     });
 
-                                    // Header row
                                     table.Header(header =>
                                     {
                                         header.Cell().Element(CellStyle).Text("Date");
                                         header.Cell().Element(CellStyle).Text("Doctor");
                                         header.Cell().Element(CellStyle).Text("Qty");
+                                        header.Cell().Element(CellStyle).Text("Repeats");
                                     });
 
                                     foreach (var line in medGroup)
                                     {
                                         table.Cell().Element(CellStyle).Text(line.Prescription.Date.ToString("yyyy-MM-dd"));
-                                        table.Cell().Element(CellStyle).Text($"{line.Prescription.Doctor.Name} {line.Prescription.Doctor.Surname}");
+                                        table.Cell().Element(CellStyle).Text($"{line.Prescription.Doctor?.Name ?? "N/A"} {line.Prescription.Doctor?.Surname ?? ""}");
                                         table.Cell().Element(CellStyle).Text(line.Quantity.ToString());
+                                        table.Cell().Element(CellStyle).Text(line.Repeats.ToString());
                                     }
 
-                                    // Subtotal row
                                     table.Footer(footer =>
                                     {
-                                        footer.Cell().ColumnSpan(3)
+                                        footer.Cell().ColumnSpan(4)
                                             .AlignRight()
                                             .Text($"Sub-total: {medGroup.Sum(l => l.Quantity)}");
                                     });
@@ -171,7 +178,7 @@ namespace ONT_PROJECT.Controllers
                         }
                     });
 
-                    // Footer with page numbers
+                    // Footer
                     page.Footer().AlignCenter().Text(text =>
                     {
                         text.Span("Page ");
