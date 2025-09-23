@@ -28,7 +28,7 @@ namespace ONT_PROJECT.Controllers
             try
             {
                 var date= order;
-                date.DatePlaced = DateTime.Now;
+                //date.DatePlaced = DateTime.Now;
                 var status = order;
                 status.Status = "Placed";
                 var vat = order;
