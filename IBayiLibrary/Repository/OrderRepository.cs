@@ -29,10 +29,10 @@ namespace IBayiLibrary.Repository
                 return false;
             }
         }
-        public async Task<IEnumerable<PrescriptionModel>> MedicationOrder()
+        public async Task<IEnumerable<tblOrder>> MedicationOrder()
         {
             string query = "spPrepareOrder";
-            return await _db.GetData<PrescriptionModel, dynamic > (query, new { });
+            return await _db.GetData<tblOrder, dynamic > (query, new { });
         }
     }
 }

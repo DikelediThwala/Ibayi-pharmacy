@@ -185,7 +185,7 @@ namespace ONT_PROJECT.Controllers
             {
                 TempData["msg"] = " Something went wrong!!!";
             }
-            return RedirectToAction("DispensePrescription", "Dispense");
+            return RedirectToAction("OrderMedication", "Order");
         }
         public async Task<IActionResult> DownloadPrescription(int id)
         {
