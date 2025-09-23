@@ -119,9 +119,6 @@ namespace ONT_PROJECT.Controllers
             }
             return RedirectToAction("CreateUser", "Pharmacist");
         }
-
-      
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePrescriptions(PrescriptionViewModel prescription)
