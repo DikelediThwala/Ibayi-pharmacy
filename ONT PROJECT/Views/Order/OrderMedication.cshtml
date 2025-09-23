@@ -31,8 +31,10 @@
         <!-- Bottom-right: Place Order button -->
         <div class="d-flex justify-content-end mt-3">
             <form asp-action="CreateOrder" method="post">
-                <input type="hidden" name="CustomerID" value="@item.CustomerID" />
-                <input type="hidden" name="TotalDue" value="@item.TotalSales" />                
+                <input  type="hidden" value="@item.CustomerID" />
+                <input type="hidden" name="TotalDue" value="@item.TotalSales" />
+                <input type="hidden" name="DatePlaced" value="@item.DatePlaced" />
+                <input type="hidden" name="DateRecieved" value="@item.DateRecieved" />
                 <button type="submit" class="btn btn-success">
                     Place Order
                 </button>

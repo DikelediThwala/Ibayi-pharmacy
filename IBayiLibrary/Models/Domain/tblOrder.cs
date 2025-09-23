@@ -21,8 +21,8 @@ namespace IBayiLibrary.Models.Domain
         public int Quantity { get; set; }
         public int SalesPrice { get; set; }
         public int TotalSales { get; set; }
-        public DateOnly DatePlaced { get; set; }
-        public DateOnly DateRecieved { get; set; }
+        public DateTime DatePlaced { get; set; }
+        public DateTime DateRecieved { get; set; }
         
     }
 }

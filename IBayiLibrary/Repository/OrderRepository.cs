@@ -20,8 +20,8 @@ namespace IBayiLibrary.Repository
         {
             try
             {
-                await _db.SaveData("spOrderMedication", new {tblOrder.CustomerID,tblOrder.PharmacistID,tblOrder.Status,tblOrder.TotalDue,tblOrder.VAT,
-                tblOrder.DatePlaced,tblOrder.DateRecieved});
+                await _db.SaveData("spOrderMedication", new {tblOrder.CustomerID,tblOrder.PharmacistID,tblOrder.Status,tblOrder.TotalDue,tblOrder.VAT,              
+                    tblOrder.DateRecieved});
                 return true;
             }
             catch (Exception ex)
