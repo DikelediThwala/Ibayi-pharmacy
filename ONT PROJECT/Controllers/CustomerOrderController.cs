@@ -22,7 +22,7 @@ namespace ONT_PROJECT.Controllers
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdStr)) return Unauthorized();
 
-            int userId = int.Parse(userIdStr);
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
 
             // Get customer record
             var customer = await _context.Customers
@@ -31,7 +31,7 @@ namespace ONT_PROJECT.Controllers
 
             if (customer == null) return NotFound();
 
-            // Get prescription lines
+            // Get prescription lines for this customer
             var prescriptionLines = await _context.PrescriptionLines
                 .Include(pl => pl.Medicine)
                 .Include(pl => pl.Prescription)
@@ -52,7 +52,7 @@ namespace ONT_PROJECT.Controllers
             }
 
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int userId = int.Parse(userIdStr);
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
 
             var customer = await _context.Customers
                 .Include(c => c.CustomerNavigation)
@@ -98,9 +98,7 @@ namespace ONT_PROJECT.Controllers
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            // Set TempData for success message
             TempData["Success"] = "Order placed successfully!";
-
             return RedirectToAction("OrderedMedication");
         }
 
@@ -108,7 +106,7 @@ namespace ONT_PROJECT.Controllers
         public async Task<IActionResult> OrderedMedication()
         {
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int userId = int.Parse(userIdStr);
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
 
             var customer = await _context.Customers
                 .Include(c => c.CustomerNavigation)
@@ -125,11 +123,10 @@ namespace ONT_PROJECT.Controllers
             return View(orders);
         }
 
-        // Delete a specific order line
+        // Delete a specific order (and its lines)
         [HttpPost]
         public async Task<IActionResult> DeleteOrder(int orderId)
         {
-            // Find the order including all its lines
             var order = await _context.Orders
                 .Include(o => o.OrderLines)
                 .FirstOrDefaultAsync(o => o.OrderId == orderId);
@@ -140,10 +137,7 @@ namespace ONT_PROJECT.Controllers
                 return RedirectToAction("OrderedMedication");
             }
 
-            // Remove all order lines
             _context.OrderLines.RemoveRange(order.OrderLines);
-
-            // Remove the order itself
             _context.Orders.Remove(order);
 
             await _context.SaveChangesAsync();
@@ -152,8 +146,18 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("OrderedMedication");
         }
 
+        // Mark an order as received
+        [HttpPost]
+        public async Task<IActionResult> MarkAsReceived(int orderId)
+        {
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == orderId);
+            if (order == null)
+                return Json(new { success = false, message = "Order not found" });
 
+            order.Status = "Received";
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Order marked as received." });
+        }
     }
-
 }
-
