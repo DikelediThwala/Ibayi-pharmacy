@@ -17,9 +17,7 @@ public partial class Medicine
 
     [Required(ErrorMessage = "The Supplier field is required.")]
     public int? SupplierId { get; set; }
-
     public int ReorderLevel { get; set; }
-
     public int Quantity { get; set; }
     public string Status { get; set; } = "Active";
 
@@ -34,6 +32,6 @@ public partial class Medicine
     public virtual ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
 
     public virtual ICollection<PrescriptionLine> PrescriptionLines { get; set; } = new List<PrescriptionLine>();
-    //public virtual Supplier Supplier { get; set; } = null!;
+    public virtual Supplier? Supplier { get; set; }  
 
 }

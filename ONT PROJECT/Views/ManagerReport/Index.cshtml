@@ -1,20 +1,23 @@
-﻿@{
+﻿@model IEnumerable<ONT_PROJECT.Models.Medicine>
+
+@{
     ViewData["Title"] = "Pharmacy Manager Report";
     Layout = "_ManagerLayout";
 }
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<div class="container py-4">
-    <h2 class="mb-4 text-center">Pharmacy Manager Report</h2>
-    <p class="text-muted text-center">Generate a stock take report with selected medication, stock levels, and quantities on hand.</p>
+<div class="container py-4" style="background-color: rgba(245, 245, 245, 0.6); border-radius: 10px; padding: 20px;">
+    <h2 class="mb-4 text-center">📊Stock Control Report</h2>
+    <p class="text-muted text-center">
+        Customize and generate detailed pharmacy stock take reports.
+    </p>
 
-    <form asp-action="GenerateReport" method="post" class="shadow p-4 rounded bg-light">
-
+    <form asp-action="GenerateReport" asp-controller="ManagerReport" method="post">
         <!-- Grouping Options -->
         <div class="mb-3">
-            <label for="GroupBy" class="form-label fw-bold">Group Report By</label>
-            <select class="form-select" id="GroupBy" name="GroupBy" required>
+            <label class="form-label fw-bold">📌 Group Report By</label>
+            <select class="form-select" name="GroupBy" required>
                 <option value="">-- Select an option --</option>
                 <option value="DosageForm">Dosage Form</option>
                 <option value="Schedule">Schedule</option>
@@ -24,26 +27,37 @@
 
         <!-- Medication Selection -->
         <div class="mb-3">
-            <label for="Medications" class="form-label fw-bold">Select Medications</label>
-            <select multiple class="form-select" id="Medications" name="SelectedMedications">
-                <option value="all">All Medications</option>
-                <!-- Later, populate dynamically with medication list -->
-                <option value="1">Paracetamol 500mg</option>
-                <option value="2">Amoxicillin 250mg</option>
-                <option value="3">Cough Syrup 100ml</option>
+            <label class="form-label fw-bold">💊 Select Medications</label>
+            <select multiple class="form-select" name="SelectedMedications">
+                <option value="-1">All Medications</option>
+                @foreach (var med in Model)
+                {
+                    <option value="@med.MedicineId">@med.MedicineName</option>
+                }
             </select>
-            <div class="form-text">Hold CTRL (or CMD on Mac) to select multiple medications.</div>
+            <div class="form-text">Hold CTRL to select multiple medicine.</div>
         </div>
 
-        <!-- Date Generated -->
+        <!-- Filters -->
         <div class="mb-3">
-            <label for="ReportDate" class="form-label fw-bold">Report Date</label>
-            <input type="date" id="ReportDate" name="ReportDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+            <label class="form-label fw-bold">⚙️ Stock Level</label>
+            <select class="form-select" name="StockLevel">
+                <option value="all">All</option>
+                <option value="low">Below Reorder</option>
+                <option value="out">Out of Stock</option>
+            </select>
         </div>
 
-        <!-- Submit Button -->
+        <!-- Date -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">📅 Report Date</label>
+            <input type="date" name="ReportDate" class="form-control"
+                   value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+        </div>
+
+        <!-- Submit -->
         <div class="text-center">
-            <button type="submit" class="btn btn-success px-4">Generate PDF Report</button>
+            <button type="submit" class="btn btn-success px-4">📄 Generate Report</button>
         </div>
     </form>
 </div>

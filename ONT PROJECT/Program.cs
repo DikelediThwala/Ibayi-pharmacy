@@ -1,6 +1,8 @@
 using IBayiLibrary.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
+using QuestPDF;
+using QuestPDF.Infrastructure;
 using IBayiLibrary.Repository;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -37,6 +39,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddControllersWithViews();
+
+// Set QuestPDF license
+QuestPDF.Settings.License = LicenseType.Community;
 // Add custom services
 builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
