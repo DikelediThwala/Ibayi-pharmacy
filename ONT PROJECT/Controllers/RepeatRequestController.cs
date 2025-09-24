@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using System;
+using System.Linq;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -61,6 +64,7 @@ namespace ONT_PROJECT.Controllers
             if (customer == null)
                 return Json(new { success = false, message = "Customer not found." });
 
+            // Find the specific OrderLine the customer is requesting a repeat for
             var line = await _context.OrderLines
                 .Include(ol => ol.Medicine)
                 .Include(ol => ol.Order)
@@ -71,15 +75,15 @@ namespace ONT_PROJECT.Controllers
             if (line == null)
                 return Json(new { success = false, message = "Order line not found or not collected yet." });
 
-            // Optional: You can still create a RepeatRequest based on PrescriptionLineId
+            // Create a RepeatRequest using the LineId from OrderLine 
             var repeatRequest = new RepeatRequest
             {
-                PrescriptionLineId = line.LineId, // use original PrescriptionLineId stored in LineId
+                PrescriptionLineId = line.LineId, // ✅ use LineId here
                 RequestDate = DateTime.Now,
                 Status = "Pending"
             };
 
-            _context.RepeatRequests.Add(repeatRequest);
+            _context.RepeatRequest.Add(repeatRequest);
             await _context.SaveChangesAsync();
 
             return Json(new
@@ -88,6 +92,5 @@ namespace ONT_PROJECT.Controllers
                 message = $"Repeat requested for {line.Medicine?.MedicineName ?? "Unknown Medication"}."
             });
         }
-
     }
 }

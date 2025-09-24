@@ -47,7 +47,7 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<PrescriptionLine> PrescriptionLines { get; set; }
 
-    public DbSet<RepeatRequest> RepeatRequests { get; set; }
+    public DbSet<RepeatRequest> RepeatRequest { get; set; }
 
     public virtual DbSet<Supplier> Suppliers { get; set; }
 
