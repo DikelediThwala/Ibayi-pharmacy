@@ -1,0 +1,45 @@
+﻿@model IEnumerable<IBayiLibrary.Models.Domain.tblOrder> 
+@{
+    ViewData["Title"] = "Load Prescription";
+    Layout = "PharmacistLayout";
+}
+<h1 class="mb-4">Prescription Details</h1>
+
+@foreach (var item in Model)
+{
+    <div class="card shadow-sm mb-4 p-3">
+        <!-- Top: Name + Surname -->
+        <h3 class="text-primary mb-3">
+            @item.FirstName @item.LastName
+        </h3>
+
+        <!-- Prescription details -->
+        <dl class="row">
+            <dt class="col-sm-2">Medicine</dt>
+            <dd class="col-sm-10">@item.MedicineName</dd>
+
+            <dt class="col-sm-2">Price</dt>
+            <dd class="col-sm-10">R @item.SalesPrice.ToString("0.00")</dd>
+
+            <dt class="col-sm-2">Quantity</dt>
+            <dd class="col-sm-10">@item.Quantity</dd>
+
+            <dt class="col-sm-2">Total</dt>
+            <dd class="col-sm-10">R @item.TotalSales.ToString("0.00")</dd>
+        </dl>
+
+        <!-- Bottom-right: Place Order button -->
+        <div class="d-flex justify-content-end mt-3">
+            <form asp-action="CreateOrder" method="post">
+                <input  type="hidden" value="@item.CustomerID" />
+                <input type="hidden" name="TotalDue" value="@item.TotalSales" />
+                <input type="hidden" name="DatePlaced" value="@item.DatePlaced" />
+                <input type="hidden" name="DateRecieved" value="@item.DateRecieved" />
+                <button type="submit" class="btn btn-success">
+                    Place Order
+                </button>
+            </form>
+        </div>
+    </div>
+}
+

@@ -119,9 +119,6 @@ namespace ONT_PROJECT.Controllers
             }
             return RedirectToAction("CreateUser", "Pharmacist");
         }
-
-      
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePrescriptions(PrescriptionViewModel prescription)
@@ -156,8 +153,8 @@ namespace ONT_PROJECT.Controllers
                 role.PharmacistID = 1009;
                 var status = prescription;
                 status.Status = "Proccessed";
-                //var repLeft = prescription;
-                //repLeft.RepeatsLeft = repLeft.Repeats;
+                var repLeft = prescription;
+                repLeft.RepeatsLeft = repLeft.Repeats;
                 bool addPerson = await _prescriptionRepository.AddAsync(prescription);
                 if (addPerson)
                 {
@@ -182,20 +179,13 @@ namespace ONT_PROJECT.Controllers
                 {
                     TempData["msg"] = "Could not add";
                 }
-
-                //var prescLine = await _prescriptionLineRepository.GetMedicineName();
-                //var medList = prescLine.ToList();
-
-                //// 🔍 Put a breakpoint here and check medList content
-                //ViewBag.MedicineID = new SelectList(medList, "MedicineID", "MedicineName");
-
             }
 
             catch (Exception ex)
             {
                 TempData["msg"] = " Something went wrong!!!";
             }
-            return RedirectToAction("DispensePrescription", "Dispense");
+            return RedirectToAction("OrderMedication", "Order");
         }
         public async Task<IActionResult> DownloadPrescription(int id)
         {

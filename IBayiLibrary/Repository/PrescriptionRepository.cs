@@ -33,7 +33,7 @@ namespace IBayiLibrary.Repository
         {
             try
             {
-                await _db.SaveData("spInsertPrescription", new { prescription.CustomerID, prescription.PharmacistID, prescription.PrescriptionPhoto, prescription.DoctorID,prescription.Status, prescription.Date });
+                await _db.SaveData("spInsertPrescription", new { prescription.CustomerID, prescription.PharmacistID, prescription.PrescriptionPhoto, prescription.DoctorID,prescription.Status,prescription.Date});
                 return true;
             }
 
@@ -47,7 +47,7 @@ namespace IBayiLibrary.Repository
         {
             try
             {
-                await _db.SaveData("spInsertPrescriptionLine", new { prescription.MedicineID, prescription.PrescriptionID, prescription.Instructions, prescription.Quantity, prescription.Repeats, prescription.RepeatsLeft });
+                await _db.SaveData("spInsertPrescriptionLine", new { prescription.PrescriptionID,prescription.MedicineID, prescription.Quantity, prescription.Instructions, prescription.Repeats, prescription.RepeatsLeft, prescription.Date });
                 return true;
             }
 

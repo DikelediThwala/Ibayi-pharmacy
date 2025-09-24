@@ -66,15 +66,26 @@
         margin-left: 5px;
         cursor: pointer;
     }
+
+    .prescription-header {
+        margin-bottom: 15px;
+    }
+
+    .prescription-box {
+        margin-bottom: 30px;
+        padding: 20px;
+        border-radius: 5px;
+        background-color: #fdfdfd;
+        box-shadow: 0 1px 3px rgba(0,0,0,.1);
+    }
 </style>
 
 <div class="container-xl">
     <div class="table-wrapper">
         <div class="table-title">
-            <h2>My <b>Prescription Lines</b></h2>
+            <h2>My <b>Prescriptions</b></h2>
         </div>
 
-        @* Legend *@
         <div class="mb-3">
             <span class="allergy-indicator"></span> Red indicates medication contains ingredients you are allergic to.
         </div>
@@ -97,63 +108,64 @@
             <form asp-controller="CustomerPrescriptionLine" asp-action="PlaceOrder" method="post" id="placeOrderForm">
                 @Html.AntiForgeryToken()
 
-                <table class="table table-striped table-hover">
-                    <thead class="table-primary">
-                        <tr>
-                            <th><input type="checkbox" id="selectAll" title="Select All" /></th>
-                            <th>Medication</th>
-                            <th>Instructions / Dosage</th>
-                            <th>Quantity</th>
-                            <th>Total Repeats</th>
-                            <th>Repeats Left</th>
-                            <th>Repeat Request</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var line in Model)
-                        {
-                            var allergicIngredients = line.Medicine?.MedIngredients
-                            .Select(mi => mi.ActiveIngredient.Ingredients)
-                            .Where(ing => line.Prescription.Customer.CustomerAllergies
-                            .Select(ca => ca.ActiveIngredient.Ingredients).Contains(ing))
-                            .ToList() ?? new List<string>();
+                <div class="mb-2">
+                    <input type="checkbox" id="selectAll" /> Select All
+                </div>
 
-                            var isAllergic = allergicIngredients.Any();
-                            var rowClass = isAllergic ? "table-danger" : "";
+                @foreach (var prescriptionGroup in Model.GroupBy(pl => pl.PrescriptionId))
+                {
+                    var prescription = prescriptionGroup.First().Prescription;
 
-                            <tr class="@rowClass">
-                                <td class="text-center">
-                                    <input type="checkbox" name="selectedLines" value="@line.PrescriptionLineId" class="line-checkbox" @(isAllergic ? "disabled" : "") />
-                                </td>
-                                <td>
-                                    @(line.Medicine?.MedicineName ?? "Unknown Medicine")
-                                    @if (isAllergic)
-                                    {
-                                        <span class="allergy-indicator" data-bs-toggle="tooltip" data-bs-placement="top"
-                                              title="Contains: @string.Join(", ", allergicIngredients)"></span>
-                                    }
-                                </td>
-                                <td>@line.Instructions</td>
-                                <td>@line.Quantity</td>
-                                <td class="text-center">@line.Repeats</td>
-                                <td class="text-center">@line.RepeatsLeft</td>
-                                <td class="text-center">
-                                    @if (line.RepeatsLeft > 0)
-                                    {
-                                        <a asp-controller="RepeatRequest" asp-action="RequestRepeat" asp-route-PrescriptionLineId="@line.PrescriptionLineId"
-                                           class="btn btn-warning btn-sm" title="Request Repeat">
-                                            <i class="material-icons">&#xE863;</i>
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">No repeats left</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                    <div class="prescription-box">
+                        <div class="prescription-header">
+                            <h5>Date: @prescription.Date.ToString("yyyy-MM-dd")</h5>
+                            <h6>Doctor: @prescription.Doctor</h6>
+                        </div>
+
+                        <table class="table table-striped table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Medication</th>
+                                    <th>Quantity</th>
+                                    <th>Instructions</th>
+                                    <th>Repeats</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var line in prescriptionGroup)
+                                {
+                                    var allergicIngredients = line.Medicine?.MedIngredients
+                                    .Select(mi => mi.ActiveIngredient.Ingredients)
+                                    .Where(ing => line.Prescription.Customer.CustomerAllergies
+                                    .Select(ca => ca.ActiveIngredient.Ingredients)
+                                    .Contains(ing))
+                                    .ToList() ?? new List<string>();
+
+                                    var isAllergic = allergicIngredients.Any();
+                                    var rowClass = isAllergic ? "table-danger" : "";
+
+                                    <tr class="@rowClass">
+                                        <td class="text-center">
+                                            <input type="checkbox" name="selectedLines" value="@line.PrescriptionLineId" class="line-checkbox" @(isAllergic ? "disabled" : "") />
+                                        </td>
+                                        <td>
+                                            @line.Medicine.MedicineName
+                                            @if (isAllergic)
+                                            {
+                                                <span class="allergy-indicator" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                      title="Contains: @string.Join(", ", allergicIngredients)"></span>
+                                            }
+                                        </td>
+                                        <td>@line.Quantity</td>
+                                        <td>@line.Instructions</td>
+                                        <td>@line.Repeats</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
 
                 <button type="submit" class="btn btn-success mt-2">Place Order</button>
             </form>
@@ -169,6 +181,7 @@
             return new bootstrap.Tooltip(tooltipTriggerEl)
         });
 
+        // Select All checkbox functionality
         $('#selectAll').click(function () {
             $('.line-checkbox').not(':disabled').prop('checked', this.checked);
         });
@@ -179,6 +192,7 @@
             $('#selectAll').prop('checked', allSelectable === checkedSelectable);
         });
 
+        // Form validation: at least one medication selected
         $('#placeOrderForm').on('submit', function (e) {
             if ($('.line-checkbox:checked').not(':disabled').length === 0) {
                 e.preventDefault();

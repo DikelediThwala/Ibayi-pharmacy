@@ -22,7 +22,7 @@ public partial class PrescriptionLine
     public int MedicineId { get; set; }
 
     public string Instructions { get; set; } = null!;
-
+    public DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     public int? RepeatsLeft { get; set; }
     public int? Repeats { get; set; }
 

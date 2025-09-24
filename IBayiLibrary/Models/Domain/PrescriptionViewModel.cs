@@ -24,10 +24,8 @@ namespace IBayiLibrary.Models.Domain
         public int Quantity { get; set; }
         public int Repeats { get; set; }
         public int RepeatsLeft { get; set; }
-        public DateTime ?Date { get; set; }
-        [ForeignKey("CustomerID")]
-        public int CustomerID { get; set; }
-        [ForeignKey("PharmacistID")]
+        public DateTime ?Date { get; set; }      
+        public int CustomerID { get; set; }   
         public int PharmacistID { get; set; }
         public byte[] PrescriptionPhoto { get; set; }
         public string Status { get; set; }

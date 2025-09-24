@@ -17,7 +17,7 @@ public partial class Order
 
     public double Vat { get; set; }
 
-    public int SupplierId { get; set; }
+    public int? SupplierId { get; set; }  // allow nulls
 
     public DateOnly DatePlaced { get; set; }
 
