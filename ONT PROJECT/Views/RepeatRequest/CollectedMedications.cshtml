@@ -1,62 +1,9 @@
-﻿@model List<ONT_PROJECT.Models.PrescriptionLine>
+﻿@model List<ONT_PROJECT.Models.OrderLine>
 
 @{
     ViewData["Title"] = "Collected Medications";
     Layout = "~/Views/Shared/_CustomerLayout.cshtml";
 }
-
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<style>
-    body {
-        color: #566787;
-        background: #f5f5f5;
-        font-family: 'Varela Round', sans-serif;
-        font-size: 13px;
-    }
-
-    .table-wrapper {
-        min-width: 900px;
-        background: #fff;
-        padding: 20px 25px;
-        border-radius: 3px;
-        box-shadow: 0 1px 1px rgba(0,0,0,.05);
-        margin-top: 30px;
-    }
-
-    .table-title {
-        color: #fff;
-        background: #4b5366;
-        padding: 16px 25px;
-        margin: -20px -25px 10px;
-        border-radius: 3px 3px 0 0;
-    }
-
-        .table-title h2 {
-            margin: 5px 0 0;
-            font-size: 24px;
-        }
-
-    table.table tr th, table.table tr td {
-        border-color: #e9e9e9;
-        padding: 12px 15px;
-        vertical-align: middle;
-        text-align: center;
-    }
-
-    table.table-striped tbody tr:nth-of-type(odd) {
-        background-color: #fff;
-    }
-
-    table.table-striped.table-hover tbody tr:hover {
-        background: #f5f5f5;
-    }
-</style>
 
 <div class="container-xl">
     <div class="table-wrapper">
@@ -64,7 +11,6 @@
             <h2>Collected <b>Medications</b></h2>
         </div>
 
-        @Html.AntiForgeryToken() <!-- Needed for AJAX token -->
         @if (!Model.Any())
         {
             <p class="text-muted">No collected medications found.</p>
@@ -75,9 +21,10 @@
                 <thead class="table-primary">
                     <tr>
                         <th>Medication</th>
-                        <th>Instructions</th>
                         <th>Quantity</th>
-                        <th>Repeats Left</th>
+                        <th>Price</th>
+                        <th>Line Total</th>
+                        <th>Order #</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -86,22 +33,16 @@
                     {
                         <tr>
                             <td>@(line.Medicine?.MedicineName ?? "Unknown")</td>
-                            <td>@line.Instructions</td>
                             <td>@line.Quantity</td>
-                            <td class="repeats-left">@line.RepeatsLeft</td>
+                            <td>@($"R{line.Price:0.00}")</td>
+                            <td>@($"R{line.LineTotal:0.00}")</td>
+                            <td>@line.OrderId</td>
                             <td>
-                                @if (line.RepeatsLeft > 0)
-                                {
-                                    <button type="button"
-                                            class="btn btn-warning btn-sm request-repeat-btn"
-                                            data-line-id="@line.PrescriptionLineId">
-                                        <i class="material-icons">&#xE863;</i> Request
-                                    </button>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">No repeats left</span>
-                                }
+                                <button type="button"
+                                        class="btn btn-warning btn-sm request-repeat-btn"
+                                        data-line-id="@line.OrderLineId">
+                                    Request Repeat
+                                </button>
                             </td>
                         </tr>
                     }
@@ -123,30 +64,16 @@
                 url: '@Url.Action("AjaxRequestRepeat", "RepeatRequest")',
                 type: 'POST',
                 data: {
-                    prescriptionLineId: lineId,
+                    orderLineId: lineId,
                     __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                 },
                 success: function (resp) {
-                    if (resp.success) {
-                        // Update RepeatsLeft cell in table
-                        var repeatsCell = btn.closest('tr').find('.repeats-left');
-                        repeatsCell.text(resp.repeatsLeft);
-
-                        if (resp.repeatsLeft <= 0) {
-                            btn.closest('td').html('<span class="text-muted">No repeats left</span>');
-                        } else {
-                            btn.prop('disabled', false).html('<i class="material-icons">&#xE863;</i> Request');
-                        }
-
-                        alert(resp.message);
-                    } else {
-                        alert(resp.message);
-                        btn.prop('disabled', false).html('<i class="material-icons">&#xE863;</i> Request');
-                    }
+                    alert(resp.message);
+                    btn.prop('disabled', false).text('Request Repeat');
                 },
                 error: function () {
                     alert('Something went wrong.');
-                    btn.prop('disabled', false).html('<i class="material-icons">&#xE863;</i> Request');
+                    btn.prop('disabled', false).text('Request Repeat');
                 }
             });
         });

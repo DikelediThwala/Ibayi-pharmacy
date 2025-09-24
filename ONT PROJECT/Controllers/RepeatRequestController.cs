@@ -32,12 +32,12 @@ namespace ONT_PROJECT.Controllers
             if (customer == null)
                 return NotFound();
 
-            var collectedLines = await _context.PrescriptionLines
-                .Include(pl => pl.Medicine)
-                .Include(pl => pl.Prescription)
-                .Where(pl => pl.Prescription != null
-                             && pl.Prescription.CustomerId == customer.CustomerId
-                             && pl.Prescription.Status == "Collected")
+            // Get all OrderLines from orders marked as "Received"
+            var collectedLines = await _context.OrderLines
+                .Include(ol => ol.Medicine)
+                .Include(ol => ol.Order)
+                .Where(ol => ol.Order.CustomerId == customer.CustomerId
+                             && ol.Order.Status == "Received")
                 .ToListAsync();
 
             return View(collectedLines);
@@ -46,7 +46,7 @@ namespace ONT_PROJECT.Controllers
         // AJAX repeat request endpoint
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AjaxRequestRepeat(int prescriptionLineId)
+        public async Task<IActionResult> AjaxRequestRepeat(int orderLineId)
         {
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdStr))
@@ -61,24 +61,20 @@ namespace ONT_PROJECT.Controllers
             if (customer == null)
                 return Json(new { success = false, message = "Customer not found." });
 
-            var line = await _context.PrescriptionLines
-                .Include(pl => pl.Medicine)
-                .Include(pl => pl.Prescription)
-                .FirstOrDefaultAsync(pl => pl.PrescriptionLineId == prescriptionLineId);
+            var line = await _context.OrderLines
+                .Include(ol => ol.Medicine)
+                .Include(ol => ol.Order)
+                .FirstOrDefaultAsync(ol => ol.OrderLineId == orderLineId
+                                           && ol.Order.CustomerId == customer.CustomerId
+                                           && ol.Order.Status == "Received");
 
             if (line == null)
-                return Json(new { success = false, message = "Prescription line not found." });
+                return Json(new { success = false, message = "Order line not found or not collected yet." });
 
-            if (line.RepeatsLeft <= 0)
-                return Json(new { success = false, message = $"No repeats left for {line.Medicine?.MedicineName ?? "Unknown Medication"}." });
-
-            // Decrement repeats
-            line.RepeatsLeft -= 1;
-
-            // Optional: create repeat request record
+            // Optional: You can still create a RepeatRequest based on PrescriptionLineId
             var repeatRequest = new RepeatRequest
             {
-                PrescriptionLineId = line.PrescriptionLineId,
+                PrescriptionLineId = line.LineId, // use original PrescriptionLineId stored in LineId
                 RequestDate = DateTime.Now,
                 Status = "Pending"
             };
@@ -89,9 +85,9 @@ namespace ONT_PROJECT.Controllers
             return Json(new
             {
                 success = true,
-                message = $"Repeat requested for {line.Medicine?.MedicineName ?? "Unknown Medication"}.",
-                repeatsLeft = line.RepeatsLeft
+                message = $"Repeat requested for {line.Medicine?.MedicineName ?? "Unknown Medication"}."
             });
         }
+
     }
 }
