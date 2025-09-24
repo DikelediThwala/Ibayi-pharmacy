@@ -21,7 +21,7 @@ namespace IBayiLibrary.Repository
             try
             {
                 await _db.SaveData("spOrderMedication", new {tblOrder.CustomerID,tblOrder.PharmacistID,tblOrder.Status,tblOrder.TotalDue,tblOrder.VAT,              
-                    tblOrder.DateRecieved});
+                    tblOrder.DatePlaced,tblOrder.DateReceived});
                 return true;
             }
             catch (Exception ex)
@@ -33,6 +33,29 @@ namespace IBayiLibrary.Repository
         {
             string query = "spPrepareOrder";
             return await _db.GetData<tblOrder, dynamic > (query, new { });
+        }
+        public async Task<IEnumerable<tblOrder>> GetAllOrders()
+        {
+            string query = "spGetOrders";
+            return await _db.GetData<tblOrder, dynamic>(query, new { });
+        }
+        public async Task<bool> UpdateOrder(tblOrder order)
+        {
+            try
+            {
+
+                await _db.SaveData("spUpdateOrderStatus", order);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+        public async Task<tblOrder> GetOrdersByID(int id)
+        {
+            IEnumerable<tblOrder> result = await _db.GetData<tblOrder, dynamic>("GetOrderByID", new { OrderID = id });
+            return result.FirstOrDefault();
         }
     }
 }

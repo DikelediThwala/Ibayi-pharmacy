@@ -1,0 +1,64 @@
+﻿@model IEnumerable<IBayiLibrary.Models.Domain.tblOrder>
+@{
+    
+    ViewData["Title"] = "Dispense Prescription";
+    Layout = "PharmacistLayout";
+}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<div class="card mt-3">
+    <div class="card-header bg-dark text-white">
+        <h4>ORDERS</h4>
+    </div>
+    <div class="card-body">
+            <table class="table table-bordered table-hover mt-3">
+                <thead class="table-light">
+                    <tr>                      
+                        <th>OrderID</th>
+                        <th>CustomerID</th>
+                        <th>PharmacistID</th>
+                        <th>Status</th>
+                        <th>VAT</th>
+                        <th>Date Placed</th>
+                        <th>Date Received</th>
+                        <th>Total Due</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>          
+                        @foreach (var item in Model)
+                        {
+                            <tr>                       
+                                <td>@item.OrderID</td>
+                                <td>@item.CustomerID</td>
+                                <td>@item.PharmacistID</td>
+                                <td>@item.Status</td>
+                                <td>@item.VAT</td>
+                                <td>@item.DatePlaced.ToString("yyyy-MM-dd")</td>
+                                <td>@item.DateReceived</td>
+                                <td>@item.TotalDue</td>
+                                <td>
+                            <a class="btn btn-primary process-btn" asp-route-id="@item.OrderID" asp-action="Edit">
+                                Dispense
+                             </a>
+                            
+                                </td>
+                            </tr>
+                        }                
+                </tbody>
+            </table>       
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

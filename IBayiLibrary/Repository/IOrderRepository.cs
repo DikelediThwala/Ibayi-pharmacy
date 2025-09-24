@@ -11,5 +11,9 @@ namespace IBayiLibrary.Repository
     {
         Task<bool> AddOrder(tblOrder tblOrder);
         Task<IEnumerable<tblOrder>> MedicationOrder();
+        Task<IEnumerable<tblOrder>> GetAllOrders();
+        Task<bool> UpdateOrder(tblOrder order);
+        Task<tblOrder> GetOrdersByID(int id);
+
     }
 }

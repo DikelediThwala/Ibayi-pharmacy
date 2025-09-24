@@ -22,7 +22,7 @@ namespace IBayiLibrary.Models.Domain
         public int SalesPrice { get; set; }
         public int TotalSales { get; set; }
         public DateTime DatePlaced { get; set; }
-        public DateTime DateRecieved { get; set; }
+        public DateTime? DateReceived { get; set; }
         
     }
 }

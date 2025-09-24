@@ -368,28 +368,3 @@
     // Apply to your sidebar
     makeDraggable(document.getElementById("pdfPreviewContainer"));
 </script>
-/*
-    document.addEventListener('DOMContentLoaded', function () {
-        const container = document.getElementById('medicationContainer');
-
-        container.addEventListener('click', function (e) {
-            // Add new row
-            if (e.target.classList.contains('add-btn')) {
-                const row = e.target.closest('.medication-row');
-                const newRow = row.cloneNode(true);
-
-                // Reset values
-                newRow.querySelectorAll('select, input, textarea').forEach(el => el.value = '');
-                container.appendChild(newRow);
-            }
-
-            // Remove row
-            if (e.target.classList.contains('remove-btn')) {
-                const rows = container.querySelectorAll('.medication-row');
-                if (rows.length > 1) {
-                    e.target.closest('.medication-row').remove();
-                }
-            }
-        });
-    });
- */

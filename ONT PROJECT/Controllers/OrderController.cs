@@ -29,8 +29,8 @@ namespace ONT_PROJECT.Controllers
             {
                 var date= order;
                 date.DatePlaced = DateTime.Now;
-                var dateReceived = order;
-                dateReceived.DateRecieved = DateTime.Now;
+                //var dateReceived = order;
+                //dateReceived.DateReceived = null;
                 var status = order;
                 status.Status = "Placed";
                 var vat = order;
@@ -54,15 +54,21 @@ namespace ONT_PROJECT.Controllers
             }
             return RedirectToAction("LoadPrescription", "Pharmacist");
         }
-
-
-
-
-
         public async Task<IActionResult> OrderMedication()
         {
             var results = await _orderRepository.MedicationOrder();
             return View(results);
         }
+        public async Task<IActionResult> GetOrdersMedication()
+        {
+            var results = await _orderRepository.GetAllOrders();
+            return View(results);
+        }
+        public async Task<IActionResult> Edit(int id)
+        {
+            var person = await _orderRepository.GetOrdersByID(id);
+            return View(person);
+        }
+
     }
 }
