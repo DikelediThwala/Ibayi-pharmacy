@@ -1,0 +1,45 @@
+﻿@model ONT_PROJECT.Models.UnprocessedPrescription
+
+@{
+    ViewData["Title"] = "Add Prescription Line";
+    Layout = "_CustomerLayout"; // Or your pharmacist layout
+}
+
+<h2 class="text-primary mb-4">Add Prescription Line</h2>
+
+<div class="card shadow-sm p-3 mb-4">
+    <h5>Prescription for: @(Model.Customer?.CustomerNavigation?.FirstName ?? "Unknown") @(Model.Customer?.CustomerNavigation?.LastName ?? "")</h5>
+    <p>Date: @Model.Date.ToString("yyyy-MM-dd")</p>
+
+    <form asp-action="AddLine" method="post">
+        <input type="hidden" name="id" value="@Model.UnprocessedPrescriptionId" />
+
+        <div class="mb-3">
+            <label for="medicineId" class="form-label">Medicine</label>
+            <select class="form-select" id="medicineId" name="medicineId" required>
+                <option value="">-- Select Medicine --</option>
+                @foreach (var med in ViewBag.Medicines as List<ONT_PROJECT.Models.Medicine>)
+                {
+                    <option value="@med.MedicineId">@med.MedicineName</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="instructions" class="form-label">Instructions</label>
+            <textarea class="form-control" id="instructions" name="instructions" rows="2" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="repeats" class="form-label">Repeats</label>
+            <input type="number" class="form-control" id="repeats" name="repeats" min="0" value="0" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Line</button>
+    </form>
+</div>

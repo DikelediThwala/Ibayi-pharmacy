@@ -1,0 +1,43 @@
+﻿@model IEnumerable<ONT_PROJECT.Models.UnprocessedPrescription>
+
+@{
+    ViewData["Title"] = "Unprocessed Prescriptions";
+    Layout = "_CustomerLayout"; // Or your pharmacist layout
+}
+
+<h2 class="text-primary mb-4">Unprocessed Prescriptions</h2>
+
+<div class="row g-3">
+    @foreach (var prescription in Model)
+    {
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        Customer: @(prescription.Customer?.CustomerNavigation?.FirstName ?? "Unknown")
+                        @(prescription.Customer?.CustomerNavigation?.LastName ?? "")
+                    </h5>
+                    <p class="card-text">
+                        Request Date: @prescription.Date.ToString("yyyy-MM-dd")<br />
+                        Status: <span class="badge bg-warning text-dark">@prescription.Status ?? "Unknown"</span>
+                    </p>
+
+                    @if (prescription.PrescriptionPhoto != null && prescription.PrescriptionPhoto.Length > 0)
+                    {
+                        <img src="data:image/png;base64,@Convert.ToBase64String(prescription.PrescriptionPhoto)"
+                             class="img-fluid mb-2 rounded shadow-sm" alt="Prescription Image" />
+                    }
+                    else
+                    {
+                        <div class="text-muted mb-2">No image uploaded.</div>
+                    }
+
+                    <a asp-action="AddLine" asp-route-id="@prescription.UnprocessedPrescriptionId"
+                       class="btn btn-primary w-100">
+                        <i class="bi bi-plus-circle me-1"></i> Add Prescription Line
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
