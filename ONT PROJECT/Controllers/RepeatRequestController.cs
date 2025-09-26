@@ -26,8 +26,10 @@ namespace ONT_PROJECT.Controllers
             if (string.IsNullOrEmpty(userIdStr))
                 return Unauthorized();
 
-            int userId = int.Parse(userIdStr);
+            if (!int.TryParse(userIdStr, out int userId))
+                return Unauthorized();
 
+            // find the current customer
             var customer = await _context.Customers
                 .Include(c => c.CustomerNavigation)
                 .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
@@ -35,7 +37,7 @@ namespace ONT_PROJECT.Controllers
             if (customer == null)
                 return NotFound();
 
-            // Get all OrderLines from orders marked as "Received"
+            // get all OrderLines from orders marked as "Received"
             var collectedLines = await _context.OrderLines
                 .Include(ol => ol.Medicine)
                 .Include(ol => ol.Order)
@@ -55,8 +57,10 @@ namespace ONT_PROJECT.Controllers
             if (string.IsNullOrEmpty(userIdStr))
                 return Json(new { success = false, message = "User not logged in." });
 
-            int userId = int.Parse(userIdStr);
+            if (!int.TryParse(userIdStr, out int userId))
+                return Json(new { success = false, message = "Invalid user id." });
 
+            // find the current customer
             var customer = await _context.Customers
                 .Include(c => c.CustomerNavigation)
                 .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
@@ -64,7 +68,7 @@ namespace ONT_PROJECT.Controllers
             if (customer == null)
                 return Json(new { success = false, message = "Customer not found." });
 
-            // Find the specific OrderLine the customer is requesting a repeat for
+            // find the specific OrderLine the customer is requesting a repeat for
             var line = await _context.OrderLines
                 .Include(ol => ol.Medicine)
                 .Include(ol => ol.Order)
@@ -75,10 +79,10 @@ namespace ONT_PROJECT.Controllers
             if (line == null)
                 return Json(new { success = false, message = "Order line not found or not collected yet." });
 
-            // Create a RepeatRequest using the LineId from OrderLine 
+            // create a RepeatRequest linked directly to OrderLineId
             var repeatRequest = new RepeatRequest
             {
-                PrescriptionLineId = line.LineId, // ✅ use LineId here
+                OrderLineId = line.OrderLineId,   // link directly to the order line
                 RequestDate = DateTime.Now,
                 Status = "Pending"
             };

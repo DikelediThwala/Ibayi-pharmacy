@@ -137,9 +137,9 @@
 
     // Get total repeats grouped by medication
     var repeatCounts = Context.RepeatRequest
-        .Include(r => r.PrescriptionLine)
+        .Include(r => r.OrderLine)
         .ThenInclude(pl => pl.Medicine)
-        .GroupBy(r => r.PrescriptionLine.Medicine.MedicineName)
+        .GroupBy(r => r.OrderLine.Medicine.MedicineName)
         .Select(g => new
         {
             MedicineName = g.Key,

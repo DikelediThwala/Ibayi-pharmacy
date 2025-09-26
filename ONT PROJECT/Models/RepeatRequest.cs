@@ -9,11 +9,12 @@ namespace ONT_PROJECT.Models
         [Key]
         public int RepeatRequestId { get; set; }
 
+        // Use OrderLineId as the foreign key
         [Required]
-        public int PrescriptionLineId { get; set; }
+        public int OrderLineId { get; set; }
 
-        [ForeignKey("PrescriptionLineId")]
-        public virtual PrescriptionLine PrescriptionLine { get; set; }
+        [ForeignKey("OrderLineId")]
+        public virtual OrderLine OrderLine { get; set; }
 
         [Required]
         public DateTime RequestDate { get; set; }

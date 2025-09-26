@@ -88,7 +88,7 @@
                     @foreach (var line in Model)
                     {
                         var repeatsCount = Context.RepeatRequest
-                        .Count(r => r.PrescriptionLineId == line.LineId);
+                        .Count(r => r.OrderLineId == line.LineId);
 
                         <tr id="line-@line.OrderLineId">
                             <td>@(line.Medicine?.MedicineName ?? "Unknown")</td>

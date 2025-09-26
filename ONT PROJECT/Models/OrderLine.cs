@@ -13,13 +13,13 @@ public partial class OrderLine
 
     public int Quantity { get; set; }
 
-    public int LineId { get; set; }
+    public int? LineId { get; set; }
 
     public double Price { get; set; }
 
     public double LineTotal { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string? Status { get; set; } /*= null!;*/
 
     public virtual Medicine Medicine { get; set; } = null!;
 
