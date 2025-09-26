@@ -47,6 +47,16 @@ namespace ONT_PROJECT.Controllers
                     TempData["msg"] = "Could not add";
                 }
 
+                //OrderLine
+                bool ad = await _orderRepository.AddOrderLine(order);
+                if (ad)
+                {
+                    TempData["msg"] = "Sucessfully Added";
+                }
+                else
+                {
+                    TempData["msg"] = "Could not add";
+                }
             }
             catch (Exception ex)
             {

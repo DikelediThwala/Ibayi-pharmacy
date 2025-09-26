@@ -29,6 +29,25 @@ namespace IBayiLibrary.Repository
                 return false;
             }
         }
+        public async Task<bool> AddOrderLine(tblOrder tblOrder)
+        {
+            try
+            {
+                await _db.SaveData("spInsertOrderLine", new
+                {
+                    tblOrder.OrderID,
+                    tblOrder.MedicineID,
+                    tblOrder.Quantity,                  
+                    tblOrder.Price,
+                    tblOrder.LineTotal,                   
+                });
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
         public async Task<IEnumerable<tblOrder>> MedicationOrder()
         {
             string query = "spPrepareOrder";

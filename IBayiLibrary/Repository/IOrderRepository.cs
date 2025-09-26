@@ -10,6 +10,7 @@ namespace IBayiLibrary.Repository
     public interface IOrderRepository
     {
         Task<bool> AddOrder(tblOrder tblOrder);
+        Task<bool> AddOrderLine(tblOrder tblOrder);
         Task<IEnumerable<tblOrder>> MedicationOrder();
         Task<IEnumerable<tblOrder>> GetAllOrders();
         Task<bool> UpdateOrder(tblOrder order);
