@@ -9,7 +9,7 @@ namespace IBayiLibrary.Models.Domain
     public class tblOrder
     {
         public int OrderID { get; set; }
-        public int CustomerID { get; set; }
+        public int CustomerID { get; set; }  
         public int MedicineID { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

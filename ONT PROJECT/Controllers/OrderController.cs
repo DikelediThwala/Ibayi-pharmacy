@@ -79,6 +79,11 @@ namespace ONT_PROJECT.Controllers
             var person = await _orderRepository.GetOrdersByID(id);
             return View(person);
         }
+        public async Task<IActionResult> Update(tblOrder order)
+        {
+            var person = await _orderRepository.UpdateOrder(order);
+            return View(person);
+        }
 
     }
 }
