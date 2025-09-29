@@ -15,16 +15,22 @@
             @Html.DisplayFor(model => model.OrderID)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.CustomerID)
+            @Html.DisplayNameFor(model => model.FirstName)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.CustomerID)
+            @Html.DisplayFor(model => model.FirstName)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.PharmacistID)
+            @Html.DisplayNameFor(model => model.LastName)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PharmacistID)
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MedicineName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MedicineName)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DatePlaced)
@@ -39,6 +45,12 @@
             @Html.DisplayFor(model => model.DateReceived)
         </dd>
         <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LineTotal)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LineTotal)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Status)
         </dt>
         <dd class="col-sm-10">
@@ -48,10 +60,8 @@
                 <option value="">Collected</option>
                 <option value="">Ready</option>
             </select>
-        </dd>
-       
+        </dd>      
     </dl>
-
 </div>
 <div>
     <a asp-action="Update" asp-route-id="@Model.OrderID">Update</a> |
