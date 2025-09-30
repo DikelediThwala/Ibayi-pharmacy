@@ -2,6 +2,7 @@
 using IBayiLibrary.Models.Domain;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace IBayiLibrary.Repository
             try
             {
                 await _db.SaveData("spOrderMedication", new {tblOrder.CustomerID,tblOrder.PharmacistID,tblOrder.Status,tblOrder.TotalDue,tblOrder.VAT,              
-                    tblOrder.DatePlaced,tblOrder.DateReceived});
+                    tblOrder.DatePlaced,tblOrder.DateRecieved});
                 return true;
             }
             catch (Exception ex)
@@ -58,23 +59,24 @@ namespace IBayiLibrary.Repository
             string query = "spGetOrders";
             return await _db.GetData<tblOrder, dynamic>(query, new { });
         }
-        public async Task<bool> UpdateOrder(tblOrder order)
-        {
-            try
-            {
+        //public async Task<tblOrder> UpdateOrder(int id,string status)
+        //{    
+        //        IEnumerable<tblOrder> result = await _db.GetData<tblOrder, dynamic>("spUpdateOrderStatus", new { OrderID = id,Status = status});
+        //        return result.FirstOrDefault();               
 
-                await _db.SaveData("spUpdateOrderStatus", order);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+        //}
+
+        public async Task<bool> UpdateOrder(int id, string status,DateTime?dateRecieved)
+        {
+            await _db.SaveData("spUpdateOrderStatus", new { OrderID = id, Status = status, DateRecieved = dateRecieved});
+            return true;
         }
+
         public async Task<tblOrder> GetOrdersByID(int id)
         {
             IEnumerable<tblOrder> result = await _db.GetData<tblOrder, dynamic>("GetOrderByID", new { OrderID = id });
             return result.FirstOrDefault();
-        }
+        }      
+
     }
 }

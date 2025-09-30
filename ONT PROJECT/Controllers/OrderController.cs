@@ -2,6 +2,7 @@
 using IBayiLibrary.Repository;
 using Microsoft.AspNetCore.Mvc;
 using ONT_PROJECT.Models;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -78,11 +79,43 @@ namespace ONT_PROJECT.Controllers
         {
             var person = await _orderRepository.GetOrdersByID(id);
             return View(person);
-        }
-        public async Task<IActionResult> Update(tblOrder order)
+        }     
+        [HttpPost]
+        public async Task<IActionResult> Update(tblOrder order,int id)
         {
-            var person = await _orderRepository.UpdateOrder(order);
-            return View(person);
+            var date = order;
+            date.DateRecieved = DateTime.Now;
+
+            var person = await _orderRepository.GetOrdersByID(id);
+            var success = await _orderRepository.UpdateOrder(order.OrderID, order.Status,order.DateRecieved);
+
+            if (!success)
+                return NotFound();
+            if (success)
+            {
+                if (!string.IsNullOrEmpty(person.Email))
+                {
+                    string emailBody = $@"
+                        <p>Hello {person.FirstName}<br>{person.LastName}</p>                       
+                        <p>Your Order is ready for collection</p>
+                        <p><strong>#Order ID:</strong> {person.OrderID}</p>                      
+                        <p><strong>Medicine:</strong> {person.MedicineName}</p>
+                        <p><strong>Date Placed:</strong> {person.DatePlaced}</p>  
+                        <p><strong>Quantity:</strong> {person.Quantity}</p>             
+                        <p><strong>Total:</strong> {person.LineTotal}</p>  
+                        <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
+
+
+                    _emailService.Send(person.Email, "Your Medication Has Been Dispensed", emailBody);
+
+                }
+                return Json(new { success = true, message = "Prescription dispensed." });
+            }
+
+            //else
+            //    return Json(new { success = false, message = "Failed to ." });
+
+            return RedirectToAction("GetOrdersMedication", new { id = order.OrderID });
         }
 
     }
