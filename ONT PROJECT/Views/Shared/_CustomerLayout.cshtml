@@ -63,7 +63,7 @@
 
         .top-navbar {
             background-color: #f8f9fa;
-            padding: 1rem;
+            padding: 0.5rem 1rem;
             border-bottom: 1px solid #ddd;
         }
 
@@ -86,12 +86,6 @@
             margin-top: 10px;
         }
 
-        .top-navbar {
-            background-color: #f8f9fa;
-            padding: 0.5rem 1rem;
-            border-bottom: 1px solid #ddd;
-        }
-
         .dropdown-menu {
             min-width: 180px;
         }
@@ -109,18 +103,16 @@
         .sidebar.collapsed .profile-text {
             display: none;
         }
-
     </style>
 </head>
 <body>
 
     <!-- Sidebar -->
-    <div class="sidebar" id="sidebar"> 
+    <div class="sidebar" id="sidebar">
         <div class="profile-header d-flex align-items-center p-3 border-bottom">
-            <img src="~/images/WhatsApp Image 2025-05-07 at 10.26.24.jpeg" alt="Profile" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+            <i class="bi bi-person-circle fs-1 me-3 text-white"></i>
             <div class="profile-text">
                 @Context.Session.GetString("UserFirstName") @Context.Session.GetString("UserLastName")
-
                 <div style="color:cadetblue;">Customer</div>
             </div>
         </div>
@@ -130,7 +122,11 @@
         </div>
 
         <ul class="nav flex-column p-2">
-            <li class="nav-item"><a class="nav-link active" asp-controller="Customer" asp-action="Dashboard"><i class="bi bi-grid"></i> <span>Dashboard</span></a></li>
+            <li class="nav-item">
+                <a class="nav-link active" asp-controller="Customer" asp-action="Dashboard">
+                    <i class="bi bi-grid"></i> <span>Dashboard</span>
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#medicationSubmenu">
                     <span><i class="bi bi-capsule"></i> <span>Prescription</span></span>
@@ -146,35 +142,38 @@
                         </li>
                     </ul>
                 </div>
+            </li>
             <li class="nav-item">
-                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#medicationSubmenu">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#medicationSubmenu2">
                     <span><i class="bi bi-capsule"></i> <span>Order Medication</span></span>
                     <i class="bi bi-chevron-down"></i>
                 </a>
-                <div class="collapse ps-3" id="medicationSubmenu">
+                <div class="collapse ps-3" id="medicationSubmenu2">
                     <ul class="nav flex-column">
                         <li><a class="nav-link" asp-controller="CustomerOrder" asp-action="OrderedMedication"><i class="bi bi-pencil-square"></i> Ordered Medication</a></li>
-                        <li><a class="nav-link" asp-controller="Repeats" asp-action="Index"><i class="bi bi-diagram-3"></i>Ordered Medication</a></li>
+                        <li><a class="nav-link" asp-controller="Repeats" asp-action="Index"><i class="bi bi-diagram-3"></i> Ordered Medication</a></li>
                     </ul>
                 </div>
+            </li>
             <li class="nav-item">
-    <a class="nav-link" asp-controller="RepeatRequest" asp-action="CollectedMedications">
-        <i class="bi bi-person-badge"></i> <span>Collected Medications</span>
-    </a>
-</li>
-
-            <li class="nav-item"><a class="nav-link" asp-controller="CustomerReport" asp-action="Index"><i class="bi bi-person-badge"></i> <span>Reports </span></a></li>
-
-            <li class="nav-item">
-               @*  <a class="nav-link" asp-controller="ProfileSettings" asp-action="Index"> *@
-                <a class="nav-link" asp-controller="ProfileSettings" asp-action="Settings">
-                    <i class="bi bi-gear"></i> <span> Settings</span>
+                <a class="nav-link" asp-controller="RepeatRequest" asp-action="CollectedMedications">
+                    <i class="bi bi-person-badge"></i> <span>Collected Medications</span>
                 </a>
-            </li> *
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="CustomerReport" asp-action="Index">
+                    <i class="bi bi-person-badge"></i> <span>Reports</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="ProfileSettings" asp-action="Settings">
+                    <i class="bi bi-gear"></i> <span>Settings</span>
+                </a>
+            </li>
         </ul>
     </div>
 
-
+    <!-- Main Content -->
     <div class="main" id="main">
         <div class="top-navbar d-flex justify-content-between align-items-center px-3 py-2 shadow-sm" style="background-color: #f8f9fa;">
             <!-- Left: Logo -->
@@ -184,10 +183,9 @@
             <div class="dropdown">
                 <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-bell me-3 fs-5"></i>
-                    <i class="bi bi-envelope me-3 fs-5"></i> <!-- Message Icon -->
+                    <i class="bi bi-envelope me-3 fs-5"></i>
                     @Context.Session.GetString("UserFirstName") @Context.Session.GetString("UserLastName")
-
-                    <img src="~/images/WhatsApp Image 2025-05-07 at 10.26.24.jpeg" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                    <i class="bi bi-person-circle fs-4 text-dark ms-2"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li>
@@ -202,9 +200,7 @@
                     </li>
                 </ul>
             </div>
-        </div> 
-
-   
+        </div>
 
         <div class="content-area">
             @RenderBody()
@@ -233,8 +229,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
