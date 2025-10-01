@@ -11,6 +11,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         .sidebar {
@@ -24,33 +25,48 @@
             transition: width 0.3s;
         }
 
-            .sidebar.collapsed {
-                width: 80px;
-            }
+        .sidebar.collapsed {
+            width: 80px;
+        }
 
-            .sidebar .nav-link {
-                color: #5C7C89;
-                white-space: nowrap;
-            }
+        .sidebar .nav-link {
+            color: #5C7C89;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-                .sidebar .nav-link:hover,
-                .sidebar .nav-link.active {
-                    background-color: #1F4959;
-                    color: white;
-                }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: #1F4959;
+            color: white;
+        }
 
-            .sidebar.collapsed .nav-link span {
-                display: none;
-            }
+        .sidebar.collapsed .nav-link span {
+            display: none;
+        }
 
-            .sidebar .logo-section {
-                padding: 1rem;
-                text-align: center;
-            }
+        .sidebar .logo-section {
+            padding: 1rem;
+            text-align: center;
+        }
 
-                .sidebar .logo-section h4 {
-                    white-space: nowrap;
-                }
+        .sidebar .logo-section h4 {
+            white-space: nowrap;
+        }
+
+        .sidebar .profile-header {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar.collapsed .profile-text {
+            display: none;
+        }
 
         .main {
             margin-left: 250px;
@@ -65,6 +81,9 @@
             background-color: #f8f9fa;
             padding: 0.5rem 1rem;
             border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .content-area {
@@ -73,11 +92,10 @@
 
         .collapse-button {
             cursor: pointer;
-        }
-
-        .sidebar.collapsed .logo-section h4,
-        .sidebar.collapsed .img-fluid {
-            display: none;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .img-fluid {
@@ -90,79 +108,51 @@
             min-width: 180px;
         }
 
-            .dropdown-menu .dropdown-item i {
-                font-size: 1rem;
-            }
-
-        .sidebar .profile-section {
-            padding: 1rem;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .sidebar.collapsed .profile-text {
-            display: none;
+        .dropdown-menu .dropdown-item i {
+            font-size: 1rem;
         }
     </style>
 </head>
 <body>
-
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <div class="profile-header d-flex align-items-center p-3 border-bottom">
-            <i class="bi bi-person-circle fs-1 me-3 text-white"></i>
+        <div class="profile-header">
+            <i class="bi bi-person-circle fs-1"></i>
             <div class="profile-text">
                 @Context.Session.GetString("UserFirstName") @Context.Session.GetString("UserLastName")
-                <div style="color:cadetblue;">Customer</div>
+                <div style="color: cadetblue;">Customer</div>
             </div>
-        </div>
-
-        <div class="p-3 mt-auto collapse-button d-flex align-items-center gap-2" onclick="toggleSidebar()">
-            <i class="bi bi-list fs-3" id="collapse-icon"></i>
         </div>
 
         <ul class="nav flex-column p-2">
             <li class="nav-item">
                 <a class="nav-link active" asp-controller="Customer" asp-action="Dashboard">
-                    <i class="bi bi-grid"></i> <span>Dashboard</span>
+                    <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#medicationSubmenu">
-                    <span><i class="bi bi-capsule"></i> <span>Prescription</span></span>
-                    <i class="bi bi-chevron-down"></i>
+                <a class="nav-link" asp-controller="Prescription" asp-action="Upload">
+                    <i class="bi bi-file-earmark-medical"></i> <span>Upload Prescription</span>
                 </a>
-                <div class="collapse ps-3" id="medicationSubmenu">
-                    <ul class="nav flex-column">
-                        <li><a class="nav-link" asp-controller="Prescription" asp-action="Upload"><i class="bi bi-pencil-square"></i> Upload Prescription</a></li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="CustomerPrescriptionLine" asp-action="MyPrescriptionLines" title="My Prescriptions" data-bs-toggle="tooltip">
-                                <i class="bi bi-plus-circle"></i> <span>My Prescriptions</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#medicationSubmenu2">
-                    <span><i class="bi bi-capsule"></i> <span>Order Medication</span></span>
-                    <i class="bi bi-chevron-down"></i>
+                <a class="nav-link" asp-controller="CustomerPrescriptionLine" asp-action="MyPrescriptionLines">
+                    <i class="bi bi-journal-medical"></i> <span>My Prescriptions</span>
                 </a>
-                <div class="collapse ps-3" id="medicationSubmenu2">
-                    <ul class="nav flex-column">
-                        <li><a class="nav-link" asp-controller="CustomerOrder" asp-action="OrderedMedication"><i class="bi bi-pencil-square"></i> Ordered Medication</a></li>
-                        <li><a class="nav-link" asp-controller="Repeats" asp-action="Index"><i class="bi bi-diagram-3"></i> Ordered Medication</a></li>
-                    </ul>
-                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="CustomerOrder" asp-action="OrderedMedication">
+                    <i class="bi bi-basket3"></i> <span>Ordered Medication</span>
+                </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" asp-controller="RepeatRequest" asp-action="CollectedMedications">
-                    <i class="bi bi-person-badge"></i> <span>Collected Medications</span>
+                    <i class="bi bi-truck"></i> <span>Collected Medications</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" asp-controller="CustomerReport" asp-action="Index">
-                    <i class="bi bi-person-badge"></i> <span>Reports</span>
+                    <i class="bi bi-file-earmark-text"></i> <span>Reports</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -171,15 +161,16 @@
                 </a>
             </li>
         </ul>
+
+        <div class="collapse-button" onclick="toggleSidebar()">
+            <i class="bi bi-list fs-3" id="collapse-icon"></i>
+        </div>
     </div>
 
     <!-- Main Content -->
     <div class="main" id="main">
-        <div class="top-navbar d-flex justify-content-between align-items-center px-3 py-2 shadow-sm" style="background-color: #f8f9fa;">
-            <!-- Left: Logo -->
+        <div class="top-navbar">
             <img src="~/images/logo_3-removebg-preview.png" alt="Thor Logo" class="img-fluid" style="height: 50px;" />
-
-            <!-- Right: Profile Dropdown -->
             <div class="dropdown">
                 <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-bell me-3 fs-5"></i>
@@ -207,7 +198,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleSidebar() {
