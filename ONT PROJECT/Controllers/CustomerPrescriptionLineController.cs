@@ -16,20 +16,16 @@ namespace ONT_PROJECT.Controllers
             _context = context;
         }
 
-        /// <summary>
-        /// Displays all prescription lines for the logged-in customer.
-        /// Safely handles missing navigation properties to avoid null exceptions.
-        /// </summary>
+        // Display all prescription lines for the logged-in customer
         public async Task<IActionResult> MyPrescriptionLines()
         {
-            // Get logged-in user ID
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdStr))
                 return Unauthorized();
 
             int userId = int.Parse(userIdStr);
 
-            // Fetch the customer including allergies
+            // Fetch customer including allergies
             var customer = await _context.Customers
                 .Include(c => c.CustomerNavigation)
                 .Include(c => c.CustomerAllergies)
@@ -39,7 +35,7 @@ namespace ONT_PROJECT.Controllers
             if (customer == null)
                 return NotFound();
 
-            // Fetch prescription lines including medicines, prescriptions, and ingredients
+            // Fetch prescription lines including medicines and prescriptions
             var lines = await _context.PrescriptionLines
                 .Include(pl => pl.Medicine)
                     .ThenInclude(m => m.MedIngredients)
@@ -48,26 +44,30 @@ namespace ONT_PROJECT.Controllers
                     .ThenInclude(p => p.Customer)
                         .ThenInclude(c => c.CustomerAllergies)
                             .ThenInclude(ca => ca.ActiveIngredient)
-                .Where(pl => pl.Prescription != null && pl.Prescription.CustomerId == customer.CustomerId)
+                .Where(pl => pl.Prescription.CustomerId == customer.CustomerId)
                 .ToListAsync();
 
-            // Filter out any lines with missing navigation properties to prevent null errors
-            lines = lines.Where(pl => pl.Medicine != null && pl.Prescription != null).ToList();
+            // Initialize RepeatsLeft if null
+            foreach (var line in lines)
+            {
+                if (!line.RepeatsLeft.HasValue && line.Repeats.HasValue)
+                {
+                    line.RepeatsLeft = line.Repeats.Value;
+                    _context.Update(line);
+                }
+            }
+            await _context.SaveChangesAsync();
 
             return View(lines);
         }
 
-        /// <summary>
-        /// Places an order for the selected prescription lines.
-        /// Checks for allergies and handles optional repeats.
-        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PlaceOrder(int[] selectedLines)
         {
             if (selectedLines == null || selectedLines.Length == 0)
             {
-                TempData["ErrorMessage"] = "No medications selected. Please select at least one.";
+                TempData["ErrorMessage"] = "No medications selected.";
                 return RedirectToAction("MyPrescriptionLines");
             }
 
@@ -77,7 +77,6 @@ namespace ONT_PROJECT.Controllers
 
             int userId = int.Parse(userIdStr);
 
-            // Fetch customer with allergies
             var customer = await _context.Customers
                 .Include(c => c.CustomerNavigation)
                 .Include(c => c.CustomerAllergies)
@@ -87,7 +86,6 @@ namespace ONT_PROJECT.Controllers
             if (customer == null)
                 return NotFound();
 
-            // Fetch selected prescription lines
             var lines = await _context.PrescriptionLines
                 .Include(pl => pl.Medicine)
                     .ThenInclude(m => m.MedIngredients)
@@ -96,13 +94,9 @@ namespace ONT_PROJECT.Controllers
                 .Where(pl => selectedLines.Contains(pl.PrescriptionLineId))
                 .ToListAsync();
 
-            // Filter out null navigation properties
-            lines = lines.Where(pl => pl.Medicine != null && pl.Prescription != null).ToList();
-
             var blocked = new List<string>();
             var ordered = new List<string>();
 
-            // Create new order
             var order = new Order
             {
                 CustomerId = customer.CustomerId,
@@ -129,12 +123,12 @@ namespace ONT_PROJECT.Controllers
                     continue;
                 }
 
-                // Optional repeats check (uncomment if needed)
-                // if (line.RepeatsLeft == null || line.RepeatsLeft <= 0)
-                // {
-                //     blocked.Add($"{line.Medicine.MedicineName} (No repeats left)");
-                //     continue;
-                // }
+                // Check repeats
+                if (!line.RepeatsLeft.HasValue || line.RepeatsLeft <= 0)
+                {
+                    blocked.Add($"{line.Medicine.MedicineName} (No repeats left)");
+                    continue;
+                }
 
                 double price = line.Medicine.SalesPrice;
 
@@ -151,9 +145,9 @@ namespace ONT_PROJECT.Controllers
                 order.TotalDue += price * line.Quantity;
                 ordered.Add(line.Medicine.MedicineName);
 
-                // Optional: decrement repeats
-                // if (line.RepeatsLeft != null)
-                //     line.RepeatsLeft -= 1;
+                // Decrement repeats
+                line.RepeatsLeft -= 1;
+                _context.Update(line);
             }
 
             if (!order.OrderLines.Any())
@@ -171,7 +165,7 @@ namespace ONT_PROJECT.Controllers
                 TempData["ErrorMessage"] = "Some medications could not be ordered: " + string.Join(", ", blocked);
 
             TempData["SuccessMessage"] = "Order placed for: " + string.Join(", ", ordered);
-            return RedirectToAction("OrderedMedication", "CustomerOrder");
+            return RedirectToAction("MyPrescriptionLines");
         }
     }
 }
