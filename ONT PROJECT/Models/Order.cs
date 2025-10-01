@@ -11,7 +11,7 @@ public partial class Order
 
     public int? PharmacistId { get; set; }  // make it nullable
 
-    public string Status { get; set; } = null!;
+    public string Status { get; set; } 
 
     public double TotalDue { get; set; }
 

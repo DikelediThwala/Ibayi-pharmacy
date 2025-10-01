@@ -9,7 +9,7 @@ public partial class Medicine
 {
     public int MedicineId { get; set; }
 
-    public string MedicineName { get; set; } = null!;
+    public string MedicineName { get; set; }
 
     public int Schedule { get; set; }
 

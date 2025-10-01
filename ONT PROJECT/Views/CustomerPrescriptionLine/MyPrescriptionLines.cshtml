@@ -129,7 +129,8 @@
                                     <th>Medication</th>
                                     <th>Quantity</th>
                                     <th>Instructions</th>
-                                    <th>Repeats</th>
+                                    <th>Repeats Allowed</th>
+                                    <th>Repeats Left</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -160,6 +161,16 @@
                                         <td>@line.Quantity</td>
                                         <td>@line.Instructions</td>
                                         <td>@line.Repeats</td>
+                                        <td>
+                                            @if (line.Repeats > 0)
+                                            {
+                                                @(line.Repeats)
+                                            }
+                                            else
+                                            {
+                                                <span class="text-danger">No repeats left</span>
+                                            }
+                                        </td>
                                     </tr>
                                 }
                             </tbody>
