@@ -140,11 +140,11 @@ namespace ONT_PROJECT.Controllers
                     MedicineId = line.MedicineId,
                     Quantity = line.Quantity,
                     Price = price,
-                    LineTotal = price * line.Quantity,
                     Status = "Pending"
                 });
 
-                order.TotalDue += price * line.Quantity;
+                // only sum the price (not multiplied by quantity)
+                order.TotalDue += price;
                 ordered.Add(line.Medicine.MedicineName);
 
                 // Decrement repeats
@@ -169,5 +169,6 @@ namespace ONT_PROJECT.Controllers
             TempData["SuccessMessage"] = "Order placed for: " + string.Join(", ", ordered);
             return RedirectToAction("MyPrescriptionLines");
         }
+
     }
 }
