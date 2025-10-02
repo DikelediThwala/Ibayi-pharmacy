@@ -42,7 +42,8 @@ namespace ONT_PROJECT.Controllers
             return View();
         }
         public async Task<IActionResult> CreatePrescriptions()
-        {           
+        {
+           
             return View();
         }
         [HttpPost]
@@ -179,6 +180,7 @@ namespace ONT_PROJECT.Controllers
                 {
                     TempData["msg"] = "Could not add";
                 }
+               
             }
 
             catch (Exception ex)
