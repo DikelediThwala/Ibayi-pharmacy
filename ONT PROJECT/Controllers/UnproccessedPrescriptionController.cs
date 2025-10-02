@@ -33,6 +33,8 @@ namespace ONT_PROJECT.Controllers
         {
             var prescLine = await _prescriptionLineRepository.GetMedicineName();
             ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
+            var doc = await _prescriptionRepository.GetDoctorName();
+            ViewBag.DoctorID = new SelectList(doc.Select(c => new { c.DoctorID, FullName = c.Name + " " + c.Surname }), "DoctorID", "FullName");
 
             var prescription = await _unproccessedprescriptionRepository.GetPrescriptionByID(id);
             if (prescription == null)

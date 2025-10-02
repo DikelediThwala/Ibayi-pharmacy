@@ -236,7 +236,8 @@
             <h2>Customer Prescription</h2>
             <hr />
             <div class="row mb-4 align-items-end">
-                <div class="col-md-4">                  
+                <div class="col-md-4">  
+                    <label asp-for="CustomerID" class="form-label">Customer Name</label>
                     <input asp-for="CustomerID" type="hidden" />
                     <!-- Readonly display -->
                     <input type="text" class="form-control" value="@Model.FirstName" readonly />
@@ -245,15 +246,21 @@
 
             <div class="row mb-4">
                 <div class="col-md-4">
-             
-                    <input asp-for="DoctorID" type="hidden" />
-                    <!-- Readonly display -->
-                    <input type="text" class="form-control" value="@Model.Name" readonly />
+    
+                    <label asp-for="DoctorID" class="form-label">Doctors <span class="text-danger">*</span></label>               
+                    <select asp-for="DoctorID" class="form-select" asp-items="@ViewBag.DoctorID">
+                        <option value="">-- Select Doctor --</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <a asp-controller="Doctors" asp-action="CreateDoctor" type="button" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Add
+                    </a>
                 </div>
             </div>
             <div class="row mb-4">
                 <div class="col-md-4">
-                    <label asp-for="Date" class="form-label">Date</label>
+                    <label asp-for="Date" class="form-label">Date <span class="text-danger">*</span></label>
                     <input asp-for="Date" type="datetime" class="form-control"value ="@Model.Date" />
                     
                     <span asp-validation-for="Date" class="text-danger small"></span>
@@ -263,7 +270,7 @@
                 <div class="row mb-3 medication-row align-items-end">
                     <!-- Medication -->
                     <div class="col-md-3">
-                        <label class="form-label">Medicine ID</label>
+                        <label class="form-label">Medicine ID <span class="text-danger">*</span></label>
                         <select asp-for="MedicineID" class="form-select" asp-items="@ViewBag.MedicineID">
                             <option value="">-- Select Medication --</option>
                         </select>
@@ -273,17 +280,17 @@
 
                     <!-- Quantity -->
                     <div class="col-md-2">
-                        <label class="form-label">Quantity</label>
+                        <label class="form-label">Quantity<span class="text-danger">*</span></label>
                         <input asp-for="Quantity" type="number" name="Quantity[]" value="0" min="1" max="100" step="1" class="form-control" />
 
                     </div>
                     <div class="col-md-2">
-                        <label>Repeats</label>
+                        <label>Repeats<span class="text-danger">*</span></label>
                         <input asp-for="Repeats" type="number" value="0" min="1" max="100" step="1" class="form-control" />
                     </div>
 
                     <div class="col-md-3">
-                        <label>Instructions</label>
+                        <label>Instructions<span class="text-danger">*</span></label>
                         <input asp-for="Instructions" type="text" name="Instructions[]" class="form-control" />
 
                     </div>

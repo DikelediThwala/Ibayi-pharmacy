@@ -5,6 +5,7 @@
     <title>@ViewData["Title"] - Ibayi Pharmacy</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
         html, body {
@@ -135,6 +136,7 @@
             <li class="nav-item"><a class="nav-link" asp-controller="UploadPrescription" asp-action="CreatePrescForWalkins" data-bs-toggle="tooltip"><i class="bi bi-collection"></i> <span>Load Prescription-Walk in's</span></a></li>
             <li class="nav-item"><a class="nav-link" asp-controller="UnproccessedPrescription" asp-action="GetUnprocessedPrescription" data-bs-toggle="tooltip"><i class="bi bi-box-seam"></i><span>Unproccessed Prescription</span></a></li>
             <li class="nav-item"><a class="nav-link" asp-controller="Dispense" asp-action="DispensePrescription" data-bs-toggle="tooltip"><i class="bi bi-pencil-square"></i> <span>Dispense Prescriptions</span></a></li>
+            <li class="nav-item"><a class="nav-link" asp-controller="Order" asp-action="GetOrdersMedication" data-bs-toggle="tooltip"><i class="fas fa-clipboard-list"></i> <span>Orders</span></a></li>
             
         </ul>
     </div>
