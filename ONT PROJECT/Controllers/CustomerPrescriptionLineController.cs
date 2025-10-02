@@ -35,7 +35,7 @@ namespace ONT_PROJECT.Controllers
             if (customer == null)
                 return NotFound();
 
-            // Fetch prescription lines including medicines and prescriptions
+            // Fetch prescription lines including medicines, prescriptions, and doctor
             var lines = await _context.PrescriptionLines
                 .Include(pl => pl.Medicine)
                     .ThenInclude(m => m.MedIngredients)
@@ -44,6 +44,8 @@ namespace ONT_PROJECT.Controllers
                     .ThenInclude(p => p.Customer)
                         .ThenInclude(c => c.CustomerAllergies)
                             .ThenInclude(ca => ca.ActiveIngredient)
+                .Include(pl => pl.Prescription)
+                    .ThenInclude(p => p.Doctor) // Include doctor
                 .Where(pl => pl.Prescription.CustomerId == customer.CustomerId)
                 .ToListAsync();
 

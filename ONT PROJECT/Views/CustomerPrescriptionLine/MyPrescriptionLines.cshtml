@@ -119,7 +119,8 @@
                     <div class="prescription-box">
                         <div class="prescription-header">
                             <h5>Date: @prescription.Date.ToString("yyyy-MM-dd")</h5>
-                            <h6>Doctor: @prescription.Doctor</h6>
+                            <h6>Doctor: @prescription.Doctor?.Name @prescription.Doctor?.Surname</h6>
+
                         </div>
 
                         <table class="table table-striped table-hover">
@@ -165,7 +166,7 @@
                                         </td>
                                         <td>@line.Quantity</td>
                                         <td>@line.Instructions</td>
-                                        <td>@line.Repeats @* ?? 0 *@</td>
+                                        <td>@line.Repeats</td>
                                         <td>
                                             @if (line.RepeatsLeft > 0)
                                             {
@@ -191,13 +192,11 @@
 
 <script>
     $(document).ready(function () {
-        // Initialize Bootstrap tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
 
-        // Select All checkbox functionality
         $('#selectAll').click(function () {
             $('.line-checkbox').not(':disabled').prop('checked', this.checked);
         });
@@ -208,7 +207,6 @@
             $('#selectAll').prop('checked', allSelectable === checkedSelectable);
         });
 
-        // Form validation: at least one medication selected
         $('#placeOrderForm').on('submit', function (e) {
             if ($('.line-checkbox:checked').not(':disabled').length === 0) {
                 e.preventDefault();
