@@ -158,14 +158,13 @@ namespace ONT_PROJECT.Controllers
                 }
             }
 
-            // Invalid credentials
-            ModelState.AddModelError("", "Invalid login credentials.");
-            LoadAllergyDropdown(); // keep this if needed
-            return View("Register", new TblUser { Email = Email });
-        
+            ViewData["LoginError"] = "Username and email are invalid.";
+            return View("~/Views/User/Login.cshtml", new TblUser { Email = Email });
+
         }
 
-       
+
+
 
         private string HashPassword(string password)
         {
