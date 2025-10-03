@@ -9,7 +9,17 @@ namespace ONT_PROJECT.Controllers
     public class PharmacistController : Controller
     {
 
-        //This method is responsible for Auto generating passsword for the customers
+        private readonly IUserRepository _personRepository;
+        private readonly IPrescriptionRepository _prescriptionRepository;
+        private readonly IOrderRepository _orderRepository;
+
+        public PharmacistController(IUserRepository personRepository, IPrescriptionRepository prescriptionRepository,IOrderRepository orderRepository)
+        {
+            _personRepository = personRepository;
+            _prescriptionRepository = prescriptionRepository;
+            _orderRepository = orderRepository;
+
+        }
         public static class PasswordGenerator
         {
             private static Random random = new Random();
@@ -21,50 +31,28 @@ namespace ONT_PROJECT.Controllers
                   .Select(s => s[random.Next(s.Length)]).ToArray());
             }
         }
-
-
-        private readonly IUserRepository _personRepository;
-        private readonly IPrescriptionRepository _prescriptionRepository;
-        
-        public PharmacistController(IUserRepository personRepository,IPrescriptionRepository prescriptionRepository)
+        public async Task<IActionResult> GetOrdersMedication()
         {
-            _personRepository = personRepository;
-            _prescriptionRepository = prescriptionRepository;
-            
+            var results = await _orderRepository.GetAllOrders() ?? new List<tblOrder>();
+
+            var top5 = results
+                .OrderByDescending(o => o.DatePlaced)
+                .Take(5);
+
+            return View(top5);
         }
-
-
 
 
         public IActionResult Index()
         {
+
             return View();
         }
         public IActionResult CreateUser()
         {
 
             return View();
-        }
-      
-        
-        public IActionResult ProcessOrder()
-        {
-
-            return View();
-        }
-        public IActionResult CreateDoctor()
-        {
-            return View();
-        }
-        public IActionResult OrderDetails()
-        {
-
-            return View();
-        }
-        public IActionResult LoadPrescription()
-        {
-            return View();
-        }
+        }     
         [HttpPost]
         //[ValidateAntiFogeryToken]
         public async Task<IActionResult> CreateUser(tblUser user)
@@ -95,17 +83,6 @@ namespace ONT_PROJECT.Controllers
             }
             return RedirectToAction("Index");          
         }      
-        public async Task<IActionResult> ViewPrescription()
-        {
-            return View();
-        }
-        public IActionResult DispensePrescription()
-        {
-            return View();
-        }
-        public IActionResult UnprocessedPrescription()
-        {
-            return View();
-        }
+        
     }
 }

@@ -43,27 +43,5 @@ namespace ONT_PROJECT.Controllers
             }           
             return View("~/Views/UploadPrescription/CreatePrescriptions.cshtml", prescription);
         }
-
-        [HttpPost]
-        public async Task<IActionResult> Process(int id)
-        {
-            var prescriptionToUpdate = new UnproccessedPrescription
-            {
-                UnprocessedPrescriptionID = id
-            };
-
-            bool success = await _unproccessedprescriptionRepository.UpdateUnprocessedPrescription(prescriptionToUpdate);
-
-            if (success)
-                return Json(new { success = true, message = "Prescription processed." });
-            else
-                return Json(new { success = false, message = "Failed to process." });
-        }
-       
-
-
-       
-
-
     }
 }

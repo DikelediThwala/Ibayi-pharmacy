@@ -54,17 +54,17 @@ namespace IBayiLibrary.Repository
             string query = "spPrepareOrder";
             return await _db.GetData<tblOrder, dynamic > (query, new { });
         }
+        //public async Task<IEnumerable<tblOrder>> GetAllOrders()
+        //{
+        //    string query = "spGetOrders";
+        //    return await _db.GetData<tblOrder, dynamic>(query, new { });
+        //}       
         public async Task<IEnumerable<tblOrder>> GetAllOrders()
         {
             string query = "spGetOrders";
-            return await _db.GetData<tblOrder, dynamic>(query, new { });
+            var orders = await _db.GetData<tblOrder, dynamic>(query, new { });
+            return orders ?? new List<tblOrder>(); // fallback to empty list
         }
-        //public async Task<tblOrder> UpdateOrder(int id,string status)
-        //{    
-        //        IEnumerable<tblOrder> result = await _db.GetData<tblOrder, dynamic>("spUpdateOrderStatus", new { OrderID = id,Status = status});
-        //        return result.FirstOrDefault();               
-
-        //}
 
         public async Task<bool> UpdateOrder(int id, string status,DateTime?dateRecieved)
         {
