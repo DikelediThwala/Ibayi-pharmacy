@@ -80,6 +80,7 @@ namespace ONT_PROJECT.Controllers
             HttpContext.Session.SetInt32("UserId", model.UserId); // UserId is generated after SaveChanges
             HttpContext.Session.SetString("UserEmail", model.Email);
             HttpContext.Session.SetString("UserFirstName", model.FirstName);
+            HttpContext.Session.SetString("UserLastName", model.LastName); 
             HttpContext.Session.SetString("UserRole", model.Role);
 
             return RedirectToAction("Dashboard", "Customer");

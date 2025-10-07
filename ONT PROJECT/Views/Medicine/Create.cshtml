@@ -124,12 +124,14 @@
 
 @section Scripts {
     <script>
-               const ingredients = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Ingredients));
+        const ingredients = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Ingredients));
 
+        // Add new ingredient row
         function addIngredientRow() {
             const tableBody = document.getElementById("ingredientsTableBody");
             const newRow = document.createElement("tr");
 
+            // Build the select options
             let options = `<option value="">-- Select Ingredient --</option>`;
             ingredients.forEach(i => {
                 options += `<option value="${i.Value}">${i.Text}</option>`;
@@ -137,7 +139,7 @@
 
             newRow.innerHTML = `
                 <td>
-                    <select name="selectedIngredients[]" class="form-select" required>
+                    <select name="selectedIngredients[]" class="form-select" required onchange="updateIngredientOptions()">
                         ${options}
                     </select>
                 </td>
@@ -152,16 +154,40 @@
             `;
 
             tableBody.appendChild(newRow);
+            updateIngredientOptions();
         }
 
-
+        // Remove a row
         function removeRow(button) {
             button.closest('tr').remove();
+            updateIngredientOptions(); // refresh available options
         }
 
+        // Disable already selected ingredients in other dropdowns
+        function updateIngredientOptions() {
+            const selects = document.querySelectorAll("select[name='selectedIngredients[]']");
+            const selectedValues = Array.from(selects)
+                .map(s => s.value)
+                .filter(v => v !== ""); // ignore empty
 
+            selects.forEach(select => {
+                Array.from(select.options).forEach(option => {
+                    if (option.value !== "" && selectedValues.includes(option.value) && option.value !== select.value) {
+                        option.disabled = true; // disable if selected elsewhere
+                    } else {
+                        option.disabled = false;
+                    }
+                });
+            });
+        }
+
+        // Initialize first row on page load
+        document.addEventListener("DOMContentLoaded", function () {
+            updateIngredientOptions();
+        });
     </script>
 }
+
 
 
 <script>

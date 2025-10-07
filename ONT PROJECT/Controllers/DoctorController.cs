@@ -34,18 +34,12 @@ namespace ONT_PROJECT.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Check if doctor already exists
-                bool exists = _context.Doctors.Any(d =>
-                    d.Name.ToLower() == doctor.Name.ToLower() &&
-                    d.Surname.ToLower() == doctor.Surname.ToLower() &&
-                    d.PracticeNo.ToLower() == doctor.PracticeNo.ToLower()
-                );
-
-                if (exists)
+                if (_context.Doctors.Any(d => d.PracticeNo == doctor.PracticeNo))
                 {
-                    TempData["ErrorMessage"] = "Doctor already exists in the system!";
-                    return RedirectToAction(nameof(Create));
+                    TempData["ErrorMessage"] = "A doctor with this Practice Number already exists!";
+                    return View(doctor); 
                 }
+
                 _context.Doctors.Add(doctor);
                 _context.SaveChanges();
 
