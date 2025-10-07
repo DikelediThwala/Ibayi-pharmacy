@@ -25,7 +25,6 @@ namespace ONT_PROJECT.Controllers
 
             int userId = int.Parse(userIdStr);
 
-            // Fetch customer including allergies
             var customer = await _context.Customers
                 .Include(c => c.CustomerNavigation)
                 .Include(c => c.CustomerAllergies)
@@ -35,7 +34,6 @@ namespace ONT_PROJECT.Controllers
             if (customer == null)
                 return NotFound();
 
-            // Fetch prescription lines including medicines, prescriptions, and doctor
             var lines = await _context.PrescriptionLines
                 .Include(pl => pl.Medicine)
                     .ThenInclude(m => m.MedIngredients)
@@ -45,7 +43,8 @@ namespace ONT_PROJECT.Controllers
                         .ThenInclude(c => c.CustomerAllergies)
                             .ThenInclude(ca => ca.ActiveIngredient)
                 .Include(pl => pl.Prescription)
-                    .ThenInclude(p => p.Doctor) // Include doctor
+                    .ThenInclude(p => p.Doctor)
+                .Include(pl => pl.RepeatHistories) // <-- include repeat history
                 .Where(pl => pl.Prescription.CustomerId == customer.CustomerId)
                 .ToListAsync();
 
@@ -143,13 +142,21 @@ namespace ONT_PROJECT.Controllers
                     Status = "Pending"
                 });
 
-                // only sum the price (not multiplied by quantity)
                 order.TotalDue += price;
                 ordered.Add(line.Medicine.MedicineName);
 
                 // Decrement repeats
                 line.RepeatsLeft -= 1;
                 _context.Update(line);
+
+                // Add repeat history
+                var repeatHistory = new RepeatHistory
+                {
+                    PrescriptionLineId = line.PrescriptionLineId,
+                    RepeatsDecremented = 1,
+                    DateUsed = DateTime.Now
+                };
+                _context.RepeatHistories.Add(repeatHistory); // <-- fixed DbSet usage
             }
 
             if (!order.OrderLines.Any())
@@ -159,7 +166,6 @@ namespace ONT_PROJECT.Controllers
             }
 
             order.Vat = order.TotalDue * 0.15;
-
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
@@ -169,6 +175,5 @@ namespace ONT_PROJECT.Controllers
             TempData["SuccessMessage"] = "Order placed for: " + string.Join(", ", ordered);
             return RedirectToAction("MyPrescriptionLines");
         }
-
     }
 }

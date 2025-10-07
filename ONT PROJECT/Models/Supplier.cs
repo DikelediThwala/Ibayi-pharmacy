@@ -12,13 +12,14 @@ public partial class Supplier
     [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters")]
     public string Name { get; set; } = null!;
 
-    [Required(ErrorMessage = "Contact Number is required")]
-    [Display(Name = "Contact Number")]
-    [RegularExpression(@"^(?:0|\+27)\d{9}$", ErrorMessage = "Invalid contact number")]
+    [Required(ErrorMessage = "Contact Number is required.")]
+    [RegularExpression(@"^(?:0\d{9}|\+27\d{9})$",
+     ErrorMessage = "Contact Number must be a valid South African number.")]
     public string ContactNo { get; set; } = null!;
 
-    [Required(ErrorMessage = "Email is required")]
-    [EmailAddress(ErrorMessage = "Invalid email address")]
+    [Required(ErrorMessage = "Email is required.")]
+    [EmailAddress(ErrorMessage = "Please enter a valid email with '@' and domain.")] 
+    [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters.")]
     public string Email { get; set; } = null!;
 
     [Required(ErrorMessage = "Status is required")]

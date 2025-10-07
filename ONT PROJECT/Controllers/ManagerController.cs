@@ -24,7 +24,8 @@ namespace ONT_PROJECT.Controllers
                 TotalMedicines = GetTotalMedicines(),
                 TotalSuppliers = GetTotalSuppliers(),
                 TotalPharmacists = GetTotalPharmacists(),
-                TotalDoctors = GetTotalDoctors()
+                TotalDoctors = GetTotalDoctors(),
+                LowStockCount = GetLowStockCount() 
             };
 
             return View(viewModel);
@@ -56,5 +57,10 @@ namespace ONT_PROJECT.Controllers
             return varOcg;
         }
         private int GetTotalDoctors() => _context.Doctors.Count(d=> d.Status == "Active");
+        private int GetLowStockCount()
+        {
+            return _context.Medicines
+                .Count(m => m.Quantity < m.ReorderLevel && m.Status == "Active");
+        }
     }
 }

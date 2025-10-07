@@ -10,5 +10,7 @@
         public int TotalSuppliers { get; set; }
         public int TotalPharmacists { get; set; }
         public int TotalDoctors { get; set; }
+        public int LowStockCount { get; set; }
+
     }
 }

@@ -32,7 +32,8 @@ builder.Services.AddSession(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login";              // Redirect to login if not authenticated
+        //options.LoginPath = "/Account/Login";              // Redirect to login if not authenticated
+        options.LoginPath = "/CustomerRegister/Login";
         options.AccessDeniedPath = "/Account/AccessDenied"; // Optional access denied page
         options.ExpireTimeSpan = TimeSpan.FromHours(1);
     });

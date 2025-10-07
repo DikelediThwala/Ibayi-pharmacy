@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ONT_PROJECT.Models;
@@ -24,9 +25,10 @@ public partial class TblUser
 
     [Required(ErrorMessage = "ID Number is required")]
     [Display(Name = "ID Number")]
-    [RegularExpression(@"^\d{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])\d{7}$",
-     ErrorMessage = "Invalid ID Number ")]
+    [SaIdNumber(ErrorMessage = "Invalid South African ID Number")]
+    [Remote(action: "ValidateIdNumber", controller: "User", ErrorMessage = "Invalid ID Number")]
     public string Idnumber { get; set; } = null!;
+
 
 
     [Required(ErrorMessage = "Role is required")]
