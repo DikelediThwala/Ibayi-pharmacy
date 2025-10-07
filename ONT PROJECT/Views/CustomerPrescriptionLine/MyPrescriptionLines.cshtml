@@ -78,6 +78,19 @@
         background-color: #fdfdfd;
         box-shadow: 0 1px 3px rgba(0,0,0,.1);
     }
+
+    .repeat-history-list {
+        max-height: 200px;
+        overflow-y: auto;
+        padding-left: 0;
+        margin-bottom: 0;
+    }
+
+        .repeat-history-list li {
+            list-style-type: none;
+            font-size: 12px;
+            text-align: left;
+        }
 </style>
 
 <div class="container-xl">
@@ -120,7 +133,6 @@
                         <div class="prescription-header">
                             <h5>Date: @prescription.Date.ToString("yyyy-MM-dd")</h5>
                             <h6>Doctor: @prescription.Doctor?.Name @prescription.Doctor?.Surname</h6>
-
                         </div>
 
                         <table class="table table-striped table-hover">
@@ -132,6 +144,7 @@
                                     <th>Instructions</th>
                                     <th>Repeats Allowed</th>
                                     <th>Repeats Left</th>
+                                    <th>View Repeats</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -149,7 +162,7 @@
                                     var rowClass = isAllergic || noRepeatsLeft ? "table-danger" : "";
 
                                     <tr class="@rowClass">
-                                        <td class="text-center">
+                                        <td>
                                             <input type="checkbox"
                                                    name="selectedLines"
                                                    value="@line.PrescriptionLineId"
@@ -168,13 +181,41 @@
                                         <td>@line.Instructions</td>
                                         <td>@line.Repeats</td>
                                         <td>
-                                            @if (line.RepeatsLeft > 0)
+                                            @(line.RepeatsLeft > 0 ? line.RepeatsLeft.ToString() : "No repeats left")
+                                        </td>
+                                        <td>
+                                            @if (line.RepeatHistories != null && line.RepeatHistories.Any())
                                             {
-                                                @(line.RepeatsLeft)
+                                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#repeatModal@line.PrescriptionLineId">
+                                                    View Repeats
+                                                </button>
+
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="repeatModal@line.PrescriptionLineId" tabindex="-1" aria-labelledby="repeatModalLabel@line.PrescriptionLineId" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="repeatModalLabel@line.PrescriptionLineId">@line.Medicine.MedicineName - Repeat History</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <ul class="repeat-history-list">
+                                                                    @foreach (var repeat in line.RepeatHistories.OrderByDescending(rh => rh.DateUsed))
+                                                                    {
+                                                                        <li>@repeat.RepeatsDecremented repeat used on @repeat.DateUsed.ToString("yyyy-MM-dd")</li>
+                                                                    }
+                                                                </ul>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             }
                                             else
                                             {
-                                                <span class="text-danger">No repeats left</span>
+                                                <span>No repeats used yet</span>
                                             }
                                         </td>
                                     </tr>

@@ -53,6 +53,7 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<TblUser> TblUsers { get; set; }
     public virtual DbSet<ActivityLog> ActivityLogs { get; set; }
+    public virtual DbSet<RepeatHistory> RepeatHistories { get; set; }
 
     public virtual DbSet<UnprocessedPrescription> UnprocessedPrescriptions { get; set; }
 
@@ -399,6 +400,26 @@ public partial class ApplicationDbContext : DbContext
               .IsRequired()
               .HasMaxLength(20)
               .HasDefaultValue("Active");
+        });
+        modelBuilder.Entity<RepeatHistory>(entity =>
+        {
+            entity.ToTable("RepeatHistory");
+
+            entity.HasKey(e => e.RepeatHistoryId);
+
+            entity.Property(e => e.RepeatHistoryId)
+                  .HasColumnName("RepeatHistoryID")
+                  .ValueGeneratedOnAdd(); // <- let SQL Server generate the ID
+
+            entity.Property(e => e.PrescriptionLineId).HasColumnName("PrescriptionLineID");
+            entity.Property(e => e.DateUsed).HasColumnType("datetime");
+            entity.Property(e => e.RepeatsDecremented).HasMaxLength(50);
+
+            entity.HasOne(d => d.PrescriptionLine)
+                  .WithMany(p => p.RepeatHistories)
+                  .HasForeignKey(d => d.PrescriptionLineId)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_RepeatHistory_PrescriptionLine");
         });
 
         modelBuilder.Entity<UnprocessedPrescription>(entity =>

@@ -34,5 +34,6 @@ namespace ONT_PROJECT.Models
 
         public virtual Medicine Medicine { get; set; } = null!;
         public virtual Prescription Prescription { get; set; } = null!;
+        public ICollection<RepeatHistory> RepeatHistories { get; set; } = new List<RepeatHistory>();
     }
 }
