@@ -12,8 +12,10 @@ namespace IBayiLibrary.Models.Domain
     {
         public string FirstName {  get; set; }
          public string Name { get; set; }
+        public string FullName { get; set; }
         public string MedicineName { get; set; }
-        public int PrescrptionLineID { get; set; }      
+        public int PrescrptionLineID { get; set; }
+        public int Schedule { get; set; }
         public int MedicineID { get; set; }
         [ForeignKey("PrescriptionID")]
         public int PrescriptionID { get; set; }

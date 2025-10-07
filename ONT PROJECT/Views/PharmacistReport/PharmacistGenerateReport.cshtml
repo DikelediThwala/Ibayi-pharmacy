@@ -1,0 +1,67 @@
+﻿@model IEnumerable<IBayiLibrary.Models.Domain.PrescriptionViewModel>
+
+@{
+    ViewData["Title"] = "Generate Report";
+    Layout = "PharmacistLayout";
+    var groupBy = ViewBag.GroupBy?.ToString() ?? "FullName";
+    IEnumerable<IGrouping<object, IBayiLibrary.Models.Domain.PrescriptionViewModel>> groupedData;
+
+    if (groupBy == "MedicineName")
+    {
+        groupedData = Model.GroupBy(x => (object)x.MedicineName);
+    }
+    else if (groupBy == "Schedule")
+    {
+        groupedData = Model.GroupBy(x => (object)x.Schedule); // assuming your model has Schedule
+    }
+    else
+    {
+        groupedData = Model.GroupBy(x => (object)x.FullName);
+    }
+}
+
+<form method="get" asp-action="PharmacistGenerateReport" class="mb-3">
+    <label for="groupBy">Group By:</label>
+    <select id="groupBy" name="groupBy" class="form-select d-inline w-auto mx-2">
+        <option value="FullName" selected="@(ViewBag.GroupBy == "FullName")">Full Name</option>
+        <option value="Schedule" selected="@(ViewBag.GroupBy == "Schedule")">Schedule</option>
+        <option value="MedicineName" selected="@(ViewBag.GroupBy == "MedicineName")">Medication</option>
+    </select>
+    <button type="submit" class="btn btn-dark btn-sm">Apply</button>
+</form>
+
+<div class="card mt-3">
+    <div class="card-header bg-dark text-white text-center">
+        <h4><strong>PRESCRIPTIONS DISPENSED</strong></h4>
+        <p>1/1/2025 – 31/12/2025</p>
+    </div>
+    <div class="card-body">
+        @foreach (var group in groupedData)
+        {
+            <h5 class="mt-4"><strong>@groupBy:</strong> @group.Key</h5>
+
+            <table class="table table-bordered mt-2">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Medication</th>
+                        <th>Qty</th>
+                        <th>Instructions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in group)
+                    {
+                        <tr>
+                            <td>@item.Date</td>
+                            <td>@item.MedicineName</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.Instructions</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
