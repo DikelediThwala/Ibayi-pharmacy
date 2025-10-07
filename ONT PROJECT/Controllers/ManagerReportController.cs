@@ -4,37 +4,72 @@ using QuestPDF.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace ONT_PROJECT.Controllers
 {
     public class ManagerReportController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ManagerReportController(ApplicationDbContext context)
+        public ManagerReportController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        // GET: Manager Report Page
         public IActionResult Index()
         {
-            var medicines = _context.Medicines.Include(m => m.Form)
-                                              .Include(m => m.Supplier)
-                                              .ToList();
+            var medicines = _context.Medicines
+                .Include(m => m.Form)
+                .Include(m => m.Supplier)
+                .Select(m => new
+                {
+                    m.MedicineId,
+                    m.MedicineName,
+                    FormName = m.Form != null ? m.Form.FormName : null,
+                    SupplierName = m.Supplier != null ? m.Supplier.Name : null
+                })
+                .ToList();
+
             return View(medicines);
         }
 
         [HttpPost]
-        public IActionResult GenerateReport(string GroupBy, List<int> SelectedMedications, DateTime ReportDate, string StockLevel)
+        public IActionResult GenerateReport(
+            string GroupBy,
+            string FilterValue,                     // Make sure form posts FilterValue
+            List<int> SelectedMedications,
+            DateTime ReportDate,
+            string StockLevel)
         {
+            var firstName = _httpContextAccessor.HttpContext.Session.GetString("UserFirstName") ?? "";
+            var lastName = _httpContextAccessor.HttpContext.Session.GetString("UserLastName") ?? "";
+            var managerName = $"{firstName} {lastName}".Trim();
+
+            // Default report date to today if not provided
+            if (ReportDate == default)
+                ReportDate = DateTime.Now;
+
             var query = _context.Medicines.Include(m => m.Form)
                                           .Include(m => m.Supplier)
                                           .AsQueryable();
 
+            // Apply filtering by dynamic selection
+            if (!string.IsNullOrEmpty(FilterValue))
+            {
+                if (GroupBy == "Supplier")
+                    query = query.Where(m => m.Supplier.Name == FilterValue);
+                else if (GroupBy == "DosageForm")
+                    query = query.Where(m => m.Form.FormName == FilterValue);
+            }
+
+            // Apply selected medicines filter
             if (SelectedMedications != null && SelectedMedications.Any() && !SelectedMedications.Contains(-1))
                 query = query.Where(m => SelectedMedications.Contains(m.MedicineId));
 
+            // Apply stock level filter
             if (StockLevel == "low")
                 query = query.Where(m => m.Quantity <= m.ReorderLevel);
             else if (StockLevel == "out")
@@ -42,64 +77,16 @@ namespace ONT_PROJECT.Controllers
 
             var medicines = query.ToList();
 
-            // If no medicines found, generate a PDF with a message
-            if (!medicines.Any())
-            {
-                var emptyPdfBytes = Document.Create(container =>
-                {
-                    container.Page(page =>
-                    {
-                        page.Size(PageSizes.A4);
-                        page.Margin(2, Unit.Centimetre);
-
-                        // Header with logo and pharmacy name
-                        page.Header().Row(row =>
-                        {
-                            row.ConstantItem(100).Image("wwwroot/images/logo_2-removebg-preview.png");
-                            row.RelativeItem().Column(col =>
-                            {
-                                col.Item().Text("Ibhayi Pharmacy")
-                                    .FontSize(24).Bold().FontColor(Colors.Blue.Darken2);
-                                col.Item().Text($"Pharmacy Manager Report - {ReportDate:dd/MM/yyyy}")
-                                    .FontSize(16).SemiBold();
-                            });
-                        });
-
-                        // Message for empty report
-                        page.Content().AlignCenter().Column(column =>
-                        {
-                            column.Item().Text("No medicines found for the selected criteria.")
-                                  .FontSize(16).Bold().FontColor(Colors.Red.Medium); 
-                        });
-
-
-                        // Footer with page numbers
-                        page.Footer().AlignCenter().Row(row =>
-                        {
-                            row.RelativeItem().Text(txt =>
-                            {
-                                txt.Span("Page ");
-                                txt.CurrentPageNumber();
-                                txt.Span(" / ");
-                                txt.TotalPages();
-                            });
-                        });
-                    });
-                }).GeneratePdf();
-
-                return File(emptyPdfBytes, "application/pdf", $"PharmacyManagerReport_{DateTime.Now:yyyyMMdd}.pdf");
-            }
-
-            // Group by selection
+            // Group medicines by selected option
             IEnumerable<IGrouping<string, Medicine>> grouped = GroupBy switch
             {
                 "DosageForm" => medicines.GroupBy(m => m.Form?.FormName ?? "Unknown"),
                 "Schedule" => medicines.GroupBy(m => m.Schedule.ToString()),
                 "Supplier" => medicines.GroupBy(m => m.Supplier?.Name ?? "Unknown"),
-                _ => new List<IGrouping<string, Medicine>>() { medicines.GroupBy(m => "All").First() }
+                _ => new List<IGrouping<string, Medicine>>() { medicines.GroupBy(m => "All").FirstOrDefault() }
             };
 
-            // Generate PDF for medicines
+            // Generate PDF
             var pdfBytes = Document.Create(container =>
             {
                 container.Page(page =>
@@ -107,22 +94,19 @@ namespace ONT_PROJECT.Controllers
                     page.Size(PageSizes.A4);
                     page.Margin(2, Unit.Centimetre);
 
-                    // Header with logo and pharmacy name
                     page.Header().Row(row =>
                     {
                         row.ConstantItem(100).Image("wwwroot/images/logo_2-removebg-preview.png");
                         row.RelativeItem().Column(col =>
                         {
-                            col.Item().Text("Ibhayi Pharmacy")
-                                .FontSize(24).Bold().FontColor(Colors.Blue.Darken2);
-                            col.Item().Text($"Pharmacy Manager Report - {ReportDate:dd/MM/yyyy}")
-                                .FontSize(16).SemiBold();
+                            col.Item().Text("Ibhayi Pharmacy").FontSize(24).Bold().FontColor(Colors.Blue.Darken2);
+                            col.Item().Text($"Pharmacy Manager Report - {ReportDate:dd/MM/yyyy}").FontSize(16).SemiBold();
+                            col.Item().Text($"Generated by: {managerName}").FontSize(12).Italic().FontColor(Colors.Grey.Darken2);
                         });
                     });
 
                     page.Content().PaddingVertical(10).Column(column =>
                     {
-                        // Add dynamic heading based on GroupBy
                         string heading = GroupBy switch
                         {
                             "Supplier" => "Stock by Supplier",
@@ -140,58 +124,65 @@ namespace ONT_PROJECT.Controllers
 
                         foreach (var group in grouped)
                         {
-                            // Group title
-                            column.Item().Text($"{GroupBy}: {group.Key}")
-                                .FontSize(14).Bold().FontColor(Colors.Black).Underline();
+                            // Skip empty groups
+                            if (!group.Any())
+                                continue;
 
-                            // Table
-                            column.Item().Table(table =>
+                            column.Item().Element(container =>
                             {
-                                table.ColumnsDefinition(columns =>
+                                container.Column(col =>
                                 {
-                                    columns.RelativeColumn(4);
-                                    columns.RelativeColumn(1);
-                                    columns.RelativeColumn(2);
-                                    columns.RelativeColumn(2);
-                                });
+                                    col.Item().Text($"{GroupBy}: {group.Key}")
+                                        .FontSize(14).Bold().FontColor(Colors.Black).Underline();
 
-                                // Table Header
-                                table.Header(header =>
-                                {
-                                    header.Cell().Background(Colors.Grey.Lighten2).BorderBottom(1).BorderColor(Colors.Black).Text("Medication").Bold();
-                                    header.Cell().Background(Colors.Grey.Lighten2).BorderBottom(1).BorderColor(Colors.Black).Text("Schedule").Bold();
-                                    header.Cell().Background(Colors.Grey.Lighten2).BorderBottom(1).BorderColor(Colors.Black).Text("Reorder Level").Bold();
-                                    header.Cell().Background(Colors.Grey.Lighten2).BorderBottom(1).BorderColor(Colors.Black).Text("Quantity").Bold();
-                                });
+                                    col.Item().Table(table =>
+                                    {
+                                        table.ColumnsDefinition(columns =>
+                                        {
+                                            columns.RelativeColumn(4);
+                                            columns.RelativeColumn(2);
+                                            columns.RelativeColumn(2);
+                                            columns.RelativeColumn(2);
+                                            columns.RelativeColumn(3);
+                                        });
 
-                                // Table Rows with alternating row colors
-                                bool alternate = false;
-                                foreach (var med in group)
-                                {
-                                    var bgColor = alternate ? Colors.Grey.Lighten5 : Colors.White;
+                                        table.Header(header =>
+                                        {
+                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Medication").Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Schedule").Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Reorder Level").Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Quantity").Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Notes").Bold();
+                                        });
 
-                                    table.Cell().Background(bgColor).BorderBottom(0.5f).BorderColor(Colors.Grey.Medium).Text(med.MedicineName);
-                                    table.Cell().Background(bgColor).BorderBottom(0.5f).BorderColor(Colors.Grey.Medium).Text(med.Schedule.ToString());
-                                    table.Cell().Background(bgColor).BorderBottom(0.5f).BorderColor(Colors.Grey.Medium).Text(med.ReorderLevel.ToString());
-                                    table.Cell().Background(bgColor).BorderBottom(0.5f).BorderColor(Colors.Grey.Medium).Text(med.Quantity.ToString());
+                                        bool alternate = false;
+                                        foreach (var med in group)
+                                        {
+                                            var bgColor = alternate ? Colors.Grey.Lighten5 : Colors.White;
 
-                                    alternate = !alternate;
-                                }
+                                            table.Cell().Background(bgColor).Border(1).BorderColor(Colors.Grey.Medium).Text(med.MedicineName);
+                                            table.Cell().Background(bgColor).Border(1).BorderColor(Colors.Grey.Medium).Text(med.Schedule.ToString());
+                                            table.Cell().Background(bgColor).Border(1).BorderColor(Colors.Grey.Medium).Text(med.ReorderLevel.ToString());
+                                            table.Cell().Background(bgColor).Border(1).BorderColor(Colors.Grey.Medium).Text(med.Quantity.ToString());
+                                            table.Cell().Background(bgColor).Border(1).BorderColor(Colors.Grey.Medium).Text("");
 
-                                // Footer (sub-total)
-                                table.Footer(footer =>
-                                {
-                                    footer.Cell().ColumnSpan(3).Background(Colors.Grey.Lighten2).BorderTop(1).BorderColor(Colors.Black).Text("Sub-total:").Bold();
-                                    footer.Cell().Background(Colors.Grey.Lighten2).BorderTop(1).BorderColor(Colors.Black).Text(group.Sum(m => m.Quantity).ToString()).Bold();
+                                            alternate = !alternate;
+                                        }
+
+                                        table.Footer(footer =>
+                                        {
+                                            footer.Cell().ColumnSpan(3).Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Sub-total:").Bold();
+                                            footer.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text(group.Sum(m => m.Quantity).ToString()).Bold();
+                                            footer.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("");
+                                        });
+                                    });
                                 });
                             });
 
-                            // Space between groups
                             column.Item().PaddingBottom(10);
                         }
                     });
 
-                    // Footer with page numbers
                     page.Footer().AlignCenter().Row(row =>
                     {
                         row.RelativeItem().Text(txt =>

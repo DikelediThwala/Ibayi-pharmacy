@@ -225,14 +225,15 @@
     <!-- Counts Section -->
     <div class="row gx-3 gy-3 mb-4">
         <div class="col-md-3">
-            <a asp-controller="Medicine" asp-action="Index" class="text-decoration-none">
-                <div class="dashboard-card bg-soft-primary">
-                    <i class="bi bi-capsule-pill text-primary"></i>
-                    <div class="fs-4 fw-bold">@Model.TotalMedicines</div>
-                    <span>Active Medications</span>
+            <a href="@Url.Action("Index", "B_Order")" class="text-decoration-none">
+                <div class="dashboard-card bg-soft-warning">
+                    <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+                    <div class="fs-4 fw-bold">@Model.LowStockCount</div>
+                    <span>Medicine Low in Stock</span>
                 </div>
             </a>
         </div>
+
         <div class="col-md-3">
             <a asp-controller="Supplier" asp-action="Index" class="text-decoration-none">
                 <div class="dashboard-card bg-soft-success">

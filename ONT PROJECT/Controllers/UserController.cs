@@ -279,5 +279,32 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("Index");
         }
 
+        [AcceptVerbs("GET", "POST")]
+        public IActionResult ValidateIdNumber(string idnumber)
+        {
+            if (string.IsNullOrWhiteSpace(idnumber))
+                return Json("ID Number is required");
+
+            if (idnumber.Length != 13 || !long.TryParse(idnumber, out _))
+                return Json("ID Number must be 13 digits");
+
+            int year = int.Parse(idnumber.Substring(0, 2));
+            int month = int.Parse(idnumber.Substring(2, 2));
+            int day = int.Parse(idnumber.Substring(4, 2));
+            int fullYear = (year > DateTime.Now.Year % 100) ? 1900 + year : 2000 + year;
+
+            try
+            {
+                var dob = new DateTime(fullYear, month, day);
+            }
+            catch
+            {
+                return Json("Invalid date in ID Number");
+            }
+
+            // OK
+            return Json(true);
+        }
+
     }
 }
