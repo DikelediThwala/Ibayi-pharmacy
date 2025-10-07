@@ -70,7 +70,7 @@ namespace IBayiLibrary.Repository
         }
         public async Task<Prescriptions> FindPrescription(int id)
         {
-            IEnumerable<Prescriptions> result = await _db.GetData<Prescriptions, dynamic>("spDownloadPrescription", new { PrescriptionID = id });
+            IEnumerable<Prescriptions> result = await _db.GetData<Prescriptions, dynamic>("spDownloadPrescription", new { UnprocessedPrescriptionID = id });
             return result.FirstOrDefault();
 
         }

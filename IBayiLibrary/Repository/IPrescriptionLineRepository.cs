@@ -12,6 +12,7 @@ namespace IBayiLibrary.Repository
        Task<bool> AddAsync(PrescriptionLines prescriptionLine);
 
         Task<IEnumerable<Medicine>>GetMedicineName();
+        Task<IEnumerable<PrescriptionViewModel>> GenerateReport();
         Task<IEnumerable<PrescriptionLines>> GetLastPrescriptioRow();
         Task<IEnumerable<PrescriptionModel>> SearchPrescriptions(string searchTerm);
 

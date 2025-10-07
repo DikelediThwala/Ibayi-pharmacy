@@ -5,17 +5,9 @@ using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ONT_PROJECT.Models;
-
-//using ONT_PROJECT.Models;
-//using iText.Kernel.Pdf;
-//using iText.Layout;
-//using iTextSharp.text;
-//using iTextSharp.text.pdf;
-//using System.IO;
-//using iText.Layout.Element;
-//using iText.IO.Image;
 using System.IO;
 using System.Text;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace ONT_PROJECT.Controllers
@@ -24,10 +16,12 @@ namespace ONT_PROJECT.Controllers
     {
         private readonly IPrescriptionRepository _prescriptionRepository;
         private readonly IPrescriptionLineRepository _prescriptionLineRepository;
-        public UploadPrescriptionController(IPrescriptionRepository prescriptionRepository, IPrescriptionLineRepository prescriptionLineRepository)
+        private readonly IUnproccessedPrescriptionRepository _unproccessedprescriptionRepository;
+        public UploadPrescriptionController(IPrescriptionRepository prescriptionRepository, IPrescriptionLineRepository prescriptionLineRepository, IUnproccessedPrescriptionRepository unproccessedprescriptionRepository)
         {
             _prescriptionRepository = prescriptionRepository;
             _prescriptionLineRepository = prescriptionLineRepository;
+            _unproccessedprescriptionRepository = unproccessedprescriptionRepository;
         }
         public async Task<IActionResult> CreatePrescForWalkins()
         {
@@ -122,7 +116,7 @@ namespace ONT_PROJECT.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePrescriptions(PrescriptionViewModel prescription)
+        public async Task<IActionResult> CreatePrescriptions(PrescriptionViewModel prescription,int id)
         {
             try
             {
@@ -180,49 +174,26 @@ namespace ONT_PROJECT.Controllers
                 {
                     TempData["msg"] = "Could not add";
                 }
-               
             }
-
             catch (Exception ex)
             {
                 TempData["msg"] = " Something went wrong!!!";
             }
             return RedirectToAction("OrderMedication", "Order");
         }
-        public async Task<IActionResult> DownloadPrescription(int id)
-        {
-            //var prescription = await _prescriptionRepository.FindPrescription(id);
-            //if (prescription == null || prescription.PrescriptionPhoto == null)
-            //{
-            //    return NotFound();
-            //}
 
-            //using var memoryStream = new MemoryStream();
-            //var document = new Document();
-            //var writer = PdfWriter.GetInstance(document, memoryStream);
 
-            //document.Open();
+           public async Task<IActionResult> DownloadPrescription(int id)
+           {
+                var prescription = await _prescriptionRepository.FindPrescription(id);
+                if (prescription == null || prescription.PrescriptionPhoto == null)
+                    return NotFound();
 
-            //using var imageStream = new MemoryStream(prescription.PrescriptionPhoto);
-            //var image = iTextSharp.text.Image.GetInstance(imageStream);
-            //image.ScaleToFit(500f, 700f);
-            //image.Alignment = Element.ALIGN_CENTER;
-            //document.Add(image);
-            //document.Close();
+                var fileName = $"Prescription_{id}.pdf";
 
-            //var fileName = $"Prescription_{id}.pdf";
-            //return File(memoryStream.ToArray(), "application/pdf", fileName);
-            var prescription = await _prescriptionRepository.FindPrescription(id);
-            if (prescription == null || prescription.PrescriptionPhoto == null)
-            {
-                return NotFound();
-            }
-
-            // No need to recreate a PDF, just return the stored one
-            var fileName = $"Prescription_{id}.pdf";
-            return File(prescription.PrescriptionPhoto, "application/pdf", fileName);
-
-        }
+                // return raw PDF bytes
+                return File(prescription.PrescriptionPhoto, "application/pdf", fileName);
+           }      
         public async Task<IActionResult> GetPrescriptions()
         {
 
