@@ -43,11 +43,13 @@ namespace ONT_PROJECT.Controllers
         }
 
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-
+            var totalOrders = await _orderRepository.TotalNumberOfOrders();
+            ViewBag.TotalOrders = totalOrders;
             return View();
         }
+
         public IActionResult CreateUser()
         {
 
