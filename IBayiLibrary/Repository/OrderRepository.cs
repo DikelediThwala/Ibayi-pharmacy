@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace IBayiLibrary.Repository
 {
-    public class OrderRepository:IOrderRepository
+    public class OrderRepository : IOrderRepository
     {
         private readonly ISqlDataAccess _db;
 
@@ -21,8 +21,16 @@ namespace IBayiLibrary.Repository
         {
             try
             {
-                await _db.SaveData("spOrderMedication", new {tblOrder.CustomerID,tblOrder.PharmacistID,tblOrder.Status,tblOrder.TotalDue,tblOrder.VAT,              
-                    tblOrder.DatePlaced,tblOrder.DateRecieved});
+                await _db.SaveData("spOrderMedication", new
+                {
+                    tblOrder.CustomerID,
+                    tblOrder.PharmacistID,
+                    tblOrder.Status,
+                    tblOrder.TotalDue,
+                    tblOrder.VAT,
+                    tblOrder.DatePlaced,
+                    tblOrder.DateRecieved
+                });
                 return true;
             }
             catch (Exception ex)
@@ -38,9 +46,9 @@ namespace IBayiLibrary.Repository
                 {
                     tblOrder.OrderID,
                     tblOrder.MedicineID,
-                    tblOrder.Quantity,                  
+                    tblOrder.Quantity,
                     tblOrder.Price,
-                    tblOrder.LineTotal,                   
+                    tblOrder.LineTotal,
                 });
                 return true;
             }
@@ -52,7 +60,7 @@ namespace IBayiLibrary.Repository
         public async Task<IEnumerable<tblOrder>> MedicationOrder()
         {
             string query = "spPrepareOrder";
-            return await _db.GetData<tblOrder, dynamic > (query, new { });
+            return await _db.GetData<tblOrder, dynamic>(query, new { });
         }
         public async Task<IEnumerable<int>> TotalNumberOfOrders()
         {
@@ -66,9 +74,9 @@ namespace IBayiLibrary.Repository
             return orders ?? new List<tblOrder>(); // fallback to empty list
         }
 
-        public async Task<bool> UpdateOrder(int id, string status,DateTime?dateRecieved)
+        public async Task<bool> UpdateOrder(int id, string status, DateTime? dateRecieved)
         {
-            await _db.SaveData("spUpdateOrderStatus", new { OrderID = id, Status = status, DateRecieved = dateRecieved});
+            await _db.SaveData("spUpdateOrderStatus", new { OrderID = id, Status = status, DateRecieved = dateRecieved });
             return true;
         }
 
@@ -76,7 +84,7 @@ namespace IBayiLibrary.Repository
         {
             IEnumerable<tblOrder> result = await _db.GetData<tblOrder, dynamic>("GetOrderByID", new { OrderID = id });
             return result.FirstOrDefault();
-        }      
+        }
 
     }
 }

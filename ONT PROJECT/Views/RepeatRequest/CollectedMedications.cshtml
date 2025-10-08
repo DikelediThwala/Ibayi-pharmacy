@@ -81,7 +81,7 @@
                         <th>Price</th>
                         <th>Line Total</th>
                         <th>Current Repeats</th>
-                        <th>Action</th>
+                       @*  <th>Action</th> *@
                     </tr>
                 </thead>
                 <tbody>
@@ -96,13 +96,13 @@
                             <td>@($"R{line.Price:0.00}")</td>
                             <td>@($"R{line.LineTotal:0.00}")</td>
                             <td class="repeats-count">@repeatsCount</td>
-                            <td>
+                           @*  <td>
                                 <button type="button"
                                         class="btn btn-warning btn-sm request-repeat-btn"
                                         data-line-id="@line.OrderLineId">
                                     <i class="material-icons">&#xE863;</i> Request Repeat
                                 </button>
-                            </td>
+                            </td> *@
                         </tr>
                     }
                 </tbody>
