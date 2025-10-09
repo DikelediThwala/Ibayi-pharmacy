@@ -85,6 +85,16 @@ namespace ONT_PROJECT.Controllers
 
             return RedirectToAction("Dashboard", "Customer");
         }
+        [AcceptVerbs("GET", "POST")]
+        public IActionResult IsEmailAvailable(string email)
+        {
+            bool emailExists = _context.TblUsers.Any(u => u.Email.ToLower() == email.ToLower());
+            if (emailExists)
+            {
+                return Json("An email already exists");
+            }
+            return Json(true); // validation passed
+        }
 
         // Updated LoadAllergyDropdown method
         private void LoadAllergyDropdown(List<int>? selectedIds = null)
@@ -177,5 +187,6 @@ namespace ONT_PROJECT.Controllers
             // TODO: replace with proper verification
             return enteredPassword == storedPassword;
         }
+
     }
 }
