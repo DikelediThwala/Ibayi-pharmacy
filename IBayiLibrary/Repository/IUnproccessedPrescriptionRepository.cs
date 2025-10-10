@@ -12,6 +12,7 @@ namespace IBayiLibrary.Repository
         Task<IEnumerable<UnproccessedPrescription>> GetUnproccessedPrescriptions();
         public Task<bool> GetPrescByIDPrescription(int unprocessedPrescriptionId);
         public Task<PrescriptionViewModel> GetPrescriptionByID(int id);
+        Task<int> NumberOfUnprocessedPresc();
         public Task<bool> UpdateUnprocessedPrescription(UnproccessedPrescription unproccessedPrescription);
     }
 }

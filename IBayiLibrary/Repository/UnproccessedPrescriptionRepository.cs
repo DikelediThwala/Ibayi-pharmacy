@@ -57,6 +57,11 @@ namespace IBayiLibrary.Repository
                 return false;
             }
         }
+        public async Task<int> NumberOfUnprocessedPresc()
+        {
+            string spName = "spTotalNumberOfUnprocessedPresc";
+            return await _db.GetSingleValue<int, dynamic>(spName, new { });
+        }
 
     }
 }
