@@ -409,18 +409,25 @@ public partial class ApplicationDbContext : DbContext
 
             entity.Property(e => e.RepeatHistoryId)
                   .HasColumnName("RepeatHistoryID")
-                  .ValueGeneratedOnAdd(); // <- let SQL Server generate the ID
+                  .ValueGeneratedOnAdd();
 
-            entity.Property(e => e.PrescriptionLineId).HasColumnName("PrescriptionLineID");
-            entity.Property(e => e.DateUsed).HasColumnType("datetime");
-            entity.Property(e => e.RepeatsDecremented).HasMaxLength(50);
+            entity.Property(e => e.PrescriptionLineId)
+                  .HasColumnName("PrescriptionLineID");
+
+            entity.Property(e => e.DateUsed)
+                  .HasColumnType("datetime");
+
+            // Removed HasMaxLength(50) because RepeatsDecremented is an int
+            entity.Property(e => e.RepeatsDecremented)
+                  .IsRequired();
 
             entity.HasOne(d => d.PrescriptionLine)
                   .WithMany(p => p.RepeatHistories)
                   .HasForeignKey(d => d.PrescriptionLineId)
-                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .OnDelete(DeleteBehavior.Cascade)
                   .HasConstraintName("FK_RepeatHistory_PrescriptionLine");
         });
+
 
         modelBuilder.Entity<UnprocessedPrescription>(entity =>
         {
