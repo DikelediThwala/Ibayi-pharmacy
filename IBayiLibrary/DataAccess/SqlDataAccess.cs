@@ -37,5 +37,12 @@ namespace IBayiLibrary.DataAccess
             return await connection.ExecuteScalarAsync<int>(spName, parameters, commandType: CommandType.StoredProcedure);
         }
 
+        public async Task<T> GetSingleValue<T, P>(string spName, P parameters, string connectionId = "DefaultConnection")
+        {
+            using IDbConnection connection = new SqlConnection(_config.GetConnectionString(connectionId));
+            return await connection.ExecuteScalarAsync<T>(spName, parameters, commandType: CommandType.StoredProcedure);
+        }
+
+
     }
 }

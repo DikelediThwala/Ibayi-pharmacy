@@ -12,13 +12,14 @@ namespace ONT_PROJECT.Controllers
         private readonly IUserRepository _personRepository;
         private readonly IPrescriptionRepository _prescriptionRepository;
         private readonly IOrderRepository _orderRepository;
+        private readonly IUnproccessedPrescriptionRepository _unproccessedPrescriptionRepository;
 
-        public PharmacistController(IUserRepository personRepository, IPrescriptionRepository prescriptionRepository,IOrderRepository orderRepository)
+        public PharmacistController(IUserRepository personRepository, IPrescriptionRepository prescriptionRepository,IOrderRepository orderRepository, IUnproccessedPrescriptionRepository unproccessedPrescriptionRepository)
         {
             _personRepository = personRepository;
             _prescriptionRepository = prescriptionRepository;
             _orderRepository = orderRepository;
-
+            _unproccessedPrescriptionRepository = unproccessedPrescriptionRepository;
         }
         public static class PasswordGenerator
         {
@@ -47,6 +48,10 @@ namespace ONT_PROJECT.Controllers
         {
             var totalOrders = await _orderRepository.TotalNumberOfOrders();
             ViewBag.TotalOrders = totalOrders;
+            var UnprocPresc = await _unproccessedPrescriptionRepository.NumberOfUnprocessedPresc();
+            ViewBag.NumberOfUnprocessedPresc = UnprocPresc;
+            var readyOrders = await _orderRepository.NoOfReadyOrders();
+            ViewBag.NoOfReadyOrders = readyOrders;
             return View();
         }
 
