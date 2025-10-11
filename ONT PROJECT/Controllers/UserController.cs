@@ -103,7 +103,7 @@ namespace ONT_PROJECT.Controllers
             }
 
             var plainPassword = GenerateRandomPassword(10);
-            user.Password = HashPassword(plainPassword);
+            user.Password = plainPassword;
 
             _context.TblUsers.Add(user);
 
@@ -206,7 +206,6 @@ namespace ONT_PROJECT.Controllers
             return View(model);
         }
 
-
         [HttpGet]
         public IActionResult ResetPassword(string email)
         {
@@ -219,27 +218,25 @@ namespace ONT_PROJECT.Controllers
         public IActionResult ResetPassword(ResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)
-                return View(model);
+                return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
 
-            var user = _context.TblUsers.FirstOrDefault(u => u.Email == model.Email);
+            var user = _context.TblUsers.FirstOrDefault(u => u.Email != null && u.Email.Trim() == model.Email.Trim());
             if (user == null)
-            {
-                ModelState.AddModelError("", "User not found.");
-                return View(model);
-            }
+                return Json(new { success = false, errors = new[] { "User not found." } });
+
+            if (model.TemporaryPassword != user.Password)
+                return Json(new { success = false, errors = new[] { "Temporary password is incorrect." } });
 
             if (model.NewPassword != model.ConfirmPassword)
-            {
-                ModelState.AddModelError("", "Passwords do not match.");
-                return View(model);
-            }
+                return Json(new { success = false, errors = new[] { "Passwords do not match." } });
 
-            user.Password = HashPassword(model.NewPassword);
+            user.Password = model.NewPassword;
             _context.SaveChanges();
 
-            TempData["SuccessMessage"] = "Password reset successfully!";
-            return RedirectToAction("Login", "User"); // redirect to login or wherever
+            return Json(new { success = true, message = "Password reset successfully!" });
         }
+
+
 
         public IActionResult Register()
         {
