@@ -92,15 +92,15 @@
             <div class="col-md-4">
                 <div class="card bg-dark">
                     <div class="card-body text-center">
-                        <h2>20</h2>
-                        <p>Total Customers</p>
+                        <h2>@ViewBag.TotalOrders</h2>
+                        <p>Placed Orders</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card bg-light text-dark">
                     <div class="card-body text-center">
-                        <h2>9</h2>
+                        <h2>@ViewBag.NumberOfUnprocessedPresc</h2>
                         <p>Unproccessed Prescription</p>
                     </div>
                 </div>
@@ -108,8 +108,8 @@
             <div class="col-md-4">
                 <div class="card bg-info">
                     <div class="card-body text-center">
-                        <h2>7</h2>
-                        <p>Uncollected Orders</p>
+                        <h2>@ViewBag.NoOfReadyOrders</h2>
+                        <p>Ready Orders</p>
                     </div>
                 </div>
             </div>

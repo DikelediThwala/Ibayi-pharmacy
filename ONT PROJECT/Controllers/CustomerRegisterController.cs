@@ -6,9 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -21,16 +20,14 @@ namespace ONT_PROJECT.Controllers
             _context = context;
         }
 
-
-        // POST: /CustomerRegister/Register
-        // GET: Register
-        // GET: Register
+        // GET: /CustomerRegister/Register
         public IActionResult Register()
         {
             LoadAllergyDropdown(); // Load allergies alphabetically
             return View();
         }
 
+        // POST: /CustomerRegister/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Register(TblUser model, string Password, string ConfirmPassword, List<int> SelectedAllergyIds)
@@ -58,7 +55,7 @@ namespace ONT_PROJECT.Controllers
             // Prepare customer linked to the same user object
             var customer = new Customer
             {
-                CustomerNavigation = model // directly link
+                CustomerNavigation = model
             };
 
             // Add allergies to customer
@@ -76,17 +73,24 @@ namespace ONT_PROJECT.Controllers
             _context.Customers.Add(customer);
             _context.SaveChanges();
 
-            // ===== Automatically log in the user =====
-            HttpContext.Session.SetInt32("UserId", model.UserId); // UserId is generated after SaveChanges
-            HttpContext.Session.SetString("UserEmail", model.Email);
-            HttpContext.Session.SetString("UserFirstName", model.FirstName);
-            HttpContext.Session.SetString("UserLastName", model.LastName); 
-            HttpContext.Session.SetString("UserRole", model.Role);
-
-            return RedirectToAction("Dashboard", "Customer");
+            // Show success message and redirect to login panel
+            TempData["Success"] = "Successfully registered! You can now log in.";
+            return RedirectToAction("Register"); // Stay on same page
         }
 
-        // Updated LoadAllergyDropdown method
+        // Remote email validation
+        [AcceptVerbs("GET", "POST")]
+        public IActionResult IsEmailAvailable(string email)
+        {
+            bool emailExists = _context.TblUsers.Any(u => u.Email.ToLower() == email.ToLower());
+            if (emailExists)
+            {
+                return Json("An email already exists");
+            }
+            return Json(true);
+        }
+
+        // Load allergy dropdown
         private void LoadAllergyDropdown(List<int>? selectedIds = null)
         {
             selectedIds ??= new List<int>();
@@ -96,12 +100,13 @@ namespace ONT_PROJECT.Controllers
                 {
                     Value = ai.ActiveIngredientId.ToString(),
                     Text = ai.Ingredients,
-                    Selected = selectedIds.Contains(ai.ActiveIngredientId) // Pre-select if in list
+                    Selected = selectedIds.Contains(ai.ActiveIngredientId)
                 })
-                .OrderBy(ai => ai.Text) // Alphabetical order
+                .OrderBy(ai => ai.Text)
                 .ToList();
         }
 
+        // POST: Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string Email, string Password)
@@ -110,23 +115,23 @@ namespace ONT_PROJECT.Controllers
 
             if (user != null && VerifyPassword(Password, user.Password))
             {
-                // --- 1. Create claims for authentication ---
+                // Create claims
                 var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new Claim(ClaimTypes.Name, user.Email),
-            new Claim(ClaimTypes.Role, user.Role)
-        };
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim(ClaimTypes.Role, user.Role)
+                };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                // --- 2. Sign in with cookie ---
+                // Sign in with cookie
                 await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity)
                 );
 
-                // --- 3. Store extra data in session if needed ---
+                // Store session data
                 HttpContext.Session.SetInt32("UserId", user.UserId);
                 HttpContext.Session.SetString("UserEmail", user.Email);
                 HttpContext.Session.SetString("UserFirstName", user.FirstName);
@@ -145,36 +150,29 @@ namespace ONT_PROJECT.Controllers
 
                 TempData["Success"] = "Login successful!";
 
-                // --- 4. Redirect based on role ---
-                switch (user.Role)
+                // Redirect based on role
+                return user.Role switch
                 {
-                    case "Customer":
-                        return RedirectToAction("Dashboard", "Customer");
-                    case "Pharmacist":
-                        return RedirectToAction("Index", "Pharmacist");
-                    case "PharmacyManager":
-                        return RedirectToAction("Dashboard", "Manager");
-                    default:
-                        return RedirectToAction("Index", "Home");
-                }
+                    "Customer" => RedirectToAction("Dashboard", "Customer"),
+                    "Pharmacist" => RedirectToAction("Index", "Pharmacist"),
+                    "PharmacyManager" => RedirectToAction("Dashboard", "Manager"),
+                    _ => RedirectToAction("Index", "Home")
+                };
             }
 
-            ViewData["LoginError"] = "Username and email are invalid.";
+            ViewData["LoginError"] = "Username and password are invalid.";
             return View("~/Views/User/Login.cshtml", new TblUser { Email = Email });
-
         }
 
-
-
-
+        // Placeholder for password hashing
         private string HashPassword(string password)
         {
             return password;
         }
 
+        // Placeholder for password verification
         private bool VerifyPassword(string enteredPassword, string storedPassword)
         {
-            // TODO: replace with proper verification
             return enteredPassword == storedPassword;
         }
     }

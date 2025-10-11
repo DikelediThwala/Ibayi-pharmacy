@@ -97,7 +97,7 @@
                                 <th>Quantity</th>
                                 <th>Instructions</th>
                                 <th>Repeats Allowed</th>
-                                <th>Repeats Left</th>
+                                @* <th>Repeats Left</th> *@
                             </tr>
                         </thead>
                         <tbody>
@@ -108,7 +108,7 @@
                                     <td>@line.Quantity</td>
                                     <td>@line.Instructions</td>
                                     <td>@line.Repeats</td>
-                                    <td>@(line.RepeatsLeft ?? 0)</td>
+                                    @* <td>@(line.RepeatsLeft ?? 0)</td> *@
                                 </tr>
                             }
                         </tbody>

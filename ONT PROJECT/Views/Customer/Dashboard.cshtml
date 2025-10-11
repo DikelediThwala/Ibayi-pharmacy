@@ -12,8 +12,11 @@
 
 <div class="container-xl py-4">
 
-    <h2 class="text-primary mb-3">Customer Dashboard</h2>
+    <h2 class="text-primary mb-3">
+        Welcome, @Context.Session.GetString("UserFirstName")!
+    </h2>
     <hr style="height: 3px; background-color: #011425; border: none;" />
+
 
     <!-- DASHBOARD CARDS -->
     <div class="row g-3 mb-4">

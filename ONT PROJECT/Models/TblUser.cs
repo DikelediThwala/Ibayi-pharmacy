@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using ONT_PROJECT.Validators;
+
+
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ONT_PROJECT.Models;
@@ -16,6 +19,7 @@ public partial class TblUser
 
     [Required(ErrorMessage = "Email is required")]
     [EmailAddress(ErrorMessage = "Invalid email address")]
+    [Remote(action: "IsEmailAvailable", controller: "CustomerRegister", ErrorMessage = "An email already exists")]
     [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Invalid email address")]
     public string Email { get; set; } = null!;
 

@@ -53,6 +53,7 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<TblUser> TblUsers { get; set; }
     public virtual DbSet<ActivityLog> ActivityLogs { get; set; }
+    public virtual DbSet<RepeatHistory> RepeatHistories { get; set; }
 
     public virtual DbSet<UnprocessedPrescription> UnprocessedPrescriptions { get; set; }
 
@@ -400,6 +401,33 @@ public partial class ApplicationDbContext : DbContext
               .HasMaxLength(20)
               .HasDefaultValue("Active");
         });
+        modelBuilder.Entity<RepeatHistory>(entity =>
+        {
+            entity.ToTable("RepeatHistory");
+
+            entity.HasKey(e => e.RepeatHistoryId);
+
+            entity.Property(e => e.RepeatHistoryId)
+                  .HasColumnName("RepeatHistoryID")
+                  .ValueGeneratedOnAdd();
+
+            entity.Property(e => e.PrescriptionLineId)
+                  .HasColumnName("PrescriptionLineID");
+
+            entity.Property(e => e.DateUsed)
+                  .HasColumnType("datetime");
+
+            // Removed HasMaxLength(50) because RepeatsDecremented is an int
+            entity.Property(e => e.RepeatsDecremented)
+                  .IsRequired();
+
+            entity.HasOne(d => d.PrescriptionLine)
+                  .WithMany(p => p.RepeatHistories)
+                  .HasForeignKey(d => d.PrescriptionLineId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .HasConstraintName("FK_RepeatHistory_PrescriptionLine");
+        });
+
 
         modelBuilder.Entity<UnprocessedPrescription>(entity =>
         {

@@ -1,48 +1,103 @@
 ﻿@{
     ViewData["Title"] = "Generate Report";
-    Layout = "_CustomerLayout";  // Same layout used on other pages
+    Layout = "_CustomerLayout";
 }
 
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+<style>
+    body {
+        color: #566787;
+        background: #f5f5f5;
+        font-family: 'Varela Round', sans-serif;
+        font-size: 13px;
+    }
+
+    .card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 3px;
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    }
+
+    .card-header {
+        color: #fff;
+        background: #4b5366;
+        padding: 16px 25px;
+        border-radius: 3px 3px 0 0;
+    }
+
+        .card-header h5 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+    .form-label {
+        font-weight: 500;
+    }
+
+    .btn-primary {
+        background: #03A9F4;
+        border: none;
+        color: #fff;
+    }
+
+        .btn-primary:hover {
+            background: #03a3e7;
+        }
+</style>
+
 <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm rounded-3">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Generate Dispensed Prescriptions Report</h5>
-                </div>
-                <div class="card-body">
-                    <form asp-controller="CustomerReport" asp-action="GenerateReport" method="get">
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="startDate" class="form-label">Start Date</label>
-                                <input type="date" id="startDate" name="startDate" class="form-control" required />
-                            </div>
-                            <div class="col-md-6">
-                                <label for="endDate" class="form-label">End Date</label>
-                                <input type="date" id="endDate" name="endDate" class="form-control" required />
-                            </div>
-                        </div>
+    <!-- Info -->
+    <div class="mb-4 p-4 rounded shadow-sm bg-light border-start border-4 border-primary">
+        <p class="lead text-muted mb-0">
+            <i class="material-icons text-primary">&#xE24D;</i>
+            Generate a dispensed prescriptions report as PDF.
+        </p>
+    </div>
 
-                        <div class="mb-3">
-                            <label for="groupBy" class="form-label">Group Records By</label>
-                            <select id="groupBy" name="groupBy" class="form-select">
-                                <option value="Doctor">Doctor</option>
-                                <option value="Medication">Medication</option>
-                            </select>
-                        </div>
+    <!-- Form Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5><i class="material-icons">&#xE24D;</i> Generate Report</h5>
+        </div>
+        <div class="card-body">
+            <form asp-controller="CustomerReport" asp-action="GenerateReport" method="get">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" id="startDate" name="startDate" class="form-control" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" id="endDate" name="endDate" class="form-control" required />
+                    </div>
+                </div>
 
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="material-icons align-middle" style="font-size:18px;">picture_as_pdf</i>
-                                Generate PDF Report
-                            </button>
-                        </div>
-                    </form>
+                <div class="mb-3">
+                    <label for="groupBy" class="form-label">Group Records By</label>
+                    <select id="groupBy" name="groupBy" class="form-select">
+                        <option value="Doctor">Doctor</option>
+                        <option value="Medication">Medication</option>
+                    </select>
                 </div>
-                <div class="card-footer text-muted text-center" style="font-size: 0.85rem;">
-                    Select the date range and grouping type, then click “Generate PDF Report”
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="material-icons align-middle" style="font-size:18px;">picture_as_pdf</i>
+                        Generate PDF Report
+                    </button>
                 </div>
-            </div>
+            </form>
+        </div>
+        <div class="card-footer text-muted text-center" style="font-size: 0.85rem;">
+            Select the date range and grouping type, then click “Generate PDF Report”
         </div>
     </div>
 </div>

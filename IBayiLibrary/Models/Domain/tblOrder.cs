@@ -19,6 +19,7 @@ namespace IBayiLibrary.Models.Domain
         public int PharmacistID { get; set; }
         public int VAT { get; set; }
         public int TotalDue { get; set; }
+        public int TotalOrders { get; set; }
         public int Price { get; set; }
         public int LineTotal { get; set; }
         public int Quantity { get; set; }

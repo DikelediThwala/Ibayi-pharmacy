@@ -12,8 +12,11 @@ namespace IBayiLibrary.Repository
         Task<bool> AddOrder(tblOrder tblOrder);
         Task<bool> AddOrderLine(tblOrder tblOrder);
         Task<IEnumerable<tblOrder>> MedicationOrder();
-        Task<IEnumerable<tblOrder>> GetAllOrders();       
+        Task<IEnumerable<tblOrder>> GetAllOrders();
+        //Task<IEnumerable<tblOrder>> ();
         Task<tblOrder> GetOrdersByID(int id);
+        Task<int> NoOfReadyOrders();
+        Task<int> TotalNumberOfOrders(); 
         //Task<tblOrder> UpdateOrder(int id,string status);
         Task<bool> UpdateOrder(int id, string status,DateTime?DateRecieved);
 

@@ -16,7 +16,6 @@ namespace ONT_PROJECT.Controllers
             _context = context;
         }
 
-        // Display all prescription lines for the logged-in customer
         public async Task<IActionResult> MyPrescriptionLines()
         {
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -25,7 +24,6 @@ namespace ONT_PROJECT.Controllers
 
             int userId = int.Parse(userIdStr);
 
-            // Fetch customer including allergies
             var customer = await _context.Customers
                 .Include(c => c.CustomerNavigation)
                 .Include(c => c.CustomerAllergies)
@@ -35,31 +33,52 @@ namespace ONT_PROJECT.Controllers
             if (customer == null)
                 return NotFound();
 
-            // Fetch prescription lines including medicines, prescriptions, and doctor
+            // STEP 1: Load prescription lines safely
             var lines = await _context.PrescriptionLines
                 .Include(pl => pl.Medicine)
                     .ThenInclude(m => m.MedIngredients)
                         .ThenInclude(mi => mi.ActiveIngredient)
                 .Include(pl => pl.Prescription)
-                    .ThenInclude(p => p.Customer)
-                        .ThenInclude(c => c.CustomerAllergies)
-                            .ThenInclude(ca => ca.ActiveIngredient)
-                .Include(pl => pl.Prescription)
-                    .ThenInclude(p => p.Doctor) // Include doctor
+                    .ThenInclude(p => p.Doctor)
                 .Where(pl => pl.Prescription.CustomerId == customer.CustomerId)
                 .ToListAsync();
 
-            // Initialize RepeatsLeft if null
+            // STEP 2: Load repeat histories
+            var lineIds = lines.Select(l => l.PrescriptionLineId).ToList();
+            var allHistories = await _context.RepeatHistories
+                .Where(rh => lineIds.Contains(rh.PrescriptionLineId))
+                .OrderByDescending(rh => rh.DateUsed)
+                .ToListAsync();
+
+            // STEP 3: Attach histories to lines safely
             foreach (var line in lines)
             {
+                line.RepeatHistories = allHistories
+                    .Where(rh => rh.PrescriptionLineId == line.PrescriptionLineId)
+                    .ToList();
+
+                // Initialize RepeatsLeft if null
                 if (!line.RepeatsLeft.HasValue && line.Repeats.HasValue)
                 {
                     line.RepeatsLeft = line.Repeats.Value;
                     _context.Update(line);
                 }
-            }
-            await _context.SaveChangesAsync();
 
+                // Make sure related properties are not null to prevent view errors
+                if (line.Medicine == null)
+                    line.Medicine = new Medicine();
+
+                if (line.Prescription == null)
+                    line.Prescription = new Prescription();
+
+                if (line.Prescription.Doctor == null)
+                    line.Prescription.Doctor = new Doctor();
+
+                if (line.RepeatHistories == null)
+                    line.RepeatHistories = new List<RepeatHistory>();
+            }
+
+            await _context.SaveChangesAsync();
             return View(lines);
         }
 
@@ -70,7 +89,7 @@ namespace ONT_PROJECT.Controllers
             if (selectedLines == null || selectedLines.Length == 0)
             {
                 TempData["ErrorMessage"] = "No medications selected.";
-                return RedirectToAction("MyPrescriptionLines");
+                return RedirectToAction(nameof(MyPrescriptionLines));
             }
 
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -111,13 +130,20 @@ namespace ONT_PROJECT.Controllers
 
             foreach (var line in lines)
             {
-                // Allergy check
-                var medicineIngredients = line.Medicine.MedIngredients
-                    .Select(mi => mi.ActiveIngredient.Ingredients)
-                    .ToList();
+                if (line.Medicine == null)
+                {
+                    blocked.Add("Unknown medicine (data error)");
+                    continue;
+                }
 
-                bool allergyConflict = customer.CustomerAllergies
-                    .Any(ca => medicineIngredients.Contains(ca.ActiveIngredient.Ingredients));
+                // Allergy check
+                var medicineIngredients = line.Medicine.MedIngredients?
+                    .Select(mi => mi.ActiveIngredient?.Ingredients)
+                    .Where(i => !string.IsNullOrEmpty(i))
+                    .ToList() ?? new List<string>();
+
+                bool allergyConflict = customer.CustomerAllergies?
+                    .Any(ca => medicineIngredients.Contains(ca.ActiveIngredient?.Ingredients)) ?? false;
 
                 if (allergyConflict)
                 {
@@ -143,23 +169,31 @@ namespace ONT_PROJECT.Controllers
                     Status = "Pending"
                 });
 
-                // only sum the price (not multiplied by quantity)
                 order.TotalDue += price;
                 ordered.Add(line.Medicine.MedicineName);
 
                 // Decrement repeats
                 line.RepeatsLeft -= 1;
                 _context.Update(line);
+
+                // Add repeat history (linked to this specific line)
+                var repeatHistory = new RepeatHistory
+                {
+                    PrescriptionLineId = line.PrescriptionLineId,
+                    RepeatsDecremented = 1,
+                    DateUsed = DateTime.Now
+                };
+
+                await _context.RepeatHistories.AddAsync(repeatHistory);
             }
 
             if (!order.OrderLines.Any())
             {
                 TempData["ErrorMessage"] = "No medications could be ordered: " + string.Join(", ", blocked);
-                return RedirectToAction("MyPrescriptionLines");
+                return RedirectToAction(nameof(MyPrescriptionLines));
             }
 
             order.Vat = order.TotalDue * 0.15;
-
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
@@ -167,8 +201,7 @@ namespace ONT_PROJECT.Controllers
                 TempData["ErrorMessage"] = "Some medications could not be ordered: " + string.Join(", ", blocked);
 
             TempData["SuccessMessage"] = "Order placed for: " + string.Join(", ", ordered);
-            return RedirectToAction("MyPrescriptionLines");
+            return RedirectToAction(nameof(MyPrescriptionLines));
         }
-
     }
 }
