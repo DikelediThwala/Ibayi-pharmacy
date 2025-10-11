@@ -14,6 +14,8 @@ public partial class BOrderLine
     [NotMapped] 
     public bool IsSelected { get; set; }
     public int Quantity { get; set; }
+    public string Status { get; set; } = "Pending";
+
     public virtual BOrder? BOrder { get; set; }
     public virtual Medicine? Medicine { get; set; }
 }

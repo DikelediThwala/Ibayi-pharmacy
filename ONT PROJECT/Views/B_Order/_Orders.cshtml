@@ -1,5 +1,7 @@
 ﻿@model List<ONT_PROJECT.Models.BOrder>
 
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
 
 <style>
     .table-wrapper {
@@ -19,6 +21,12 @@
         border-radius: 3px 3px 0 0;
     }
 
+
+    #TableWrapper {
+        max-height: 540px;
+        overflow-y: auto;
+        display: block;
+    }
     table.table tr th,
     table.table tr td {
         border-color: #e9e9e9;
@@ -26,112 +34,122 @@
         vertical-align: middle;
     }
 
-    .table-primary {
-        background-color: #dbe9f7 !important;
+    .badge-status {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        border-radius: 8px;
     }
 
-    .table-warning {
-        background-color: #ffe5b4 !important;
-    }
-
-    .table-success {
-        background-color: #d4edda !important;
+    .order-header {
+        background-color: #f7f7f7;
+        font-weight: bold;
     }
 </style>
 
-<div class="table-wrapper">
-    <div class="table-title d-flex justify-content-between align-items-center mb-2" style="background: #4b5366; padding: 8px 15px; border-radius: 4px;">
-        <h2><i class="fas fa-clipboard-list"></i> Previous <b>Orders</b></h2>
-        <div>
-            <label for="statusFilter" class="form-label text-white me-2 mb-0" style="font-weight: 600; font-size: 0.9rem;">Filter by Status:</label>
-            <select id="statusFilter" class="form-select form-select-sm d-inline-block w-auto" onchange="filterOrdersByStatus()" style="font-size: 0.85rem;">
-                <option value="">All</option>
-                <option value="Pending">Pending</option>
-                <option value="Received">Received</option>
-            </select>
+<div class="container-xl my-4">
+    <div class="table-wrapper">
+        <div class="table-title d-flex justify-content-between align-items-center mb-2">
+            <h2><i class="fas fa-clipboard-list"></i> Previous <b>Orders</b></h2>
+            <div>
+                <label for="statusFilter" class="form-label text-white me-2 mb-0" style="font-weight: 600; font-size: 0.9rem;">Filter by Status:</label>
+                <select id="statusFilter" class="form-select form-select-sm d-inline-block w-auto" style="font-size: 0.85rem;">
+                    <option value="">All</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Received">Received</option>
+                </select>
+            </div>
         </div>
-    </div>
 
-    <table class="table table-hover" id="ordersTable">
-        
-        <thead>
-            <tr>
-                <th>Order ID</th>
-                <th>Date Ordered</th>
-                <th>Medicines Ordered</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var order in Model)
-            {
-                <tr data-status="@order.Status">
-                    <!-- ✅ Added data-status -->
-                    <td>@order.BOrderId</td>
-                    <td>@order.DatePlaced.ToShortDateString()</td>
-                    <td>
-                        <ul class="mb-0 ps-3">
-                            @foreach (var line in order.BOrderLines)
-                            {
-                                <li>@line.Medicine.MedicineName - Qty: @line.Quantity</li>
-                            }
-                        </ul>
-                    </td>
-                    <td>
-                        @switch (order.Status)
+        <div id="TableWrapper">
+
+            <table class="table table-hover" id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>Order Number</th>
+                        <th>Date Ordered</th>
+                        <th>Supplier</th>
+                        <th>Medicines</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        var orderStatus = order.BOrderLines.All(l => l.Status == "Received") ? "Received" : "Pending";
+
+                        <!-- Order header row -->
+                        <tr class="order-header" data-order-status="@orderStatus">
+                            <td>@order.BOrderId</td>
+                            <td>@order.DatePlaced.ToShortDateString()</td>
+                            <td colspan="3"></td> <!-- fill remaining columns -->
+                        </tr>
+
+                        <!-- Supplier lines grouped by Supplier -->
+                        var supplierGroups = order.BOrderLines
+                        .Where(l => l.Medicine != null && l.Medicine.Supplier != null)
+                        .GroupBy(l => l.Medicine!.Supplier!.Name)
+                        .ToList();
+
+                        foreach (var group in supplierGroups)
                         {
-                            case "Pending":
-                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2">Pending</span>
-                                ;
-                                break;
-                            case "Processing":
-                                <span class="badge bg-primary text-white rounded-pill px-3 py-2">Processing</span>
-                                ;
-                                break;
-                            case "Received":
-                                <span class="badge bg-success text-white rounded-pill px-3 py-2">Received</span>
-                                ;
-                                break;
-                            default:
-                                <span class="badge bg-secondary rounded-pill px-3 py-2">@order.Status</span>
-                                ;
-                                break;
+                            var supplierStatus = group.All(l => l.Status == "Received") ? "Received" : "Pending";
+
+                            <tr data-order-status="@orderStatus" data-supplier-status="@supplierStatus">
+                                <td></td>
+                                <td></td>
+                                <td>@group.Key</td>
+                                <td>
+                                    <ul class="mb-0 ps-3">
+                                        @foreach (var line in group)
+                                        {
+                                            <li>
+                                                @line.Medicine!.MedicineName - Qty: @line.Quantity
+                                                <span class="badge @(line.Status == "Received" ? "bg-success text-white" : "bg-warning text-dark") ms-1">
+                                                    @line.Status
+                                                </span>
+                                            </li>
+                                        }
+                                    </ul>
+                                </td>
+                                <td>
+                                    @if (supplierStatus == "Received")
+                                    {
+                                        <i class="text-success">✓</i>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="MarkSupplierLinesAsReceived" asp-controller="B_Order" method="post">
+                                            <input type="hidden" name="orderId" value="@order.BOrderId" />
+                                            <input type="hidden" name="supplierName" value="@group.Key" />
+                                            <button type="submit" class="btn btn-sm btn-success">Mark Supplier Received</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
                         }
-                    </td>
-                    <td>
-                        @if (order.Status != "Received")
-                        {
-                            <form asp-action="MarkAsReceived" asp-controller="B_Order" method="post" class="d-inline">
-                                <input type="hidden" name="id" value="@order.BOrderId" />
-                                <button type="submit" class="btn btn-sm btn-success">Mark as Received</button>
-                            </form>
-                        }
-                        else
-                        {
-                            <i class="text-success">✓</i>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    }
+                </tbody>
+            </table>
+       </div>
+    </div>
 </div>
 
-<!-- Include jQuery and DataTables scripts -->
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
     $(document).ready(function () {
-        // Initialize DataTable for orders table
-        $('#ordersTable').DataTable({
-            pageLength: 8,       
-            lengthChange: false,  
-            searching: true,      
-            ordering: true,   
-            order: [[1, "desc"]], 
+
+        // Disable DataTables error alerts
+        $.fn.dataTable.ext.errMode = 'none';
+
+        // Initialize DataTable
+        var table = $('#ordersTable').DataTable({
+            pageLength: 6,          // show 6 rows per page
+            lengthChange: false,
+            ordering: true,
+            order: [[1, "desc"]],
             language: {
                 search: "Search table:",
                 paginate: {
@@ -140,16 +158,24 @@
                 }
             }
         });
-    });
 
-    // Filter orders by status
-    function filterOrdersByStatus() {
-        const filterValue = document.getElementById('statusFilter').value;
-        const rows = document.querySelectorAll('#ordersTable tbody tr');
+        // Custom status filter
+        $('#statusFilter').on('change', function () {
+            var filterValue = $(this).val();
 
-        rows.forEach(row => {
-            const status = row.getAttribute('data-status');
-            row.style.display = (!filterValue || status === filterValue) ? '' : 'none';
+            table.rows().every(function () {
+                var row = $(this.node());
+                var orderStatus = row.data('order-status');
+                var supplierStatus = row.data('supplier-status');
+
+                if (!filterValue || orderStatus === filterValue || supplierStatus === filterValue) {
+                    row.show();
+                } else {
+                    row.hide();
+                }
+            });
+
+            table.draw(false);
         });
-    }
+    });
 </script>
