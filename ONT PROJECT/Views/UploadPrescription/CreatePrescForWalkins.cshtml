@@ -404,8 +404,40 @@
                 }
             }
         });
+
+        // Validate duplicate MedicineID selections
+        container.addEventListener('change', function (e) {
+            if (e.target.matches('select[name="MedicineID"]')) {
+                const allSelects = Array.from(container.querySelectorAll('select[name="MedicineID"]'));
+                const selectedValues = allSelects.map(sel => sel.value).filter(v => v !== '');
+
+                // Check for duplicates
+                const duplicates = selectedValues.filter((v, i, arr) => arr.indexOf(v) !== i);
+
+                if (duplicates.length > 0) {
+                    alert("You cannot select the same medication more than once!");
+                    e.target.value = ''; // Reset the duplicated selection
+                }
+            }
+        });
+
+        // Optional: Validate before form submission
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                const allSelects = Array.from(container.querySelectorAll('select[name="MedicineID"]'));
+                const selectedValues = allSelects.map(sel => sel.value).filter(v => v !== '');
+                const duplicates = selectedValues.filter((v, i, arr) => arr.indexOf(v) !== i);
+
+                if (duplicates.length > 0) {
+                    e.preventDefault();
+                    alert("Duplicate medications found. Please remove duplicates before saving.");
+                }
+            });
+        }
     });
 </script>
+
 <script>
     document.getElementById("btnSearch").addEventListener("click", function () {
         let searchTerm = document.getElementById("searchBox").value;

@@ -63,7 +63,7 @@ namespace ONT_PROJECT.Controllers
             {
                 TempData["msg"] = " Something went wrong!!!";
             }
-            return RedirectToAction("LoadPrescription", "Pharmacist");
+            return RedirectToAction("GetOrdersMedication", "Order");
         }
         public async Task<IActionResult> OrderMedication()
         {

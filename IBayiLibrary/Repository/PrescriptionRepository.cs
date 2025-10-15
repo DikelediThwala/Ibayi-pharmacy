@@ -152,11 +152,11 @@ namespace IBayiLibrary.Repository
             IEnumerable<PrescriptionViewModel> result = await _db.GetData<PrescriptionViewModel, dynamic>("spSelectCustomerName", new { UserID = userID });
             return result.FirstOrDefault();
         }
-        public async Task<List<string>> GetAllergicIngredients(int customerId)
+        public async Task<List<string>> GetAllergicIngredients(int Id)
         {
             var result = await _db.GetData<PrescriptionViewModel, dynamic>(
                 "spCheckAllergy",
-                new { CustomerID = customerId }
+                new { CustomerID = Id }
             );
 
             return result.Select(r => r.Ingredients).ToList(); // return ingredient names

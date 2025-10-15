@@ -170,6 +170,7 @@ namespace ONT_PROJECT.Controllers
                 var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
                 var lastRow = result.FirstOrDefault();
 
+              
                 int prescriptionID = lastRow?.PrescriptionID ?? 0;
                 prescription.PrescriptionID = prescriptionID;
                 bool addPrescLine = await _prescriptionRepository.AddPrescLineAsync(prescription);
@@ -279,5 +280,28 @@ namespace ONT_PROJECT.Controllers
                 data = new { firstName = customer.FirstName,idNumber = customer.IDNumber }
             });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> CreatePrescriptions(int id)
+        {
+            // Get the prescription (with the photo bytes)
+            var prescription = await _prescriptionRepository.FindPrescription(id);
+
+            if (prescription == null)
+            {
+                return NotFound();
+            }
+
+            // Pass it to your view model
+            var viewModel = new PrescriptionViewModel
+            {
+                CustomerID = prescription.CustomerID,               
+                Date = prescription.Date,
+                PrescriptionPhoto = prescription.PrescriptionPhoto
+            };
+
+            return View(viewModel);
+        }
+
     }
 }
