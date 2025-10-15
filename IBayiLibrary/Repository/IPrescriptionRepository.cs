@@ -25,5 +25,8 @@ namespace IBayiLibrary.Repository
         Task<Prescriptions> FindPrescription(int PrescriptionID);
         Task<PrescriptionModel> GetDispenseById(int prescriptionId);
         Task<IEnumerable<PrescriptionViewModel>> SearchCustomer(string searchTerm);
+        Task<List<string>> GetAllergicIngredients(int customerId);
+        
+
     }
 }

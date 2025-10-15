@@ -297,12 +297,11 @@
                 <table id="prescriptionsTable" class="table table-striped table-hover">
                     <thead>
                         <tr>   
-                            <th>UnprocessedPrescription ID</th>
-                            <th>Customer</th>
-                            <th>Doctor</th>                           
+                           
+                            <th>Customer</th>                                                    
                             <th>Date</th>
                             <th>Photo</th>                          
-                            <th>Status</th>
+                            <th>Dispense</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -312,9 +311,9 @@
                         @foreach (var item in Model)
                         {
                             <tr id="prescription-@item.UnprocessedPrescriptionID">
-                                <td>@item.UnprocessedPrescriptionID</td>
+                                
                                 <td>@item.FirstName</td>
-                                <td>@item.Name</td>
+                                
                                 <td>@item.Date.ToString("yyyy-MM-dd")</td>
                                 <td>
                                     @if (item.PrescriptionPhoto != null)
@@ -328,8 +327,8 @@
                                         <span>No File</span>
                                     }
                                 </td>
-                                <td class="status-cell">
-                                    <span id="status-@item.UnprocessedPrescriptionID">@item.Status</span>
+                                <td >
+                                    @item.Dispense
                                 </td>
                                 <td>
                                     <!-- View Details Button -->

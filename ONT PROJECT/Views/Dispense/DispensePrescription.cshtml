@@ -30,6 +30,13 @@
 
         <!-- Search Form -->
         <form asp-action="DispensePrescription" method="get" class="mb-3">
+            @if (TempData["AllergyAlert"] != null)
+            {
+                <div id="errorAlert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["AllergyAlert"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }           
             <div class="input-group">
                 <input type="text" name="searchTerm" class="form-control"
                        placeholder="Search by customer, doctor, or medication..."
@@ -153,4 +160,14 @@
         });
     });
     
+</script>
+<script>
+    setTimeout(function () {
+
+        var error = document.getElementById('errorAlert');
+        if (error) {
+            var bsAlert = new bootstrap.Alert(error);
+            bsAlert.close();
+        }
+    }, 4000);
 </script>

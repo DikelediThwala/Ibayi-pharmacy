@@ -78,6 +78,14 @@ namespace ONT_PROJECT.Controllers
                 if (addPerson)
                 {
                     TempData["msg"] = "Sucessfully Added";
+                    var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(prescription.CustomerID);
+
+                    if (allergicIngredients.Any())
+                    {
+                        // You can map IDs to names for clarity if needed
+                        TempData["AllergyAlert"] = "Warning: Patient is allergic to the following ingredients: "
+                                                   + string.Join(", ", allergicIngredients);
+                    }
                 }
                 else
                 {
@@ -112,7 +120,7 @@ namespace ONT_PROJECT.Controllers
             {
                 TempData["msg"] = " Something went wrong!!!";
             }
-            return RedirectToAction("CreateUser", "Pharmacist");
+            return RedirectToAction("DispensePrescription", "Dispense");
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -169,6 +177,26 @@ namespace ONT_PROJECT.Controllers
                 if (addPrescLine)
                 {
                     TempData["msg"] = "Sucessfully Added";
+                    // After adding prescription line
+                    if (addPrescLine)
+                    {
+                        TempData["msg"] = "Successfully Added";
+
+                        // Check for patient allergies
+                        var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(prescription.CustomerID);
+
+                        if (allergicIngredients.Any())
+                        {
+                            // You can map IDs to names for clarity if needed
+                            TempData["AllergyAlert"] = "Warning: Patient is allergic to the following ingredients: "
+                                                       + string.Join(", ", allergicIngredients);
+                        }
+                    }
+                    else
+                    {
+                        TempData["msg"] = "Could not add prescription line";
+                    }
+
                 }
                 else
                 {

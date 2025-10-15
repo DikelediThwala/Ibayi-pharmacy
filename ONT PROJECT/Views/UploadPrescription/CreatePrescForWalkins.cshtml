@@ -229,6 +229,12 @@
     <div class="card-body">
 
         <form asp-action="CreatePrescForWalkins" enctype="multipart/form-data" method="post">
+            @if (TempData["AllergyAlert"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["AllergyAlert"]
+                </div>
+            }
 
             <div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
                 <i class="bi bi-info-circle-fill"></i>

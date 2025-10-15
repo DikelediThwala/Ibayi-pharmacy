@@ -25,6 +25,8 @@ namespace IBayiLibrary.Models.Domain
         public string Instructions { get; set; }
         public string IDNumber { get; set; }
         public string LastName { get; set; }
+        public string Ingredients { get; set; }
+       
         public int Quantity { get; set; }
         public int Repeats { get; set; }
         public int RepeatsLeft { get; set; }

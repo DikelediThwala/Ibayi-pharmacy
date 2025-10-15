@@ -2,6 +2,7 @@
 using IBayiLibrary.Repository;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol.Core.Types;
+using ONT_PROJECT.Models;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace ONT_PROJECT.Controllers
@@ -54,7 +55,7 @@ namespace ONT_PROJECT.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Process(int id)
+        public async Task<IActionResult> Process(int id, PrescriptionViewModel prescription)
         {
             var prescriptionss = await _prescriptionRepository.GetDispenseById(id);
 
@@ -65,6 +66,14 @@ namespace ONT_PROJECT.Controllers
             bool success = await _prescriptionRepository.UpdateDispnse(prescriptionToUpdate);
             if (success)
             {
+                var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(prescription.CustomerID);
+
+                if (allergicIngredients.Any())
+                {
+                    // You can map IDs to names for clarity if needed
+                    TempData["AllergyAlert"] = "Warning: Patient is allergic to the following ingredients: "
+                                               + string.Join(", ", allergicIngredients);
+                }
                 if (!string.IsNullOrEmpty(prescriptionss.Email))
                 {
                     string emailBody = $@"

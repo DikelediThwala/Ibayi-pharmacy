@@ -19,6 +19,7 @@ namespace IBayiLibrary.Models.Domain
         public string ?Dispened { get; set; }
         public string Status { get; set; }
         [NotMapped]
-        public IFormFile? PescriptionFile { get; set; }              
+        public IFormFile? PescriptionFile { get; set; }
+        public string Dispense { get; set; } = string.Empty;
     }
 }

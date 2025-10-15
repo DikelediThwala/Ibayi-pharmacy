@@ -347,32 +347,28 @@
 </script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-
 <script>
-    function makeDraggable(element) {
-        let offsetX = 0, offsetY = 0, isDragging = false;
+    document.addEventListener('DOMContentLoaded', function () {
+        const container = document.getElementById('medicationContainer');
 
-        element.addEventListener("mousedown", function(e) {
-            isDragging = true;
-            offsetX = e.clientX - element.getBoundingClientRect().left;
-            offsetY = e.clientY - element.getBoundingClientRect().top;
-            document.body.style.userSelect = "none"; // prevent text selection
+        container.addEventListener('click', function (e) {
+            // Add new row
+            if (e.target.classList.contains('add-btn')) {
+                const row = e.target.closest('.medication-row');
+                const newRow = row.cloneNode(true);
+
+                // Reset values
+                newRow.querySelectorAll('select, input, textarea').forEach(el => el.value = '');
+                container.appendChild(newRow);
+            }
+
+            // Remove row
+            if (e.target.classList.contains('remove-btn')) {
+                const rows = container.querySelectorAll('.medication-row');
+                if (rows.length > 1) {
+                    e.target.closest('.medication-row').remove();
+                }
+            }
         });
-
-        document.addEventListener("mousemove", function(e) {
-            if (!isDragging) return;
-            element.style.left = (e.clientX - offsetX) + "px";
-            element.style.top = (e.clientY - offsetY) + "px";
-            element.style.right = "auto"; // allow free movement
-        });
-
-        document.addEventListener("mouseup", function() {
-            isDragging = false;
-            document.body.style.userSelect = "auto";
-        });
-    }
-
-    // Apply to your sidebar
-    makeDraggable(document.getElementById("pdfPreviewContainer"));
+    });
 </script>
-
