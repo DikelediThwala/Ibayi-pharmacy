@@ -301,7 +301,7 @@
                             <th>Customer</th>                                                    
                             <th>Date</th>
                             <th>Photo</th>                          
-                            <th>Dispense</th>
+                            <th>Dispense Status</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -338,7 +338,18 @@
                                        class="btn btn-success"
                                        title="View Details">
                                         <i class="material-icons">&#xE5C8;</i>
-                                    </a>                                
+                                    </a>
+
+                                    @if (item.Dispense?.Trim().Equals("Requested", StringComparison.OrdinalIgnoreCase) == true)
+                                    {
+                                        <a asp-controller="Pharmacist"
+                                           asp-action="DispenseNow"
+                                           asp-route-id="@item.UnprocessedPrescriptionID"
+                                           class="btn btn-warning ms-2"
+                                           title="Dispense Immediately">
+                                            <i class="material-icons">local_pharmacy</i>
+                                        </a>
+                                    }
                             </tr>
                         }
                     </tbody>

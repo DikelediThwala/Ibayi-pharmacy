@@ -3,7 +3,11 @@
 @{
     ViewData["Title"] = "Generate Report";
     Layout = "PharmacistLayout";
+
     var groupBy = ViewBag.GroupBy?.ToString() ?? "FullName";
+    DateTime? startDate = ViewBag.StartDate;
+    DateTime? endDate = ViewBag.EndDate;
+
     IEnumerable<IGrouping<object, IBayiLibrary.Models.Domain.PrescriptionViewModel>> groupedData;
 
     if (groupBy == "MedicineName")
@@ -12,31 +16,62 @@
     }
     else if (groupBy == "Schedule")
     {
-        groupedData = Model.GroupBy(x => (object)x.Schedule); // assuming your model has Schedule
+        groupedData = Model.GroupBy(x => (object)x.Schedule);
     }
     else
     {
         groupedData = Model.GroupBy(x => (object)x.FullName);
     }
+
+    // Grand total across all groups
+    var grandTotalQty = Model.Sum(x => x.Quantity);
 }
 
-<form method="get" asp-action="PharmacistGenerateReport" class="mb-3">
-    <label for="groupBy">Group By:</label>
-    <select id="groupBy" name="groupBy" class="form-select d-inline w-auto mx-2">
-        <option value="FullName" selected="@(ViewBag.GroupBy == "FullName")">Full Name</option>
-        <option value="Schedule" selected="@(ViewBag.GroupBy == "Schedule")">Schedule</option>
-        <option value="MedicineName" selected="@(ViewBag.GroupBy == "MedicineName")">Medication</option>
-    </select>
-    <button type="submit" class="btn btn-dark btn-sm">Apply</button>
+<!-- Filter Form -->
+<form method="get" asp-action="PharmacistGenerateReport" class="mb-3 row align-items-end g-2">
+    <div class="col-md-3">
+        <label for="startDate" class="form-label">Start Date:</label>
+        <input type="date" id="startDate" name="startDate"
+               class="form-control"
+               value="@(startDate?.ToString("yyyy-MM-dd"))" />
+    </div>
+
+    <div class="col-md-3">
+        <label for="endDate" class="form-label">End Date:</label>
+        <input type="date" id="endDate" name="endDate"
+               class="form-control"
+               value="@(endDate?.ToString("yyyy-MM-dd"))" />
+    </div>
+
+    <div class="col-md-3">
+        <label for="groupBy" class="form-label">Group By:</label>
+        <select id="groupBy" name="groupBy" class="form-select">
+            <option value="FullName" selected="@(ViewBag.GroupBy == "FullName")">Full Name</option>
+            <option value="Schedule" selected="@(ViewBag.GroupBy == "Schedule")">Schedule</option>
+            <option value="MedicineName" selected="@(ViewBag.GroupBy == "MedicineName")">Medication</option>
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-dark w-100">Apply</button>
+    </div>
 </form>
+
+<!-- Report Card -->
 <div class="card mt-3">
     <div class="card-header bg-dark text-white text-center">
         <h4><strong>PRESCRIPTIONS DISPENSED</strong></h4>
-        <p>1/1/2025 – 31/12/2025</p>
+        <p>
+            @(startDate?.ToString("dd/MM/yyyy") ?? "Start") –
+            @(endDate?.ToString("dd/MM/yyyy") ?? "End")
+        </p>
     </div>
+
     <div class="card-body">
         @foreach (var group in groupedData)
         {
+            var subTotalQty = group.Sum(x => x.Quantity);
+
             <h5 class="mt-4"><strong>@groupBy:</strong> @group.Key</h5>
 
             <table class="table table-bordered mt-2">
@@ -52,23 +87,41 @@
                     @foreach (var item in group)
                     {
                         <tr>
-                            <td>@item.Date</td>
+                            <td>@item.Date.ToString()</td>
                             <td>@item.MedicineName</td>
                             <td>@item.Quantity</td>
                             <td>@item.Instructions</td>
                         </tr>
                     }
+
+                    <!-- Subtotal Row -->
+                    <tr class="table-secondary fw-bold">
+                        <td colspan="2" class="text-end">Subtotal:</td>
+                        <td class="text-center">@subTotalQty</td>
+                        <td></td>
+                    </tr>
                 </tbody>
             </table>
         }
+
+        <!-- Grand Total -->
+        <div class="mt-4 d-flex justify-content-end">
+            <table class="table table-bordered w-auto">
+                <tr class="table-dark text-white">
+                    <th class="text-end">Grand Total Quantity:</th>
+                    <th class="text-center">@grandTotalQty</th>
+                </tr>
+            </table>
+        </div>
     </div>
+
     <div class="d-flex justify-content-end mb-3">
         <a asp-action="DownloadPharmacistReport"
            asp-route-groupBy="@groupBy"
+           asp-route-startDate="@startDate"
+           asp-route-endDate="@endDate"
            class="btn btn-success">
             <i class="bi bi-file-earmark-pdf me-2"></i> Generate Report
         </a>
     </div>
-
 </div>
-
