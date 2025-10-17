@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;   // For [Authorize]
-using Microsoft.AspNetCore.Mvc;              // For Controller, IActionResult
-using Microsoft.EntityFrameworkCore;         // For Include(), ThenInclude(), EF queries
-using ONT_PROJECT.Models;                     // Your DbContext and models
-using QuestPDF.Fluent;                        // For Document.Create()
-using QuestPDF.Helpers;                       // For Colors
-using QuestPDF.Infrastructure;                // For IContainer
-using System;                                 // For DateTime, DateOnly
-using System.Linq;                            // For LINQ queries (Where, GroupBy, SelectMany, etc.)
-
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ONT_PROJECT.Models;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using System;
+using System.Linq;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -30,7 +29,6 @@ namespace ONT_PROJECT.Controllers
         [HttpGet]
         public IActionResult GenerateReport(DateTime startDate, DateTime endDate, string groupBy)
         {
-            // Get logged-in customer's email
             var email = User.Identity?.Name;
             if (string.IsNullOrEmpty(email))
                 return Unauthorized();
@@ -47,90 +45,130 @@ namespace ONT_PROJECT.Controllers
             if (customer == null)
                 return Unauthorized();
 
-            // Filter prescriptions by PrescriptionLine date
+            var fullName = $"{customer.CustomerNavigation.FirstName} {customer.CustomerNavigation.LastName}";
+
+            // Collect all relevant prescription lines in date range, keeping Prescription object for grouping
             var prescriptionLines = customer.Prescriptions
                 .SelectMany(p => p.PrescriptionLines, (p, line) => new { Prescription = p, Line = line })
-                .Where(x => x.Line.Date >= DateOnly.FromDateTime(startDate) &&
-                            x.Line.Date <= DateOnly.FromDateTime(endDate))
+                .Where(x => x.Line.Date >= DateOnly.FromDateTime(startDate)
+                         && x.Line.Date <= DateOnly.FromDateTime(endDate))
                 .ToList();
 
             var report = Document.Create(container =>
             {
                 container.Page(page =>
                 {
-                    page.Margin(30);
+                    page.Size(PageSizes.A4);
+                    page.Margin(2, Unit.Centimetre);
 
-                    // Header
-                    page.Header().AlignCenter().Column(col =>
+                    // HEADER
+                    page.Header().Row(row =>
                     {
-                        col.Item().Text("CUSTOMER REPORT").SemiBold().FontSize(16).FontColor(Colors.Blue.Darken1);
-                        col.Item().Text($"Date Range: {startDate:yyyy-MM-dd} - {endDate:yyyy-MM-dd}")
-                            .FontSize(12)
-                            .FontColor(Colors.Black);
+                        row.ConstantItem(100).Image("wwwroot/images/logo_2-removebg-preview.png");
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Ibhayi Pharmacy").FontSize(24).Bold().FontColor(Colors.Blue.Darken2);
+                            col.Item().Text($"Dispensed Prescriptions by {groupBy}").FontSize(16).SemiBold();
+                            col.Item().Text($"Date Range: {startDate:yyyy-MM-dd} – {endDate:yyyy-MM-dd}").FontSize(12);
+                            col.Item().Text($"Customer: {fullName}").FontSize(12).Italic().FontColor(Colors.Grey.Darken2);
+                        });
                     });
 
-                    // Content
+                    // CONTENT
                     page.Content().PaddingVertical(10).Column(col =>
                     {
                         if (!prescriptionLines.Any())
                         {
                             col.Item().AlignCenter().Text("No prescriptions found for the selected date range.");
+                            return;
                         }
-                        else if (groupBy == "Doctor")
+
+                        if (groupBy == "Doctor")
                         {
                             var groupedByDoctor = prescriptionLines
                                 .GroupBy(x => x.Prescription.Doctor)
                                 .ToList();
 
+                            int grandTotal = 0;
+
                             foreach (var doctorGroup in groupedByDoctor)
                             {
                                 var doctor = doctorGroup.Key;
-                                col.Item().Text($"DOCTOR: {doctor?.Name ?? "N/A"} {doctor?.Surname ?? ""}")
-                                    .Bold().FontSize(12);
+                                string doctorName = $"{doctor?.Name ?? "N/A"} {doctor?.Surname ?? ""}".Trim();
 
-                                col.Item().Table(table =>
+                                col.Item().Container().PaddingBottom(5)
+                                    .Text($"DOCTOR: {doctorName}")
+                                    .FontSize(14).Bold();
+
+                                // Group by prescription under this doctor
+                                var linesByPrescription = doctorGroup
+                                    .GroupBy(x => x.Prescription)
+                                    .ToList();
+
+                                int subtotalForDoctor = 0;
+
+                                foreach (var presGroup in linesByPrescription)
                                 {
-                                    table.ColumnsDefinition(columns =>
+                                    var prescription = presGroup.Key;
+
+                                    col.Item().Container().PaddingBottom(2)
+                                        .Text($"Prescription Date: {prescription.Date:yyyy-MM-dd}")
+                                        .FontSize(12).SemiBold();
+
+                                    col.Item().Table(table =>
                                     {
-                                        columns.RelativeColumn(); // Date
-                                        columns.RelativeColumn(); // Medication
-                                        columns.RelativeColumn(); // Qty
-                                        columns.RelativeColumn(); // Repeats
+                                        table.ColumnsDefinition(columns =>
+                                        {
+                                            columns.RelativeColumn();    // Date
+                                            columns.RelativeColumn(3);   // Medication
+                                            columns.RelativeColumn();    // Qty
+                                            columns.RelativeColumn();    // Repeats
+                                        });
+
+                                        table.Header(header =>
+                                        {
+                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Date").Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Medication").Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Qty").Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Repeats").Bold();
+                                        });
+
+                                        foreach (var item in presGroup)
+                                        {
+                                            table.Cell().Border(1).BorderColor(Colors.Grey.Medium).Text(item.Line.Date.ToString("yyyy-MM-dd"));
+                                            table.Cell().Border(1).BorderColor(Colors.Grey.Medium).Text(item.Line.Medicine?.MedicineName ?? "N/A");
+                                            table.Cell().Border(1).BorderColor(Colors.Grey.Medium).Text(item.Line.Quantity.ToString());
+                                            table.Cell().Border(1).BorderColor(Colors.Grey.Medium).Text(item.Line.Repeats.ToString());
+                                        }
+
+                                        int subTotalPres = presGroup.Sum(x => x.Line.Quantity);
+                                        subtotalForDoctor += subTotalPres;
+
+                                        table.Footer(footer =>
+                                        {
+                                            footer.Cell().ColumnSpan(4)
+                                                  .AlignRight()
+                                                  .Padding(5)
+                                                  .Text($"Sub-total (Prescription): {subTotalPres}")
+                                                  .Bold();
+                                        });
                                     });
 
-                                    table.Header(header =>
-                                    {
-                                        header.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text("Date");
-                                        header.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text("Medication");
-                                        header.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text("Qty");
-                                        header.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text("Repeats");
-                                    });
+                                    // Add space after prescription table
+                                    col.Item().Container().PaddingBottom(10).Text("");
+                                }
 
-                                    foreach (var item in doctorGroup)
-                                    {
-                                        table.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
-                                            .Text(item.Line.Date.ToString("yyyy-MM-dd"));
-                                        table.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
-                                            .Text(item.Line.Medicine?.MedicineName ?? "N/A");
-                                        table.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
-                                            .Text(item.Line.Quantity.ToString());
-                                        table.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
-                                            .Text(item.Line.Repeats.ToString());
-                                    }
+                                col.Item().Container().PaddingBottom(10)
+                                    .Text($"Sub-total for Doctor: {subtotalForDoctor}")
+                                    .FontSize(12).Bold();
 
-                                    table.Footer(footer =>
-                                    {
-                                        footer.Cell().ColumnSpan(4)
-                                            .AlignRight()
-                                            .Text($"Sub-total: {doctorGroup.Sum(d => d.Line.Quantity)}");
-                                    });
-                                });
-
-                                col.Item().Text(""); // spacing
+                                grandTotal += subtotalForDoctor;
                             }
 
-                            col.Item().Text($"GRAND TOTAL: {prescriptionLines.Sum(p => p.Line.Quantity)}")
-                                .Bold().FontSize(12);
+                            col.Item().Container().PaddingTop(10)
+                                .AlignRight()
+                                .Text($"GRAND TOTAL: {grandTotal}")
+                                .FontSize(14).Bold();
                         }
                         else if (groupBy == "Medication")
                         {
@@ -138,71 +176,107 @@ namespace ONT_PROJECT.Controllers
                                 .GroupBy(x => x.Line.Medicine)
                                 .ToList();
 
+                            int grandTotal = 0;
+
                             foreach (var medGroup in groupedByMedication)
                             {
                                 var med = medGroup.Key;
-                                col.Item().Text($"MEDICATION: {med?.MedicineName ?? "N/A"}")
-                                    .Bold().FontSize(12);
+                                string medName = med?.MedicineName ?? "N/A";
 
-                                col.Item().Table(table =>
+                                col.Item().Container().PaddingBottom(5)
+                                    .Text($"MEDICATION: {medName}")
+                                    .FontSize(14).Bold();
+
+                                // Group by prescription under this medication
+                                var linesByPrescription = medGroup
+                                    .GroupBy(x => x.Prescription)
+                                    .ToList();
+
+                                int subtotalForMedication = 0;
+
+                                foreach (var presGroup in linesByPrescription)
                                 {
-                                    table.ColumnsDefinition(columns =>
+                                    var prescription = presGroup.Key;
+
+                                    col.Item().Container().PaddingBottom(2)
+                                        .Text($"Prescription Date: {prescription.Date:yyyy-MM-dd}")
+                                        .FontSize(12).SemiBold();
+
+                                    col.Item().Table(table =>
                                     {
-                                        columns.RelativeColumn(); // Date
-                                        columns.RelativeColumn(); // Doctor
-                                        columns.RelativeColumn(); // Qty
-                                        columns.RelativeColumn(); // Repeats
+                                        table.ColumnsDefinition(columns =>
+                                        {
+                                            columns.RelativeColumn();    // Date
+                                            columns.RelativeColumn(3);   // Doctor
+                                            columns.RelativeColumn();    // Qty
+                                            columns.RelativeColumn();    // Repeats
+                                        });
+
+                                        table.Header(header =>
+                                        {
+                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Date").Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Doctor").Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Qty").Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Repeats").Bold();
+                                        });
+
+                                        foreach (var item in presGroup)
+                                        {
+                                            var doctor = item.Prescription.Doctor;
+                                            string doctorName = $"{doctor?.Name ?? "N/A"} {doctor?.Surname ?? ""}".Trim();
+
+                                            table.Cell().Border(1).BorderColor(Colors.Grey.Medium).Text(item.Line.Date.ToString("yyyy-MM-dd"));
+                                            table.Cell().Border(1).BorderColor(Colors.Grey.Medium).Text(doctorName);
+                                            table.Cell().Border(1).BorderColor(Colors.Grey.Medium).Text(item.Line.Quantity.ToString());
+                                            table.Cell().Border(1).BorderColor(Colors.Grey.Medium).Text(item.Line.Repeats.ToString());
+                                        }
+
+                                        int subTotalPres = presGroup.Sum(x => x.Line.Quantity);
+                                        subtotalForMedication += subTotalPres;
+
+                                        table.Footer(footer =>
+                                        {
+                                            footer.Cell().ColumnSpan(4)
+                                                  .AlignRight()
+                                                  .Padding(5)
+                                                  .Text($"Sub-total (Prescription): {subTotalPres}")
+                                                  .Bold();
+                                        });
                                     });
 
-                                    table.Header(header =>
-                                    {
-                                        header.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text("Date");
-                                        header.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text("Doctor");
-                                        header.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text("Qty");
-                                        header.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text("Repeats");
-                                    });
+                                    col.Item().Container().PaddingBottom(10).Text("");
+                                }
 
-                                    foreach (var item in medGroup)
-                                    {
-                                        table.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
-                                            .Text(item.Line.Date.ToString("yyyy-MM-dd"));
-                                        table.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
-                                            .Text($"{item.Prescription.Doctor?.Name ?? "N/A"} {item.Prescription.Doctor?.Surname ?? ""}");
-                                        table.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
-                                            .Text(item.Line.Quantity.ToString());
-                                        table.Cell().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
-                                            .Text(item.Line.Repeats.ToString());
-                                    }
+                                col.Item().Container().PaddingBottom(10)
+                                    .Text($"Sub-total for Medication: {subtotalForMedication}")
+                                    .FontSize(12).Bold();
 
-                                    table.Footer(footer =>
-                                    {
-                                        footer.Cell().ColumnSpan(4)
-                                            .AlignRight()
-                                            .Text($"Sub-total: {medGroup.Sum(l => l.Line.Quantity)}");
-                                    });
-                                });
-
-                                col.Item().Text(""); // spacing
+                                grandTotal += subtotalForMedication;
                             }
 
-                            col.Item().Text($"GRAND TOTAL: {prescriptionLines.Sum(p => p.Line.Quantity)}")
-                                .Bold().FontSize(12);
+                            col.Item().Container().PaddingTop(10)
+                                .AlignRight()
+                                .Text($"GRAND TOTAL: {grandTotal}")
+                                .FontSize(14).Bold();
                         }
                     });
 
-                    // Footer
-                    page.Footer().AlignCenter().Text(text =>
+                    // FOOTER with page numbering
+                    page.Footer().AlignCenter().Row(row =>
                     {
-                        text.Span("Page ");
-                        text.CurrentPageNumber();
-                        text.Span(" of ");
-                        text.TotalPages();
+                        row.RelativeItem().Text(text =>
+                        {
+                            text.Span("Page ");
+                            text.CurrentPageNumber();
+                            text.Span(" / ");
+                            text.TotalPages();
+                        });
                     });
                 });
             });
 
             var pdfBytes = report.GeneratePdf();
-            return File(pdfBytes, "application/pdf", "CustomerReport.pdf");
+            return File(pdfBytes, "application/pdf", $"CustomerReport_{DateTime.Now:yyyyMMdd}.pdf");
         }
     }
 }

@@ -66,13 +66,14 @@ namespace ONT_PROJECT.Controllers
             bool success = await _prescriptionRepository.UpdateDispnse(prescriptionToUpdate);
             if (success)
             {
-                var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(prescription.CustomerID);
+                var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(prescriptionss.CustomerID);
 
                 if (allergicIngredients.Any())
                 {
                     // You can map IDs to names for clarity if needed
                     TempData["AllergyAlert"] = "Warning: Patient is allergic to the following ingredients: "
                                                + string.Join(", ", allergicIngredients);
+
                 }
                 if (!string.IsNullOrEmpty(prescriptionss.Email))
                 {

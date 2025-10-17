@@ -13,7 +13,8 @@ namespace IBayiLibrary.Models.Domain
             public int PrescriptionLineID { get; set; }
             public int PrescriptionID { get; set; }
             public int PharmacistID { get; set; }
-            public string FirstName { get; set; }
+        public int CustomerID { get; set; }
+        public string FirstName { get; set; }
         public string Email { get; set; }
         public string IDNumber { get; set; }
             public string Instructions { get; set; }
