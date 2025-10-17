@@ -50,8 +50,9 @@ public partial class TblUser
 
     public string? Allergies { get; set; } = null!;
     [NotMapped]
-
     public List<int> SelectedAllergyIds { get; set; } = new();
+    public string? ResetToken { get; set; }
+    public DateTime? TokenExpiry { get; set; }
 
     public byte[]? ProfilePicture { get; set; }
 

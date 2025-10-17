@@ -400,6 +400,11 @@ public partial class ApplicationDbContext : DbContext
               .IsRequired()
               .HasMaxLength(20)
               .HasDefaultValue("Active");
+
+            entity.Property(e => e.ResetToken).
+            HasMaxLength(200);
+            entity.Property(e => e.TokenExpiry);
+
         });
         modelBuilder.Entity<RepeatHistory>(entity =>
         {

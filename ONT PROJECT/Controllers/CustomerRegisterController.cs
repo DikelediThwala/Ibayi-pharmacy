@@ -4,21 +4,29 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ONT_PROJECT.Models;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Net;
+using System.Net.Mail;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace ONT_PROJECT.Controllers
 {
     public class CustomerRegisterController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public CustomerRegisterController(ApplicationDbContext context)
+        public CustomerRegisterController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
+
+
 
         // GET: /CustomerRegister/Register
         public IActionResult Register()
@@ -164,13 +172,141 @@ namespace ONT_PROJECT.Controllers
             return View("~/Views/User/Login.cshtml", new TblUser { Email = Email });
         }
 
-        // Placeholder for password hashing
+
+
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ForgotPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                ViewBag.Error = "Please enter your email.";
+                return View();
+            }
+
+            var user = _context.TblUsers.FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
+            if (user == null)
+            {
+                // Do not reveal that the email doesn't exist (security best practice)
+                ViewBag.Message = "If an account with that email exists, a reset link has been sent.";
+                return View();
+            }
+
+            // Generate secure reset token
+            var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+            user.ResetToken = token;
+            user.TokenExpiry = DateTime.UtcNow.AddHours(1);
+
+            _context.SaveChanges();
+
+            // Build reset link
+            var resetLink = Url.Action("UserResetPassword", "CustomerRegister",
+                new { token = token, email = user.Email }, Request.Scheme);
+
+            // Send email
+            SendPasswordResetEmail(user.Email, resetLink);
+
+            ViewBag.Message = "If an account with that email exists, a reset link has been sent.";
+            return View();
+        }
+
+        private void SendPasswordResetEmail(string email, string resetLink)
+        {
+            var smtpHost = _configuration["SmtpSettings:Host"];
+            var smtpPort = int.Parse(_configuration["SmtpSettings:Port"]);
+            var smtpUser = _configuration["SmtpSettings:User"];
+            var smtpPass = _configuration["SmtpSettings:Password"];
+            var fromAddress = new MailAddress(smtpUser, "ONT App");
+
+            var toAddress = new MailAddress(email);
+            const string subject = "Password Reset Request";
+            string body = $@"
+        <p>Hello,</p>
+        <p>Click the link below to reset your password:</p>
+        <p><a href='{resetLink}'>Reset Password</a></p>
+        <p>This link will expire in 1 hour.</p>";
+
+            using (var smtp = new SmtpClient())
+            {
+                smtp.Host = smtpHost;
+                smtp.Port = smtpPort;
+                smtp.EnableSsl = true;
+                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtp.Credentials = new NetworkCredential(smtpUser, smtpPass);
+                smtp.Timeout = 20000;
+
+                using (var message = new MailMessage(fromAddress, toAddress)
+                {
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true
+                })
+                {
+                    smtp.Send(message);
+                }
+            }
+        }
+
+
+        [HttpGet]
+        public IActionResult UserResetPassword(string token, string email)
+        {
+            if (token == null || email == null)
+            {
+                return BadRequest("Invalid password reset request.");
+            }
+
+            var user = _context.TblUsers.FirstOrDefault(u => u.Email == email && u.ResetToken == token && u.TokenExpiry > DateTime.UtcNow);
+            if (user == null)
+            {
+                return BadRequest("Invalid or expired token.");
+            }
+
+            ViewBag.Email = email;
+            ViewBag.Token = token;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UserResetPassword(string email, string token, string newPassword, string confirmPassword)
+        {
+            var user = _context.TblUsers.FirstOrDefault(u => u.Email == email && u.ResetToken == token && u.TokenExpiry > DateTime.UtcNow);
+            if (user == null)
+            {
+                ViewBag.Error = "Invalid or expired token.";
+                return View();
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                ViewBag.Error = "Passwords do not match.";
+                ViewBag.Email = email;
+                ViewBag.Token = token;
+                return View();
+            }
+
+            user.Password = newPassword; // You can hash it later with BCrypt or SHA256
+            user.ResetToken = null;
+            user.TokenExpiry = null;
+            _context.SaveChanges();
+
+            ViewBag.Success = "Password reset successful. You can now log in.";
+            return RedirectToAction("Register", "CustomerRegister");
+        }
+
         private string HashPassword(string password)
         {
             return password;
         }
 
-        // Placeholder for password verification
         private bool VerifyPassword(string enteredPassword, string storedPassword)
         {
             return enteredPassword == storedPassword;

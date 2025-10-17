@@ -327,7 +327,7 @@
             <input name="Password" type="password" placeholder="Password" class="form-control" required />
             <span asp-validation-for="Password" class="text-danger small"></span>
 
-            <a href="#">Forgot your password?</a>
+            <a asp-controller="CustomerRegister" asp-action="ForgotPassword">Forgot your password?</a>
             <button type="submit" class="btn btn-primary mt-2">Sign In</button>
         </form>
     </div>
@@ -411,4 +411,5 @@
     }
 </script>
 
-@@await Html.RenderPartialAsync("_ValidationScriptsPartial")
+@* @@await Html.RenderPartialAsync("_ValidationScriptsPartial")
+ *@
