@@ -27,56 +27,41 @@
 <body>
     <header>
         <div class="site-wrap">
-            <div class="site-navbar py-0">
-                <div class="search-wrap">
-                    <div class="container">
-                        <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
-                        <form action="#" method="post">
-                            <input type="text" class="form-control" placeholder="Search keyword and hit enter...">
-                        </form>
-                    </div>
-                </div>
+            <div class="site-navbar">
+                <div class="container d-flex align-items-center justify-content-between py-2">
 
-                <div class="container">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="logo">
-                            <div class="site-logo">
-                                <img src="~/images/landingpage/logo 2.png" style="width:120px; height:100px" />
-                            </div>
-                        </div>
-                        <div class="main-nav d-none d-lg-block">
-                            <nav class="site-navigation text-right text-md-center" role="navigation">
-                                <ul class="site-menu js-clone-nav d-none d-lg-block">
-                                    <li class="active"><a href="#home">Home</a></li>
-                                    <li><a href="#about-us">About</a></li>
-                                    <li><a href="#services">Services</a></li>
-                                    <li><a href="#FAQ">FAQ</a></li>
-                                    <li><a href="#contact">Contact</a></li>
-                                </ul>
-                            </nav>
-                        </div>
-                        <div class="icons">                   
-                    
-                        @* <div class="d-flex align-items-center" style="margin-left: 200px; gap: 10px;">
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle px-4 py-2" type="button" id="loginDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Login As
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="loginDropdown">
-                                    <li><a class="dropdown-item" asp-controller="Manager" asp-action="Dashboard" asp-route-role="Manager">Manager</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Customer" asp-action="Dashboard" asp-route-role="Customer">Customer</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Pharmacist" asp-action="Index" asp-route-role="Pharmacist">Pharmacist</a></li>
-                                </ul>
-                            </div> *@
-                            <a href="@Url.Action("Register", "CustomerRegister")" class="btn btn-outline-success px-4 py-2">
-                                Login
-                            </a>
+                    <!-- Logo -->
+                    <div class="logo">
+                        <div class="site-logo">
+                            <img src="~/images/landingpage/logo 2.png" alt="Ibayi Pharmacy Logo">
                         </div>
                     </div>
+
+                    <!-- Navigation -->
+                    <div class="main-nav d-none d-lg-block">
+                        <nav class="site-navigation" role="navigation">
+                            <ul class="site-menu js-clone-nav d-flex gap-3">
+                                <li class="active"><a href="#home">Home</a></li>
+                                <li><a href="#about-us">About</a></li>
+                                <li><a href="#services">Services</a></li>
+                                <li><a href="#FAQ">FAQ</a></li>
+                                <li><a href="#contact">Contact</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="icons">
+                        <a href="@Url.Action("Register", "CustomerRegister")" class="btn btn-outline-primary btn-login">
+                            Login
+                        </a>
+                    </div>
                 </div>
-            </div>            
+            </div>
         </div>
     </header>
+
+
     <main role="main" class="pb-3">
         @RenderBody()
     </main>

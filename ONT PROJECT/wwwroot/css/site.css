@@ -29,3 +29,348 @@ main {
 .navbar {
     margin-bottom: 0 !important;
 }
+
+
+/*Home section*/
+
+.info-card {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 139, 139, 0.8)); 
+    border: 1px solid black;
+    width: 350px;
+    min-height: 150px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.4); 
+    color: #fff;
+    transition: transform 0.5s, opacity 0.5s, box-shadow 0.3s;
+}
+
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0,0,0,0.6);
+    }
+
+.slide-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    animation: slideInLeft 1s forwards;
+    animation-delay: 0.2s;
+}
+
+.slide-fade {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s forwards;
+    animation-delay: 0.5s;
+}
+
+.slide-right {
+    opacity: 0;
+    transform: translateX(50px);
+    animation: slideInRight 1s forwards;
+    animation-delay: 0.8s;
+}
+
+@keyframes slideInLeft {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Base settings */
+html {
+    position: relative;
+    min-height: 100%;
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+main {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.navbar {
+    margin-bottom: 0 !important;
+}
+
+/* Buttons and form focus */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* ------------------------- Home Cards ------------------------- */
+.info-card {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 139, 139, 0.8));
+    border: 1px solid black;
+    width: 350px;
+    min-height: 150px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+    color: #fff;
+    transition: transform 0.5s, opacity 0.5s, box-shadow 0.3s;
+}
+
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0,0,0,0.6);
+    }
+
+/* Card Animations */
+.slide-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    animation: slideInLeft 1s forwards;
+    animation-delay: 0.2s;
+}
+
+.slide-fade {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s forwards;
+    animation-delay: 0.5s;
+}
+
+.slide-right {
+    opacity: 0;
+    transform: translateX(50px);
+    animation: slideInRight 1s forwards;
+    animation-delay: 0.8s;
+}
+
+@keyframes slideInLeft {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+/* Navbar */
+.site-navbar {
+    background-color: #ffffff; /* White background */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0.5rem 0;
+}
+
+    /* Logo size */
+    .site-navbar .site-logo img {
+        width: 100px;
+        height: auto;
+    }
+
+/* Menu */
+.site-navigation ul.site-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 25px;
+}
+
+    .site-navigation ul.site-menu li a {
+        color: #004d4d; /* Dark teal text */
+        font-weight: 500;
+        padding: 5px 10px;
+        transition: all 0.3s ease;
+        border-radius: 5px;
+        position: relative;
+    }
+
+        /* Hover underline effect */
+        .site-navigation ul.site-menu li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background-color: #00b3b3;
+            bottom: 0;
+            left: 0;
+            transition: all 0.3s ease;
+        }
+
+        .site-navigation ul.site-menu li a:hover::after,
+        .site-navigation ul.site-menu li.active a::after {
+            width: 100%;
+        }
+
+        .site-navigation ul.site-menu li a:hover,
+        .site-navigation ul.site-menu li.active a {
+            background-color: #e6f7f7; /* subtle highlight */
+            transform: scale(1.05);
+        }
+
+/* Button styles */
+.site-navbar .btn-login {
+    background-color: #00b3b3;
+    color: #fff;
+    border-radius: 25px;
+    font-weight: 500;
+    padding: 5px 15px;
+    transition: all 0.3s ease;
+}
+
+    .site-navbar .btn-login:hover {
+        background-color: #008080;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+    }
+/* Navbar Base */
+.site-navbar {
+    background-color: white;
+    padding: 0.5rem 2rem; /* top/bottom, left/right spacing */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* subtle shadow */
+    position: relative;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+    /* Logo */
+    .site-navbar .site-logo img {
+        height: 60px; /* control navbar height */
+        width: auto; /* maintain aspect ratio */
+        transition: transform 0.3s ease;
+    }
+
+        /* Logo hover effect */
+        .site-navbar .site-logo img:hover {
+            transform: scale(1.05);
+        }
+
+/* Main navigation */
+.main-nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+}
+
+    .main-nav ul li a {
+        color: #333;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        padding: 0.5rem 0;
+        position: relative;
+    }
+
+        /* Hover underline effect */
+        .main-nav ul li a::after {
+            content: "";
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #00b3b3; /* teal underline */
+            transition: width 0.3s ease;
+        }
+
+        .main-nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        /* Hover text color */
+        .main-nav ul li a:hover {
+            color: #008080; /* teal-ish */
+        }
+
+/* Buttons */
+.icons .btn {
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 25px;
+    border: 1px solid #008080;
+    color: #008080;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+    /* Button hover */
+    .icons .btn:hover {
+        background-color: #008080;
+        color: white;
+        transform: scale(1.05);
+    }
+
+/* Mobile adjustments */
+@media (max-width: 992px) {
+    .main-nav {
+        display: none; /* hide menu on tablets/small screens */
+    }
+
+    .site-navbar {
+        padding: 0.5rem 1rem;
+    }
+
+        .site-navbar .site-logo img {
+            height: 50px;
+        }
+
+    .icons .btn {
+        padding: 0.4rem 1.2rem;
+        font-size: 0.9rem;
+    }
+}

@@ -1,25 +1,45 @@
 ﻿@{
     ViewData["Title"] = "Login";
 }
+<link rel="stylesheet" href="~/css/site.css" />
+
+
 
 
 <div class="site-wrap">
 
     @* @Home Section@ *@          
-    <section id="home" class="site-blocks-cover">
-        <div class="site-blocks-cover" style="background-image: url('images/landingpage/backgroundpicture.jpeg');">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-7 mx-auto order-lg-2 align-self-center">
-                        <div class="site-block-cover-content text-center">
-                            <h2 class="sub-title">Effective Medicine, New Medicine Everyday</h2>
-                            <h1 style="color:darkcyan">YOUR HEALTH, OUR PRIORITY</h1>
-                        </div>
+   <section id="home" class="site-blocks-cover position-relative">
+        <div class="site-blocks-cover" style="background-image: url('images/landingpage/backgroundpicture.jpeg'); background-size: cover; background-position: center; height: 100vh;">
+            <div class="container h-100 d-flex flex-column justify-content-center align-items-center text-center">
+                <div class="site-block-cover-content">
+                    <h2 class="sub-title">Effective Medicine, New Medicine Everyday</h2>
+                    <h1 style="color:darkcyan">YOUR HEALTH, OUR PRIORITY</h1>
+                </div>
+
+                <!-- New Cards Section -->
+                <div class="d-flex flex-wrap justify-content-center mt-5 gap-3">
+                    <div class="info-card slide-left p-4 text-white rounded shadow">
+                        <h4>Customer Friendly</h4>
+                        <p>Easy prescription loading and notifications when your medication is ready for collection.</p>
+                    </div>
+
+                    <div class="info-card slide-fade p-4 text-white rounded shadow">
+                        <h4>Trusted Pharmacists</h4>
+                        <p>Our licensed pharmacists ensure your prescriptions are dispensed safely and correctly.</p>
+                    </div>
+
+                    <div class="info-card slide-right p-4 text-white rounded shadow">
+                        <h4>Manager Oversight</h4>
+                        <p>Pharmacy managers maintain stock levels and ensure smooth operations for all users.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    
+
 
 
     @*@About Us Section@*@    
