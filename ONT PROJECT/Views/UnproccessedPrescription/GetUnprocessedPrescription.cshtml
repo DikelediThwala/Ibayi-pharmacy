@@ -292,6 +292,13 @@
 
                     </div>
                 </div>
+                 @if (TempData["AllergyAlert"] != null)
+                  {
+                <div id="errorAlert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["AllergyAlert"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                  }    
                 <div class="table-filter">
                 </div>
                 <table id="prescriptionsTable" class="table table-striped table-hover">
@@ -342,8 +349,8 @@
 
                                     @if (item.Dispense?.Trim().Equals("Requested", StringComparison.OrdinalIgnoreCase) == true)
                                     {
-                                        <a asp-controller="Pharmacist"
-                                           asp-action="DispenseNow"
+                                        <a asp-controller="UnproccessedPrescription"
+                                           asp-action="GetPrescByIDForImmediateDispense"
                                            asp-route-id="@item.UnprocessedPrescriptionID"
                                            class="btn btn-warning ms-2"
                                            title="Dispense Immediately">
@@ -374,4 +381,14 @@
         });       
     });
 
+</script>
+<script>
+    setTimeout(function () {
+
+        var error = document.getElementById('errorAlert');
+        if (error) {
+            var bsAlert = new bootstrap.Alert(error);
+            bsAlert.close();
+        }
+    }, 4000);
 </script>

@@ -17,11 +17,13 @@ namespace ONT_PROJECT.Controllers
         private readonly IPrescriptionRepository _prescriptionRepository;
         private readonly IPrescriptionLineRepository _prescriptionLineRepository;
         private readonly IUnproccessedPrescriptionRepository _unproccessedprescriptionRepository;
-        public UploadPrescriptionController(IPrescriptionRepository prescriptionRepository, IPrescriptionLineRepository prescriptionLineRepository, IUnproccessedPrescriptionRepository unproccessedprescriptionRepository)
+        private readonly EmailService _emailService;
+        public UploadPrescriptionController(IPrescriptionRepository prescriptionRepository, IPrescriptionLineRepository prescriptionLineRepository, IUnproccessedPrescriptionRepository unproccessedprescriptionRepository, EmailService emailService)
         {
             _prescriptionRepository = prescriptionRepository;
             _prescriptionLineRepository = prescriptionLineRepository;
             _unproccessedprescriptionRepository = unproccessedprescriptionRepository;
+            _emailService = emailService;
         }
         public async Task<IActionResult> CreatePrescForWalkins()
         {
@@ -39,6 +41,138 @@ namespace ONT_PROJECT.Controllers
         {
            
             return View();
+        }
+        public async Task<IActionResult> CreatePrescForImmediateDispense()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePrescForImmediateDispense(PrescriptionViewModel prescription, int id)
+        {
+            
+                if (prescription.PescriptionFile != null && prescription.PescriptionFile.Length > 0)
+                {
+                    // Open stream and validate PDF header
+                    var stream = prescription.PescriptionFile.OpenReadStream();
+                    using var reader = new BinaryReader(stream);
+                    var header = reader.ReadBytes(4);
+
+                    // Reset stream position so we can read it again below
+                    stream.Position = 0;
+
+                    if (Encoding.ASCII.GetString(header) != "%PDF")
+                    {
+                        ModelState.AddModelError("PescriptionFile", "This is not a valid PDF file.");
+                        return View(prescription);
+                    }
+
+                    // Copy full file to memory
+                    using var ms = new MemoryStream();
+                    await prescription.PescriptionFile.CopyToAsync(ms);
+                    prescription.PrescriptionPhoto = ms.ToArray();
+                }
+
+
+
+                var role = prescription;
+                role.PharmacistID = 1009;
+                var status = prescription;
+                status.Status = "Proccessed";
+                var repLeft = prescription;
+                repLeft.RepeatsLeft = repLeft.Repeats;
+                bool addPerson = await _prescriptionRepository.AddAsync(prescription);
+                if (addPerson)
+                {
+                    TempData["msg"] = "Sucessfully Added";
+                }
+                else
+                {
+                    TempData["msg"] = "Could not add";
+                }
+                var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
+                var lastRow = result.FirstOrDefault();
+
+
+                int prescriptionID = lastRow?.PrescriptionID ?? 0;
+                prescription.PrescriptionID = prescriptionID;
+                bool addPrescLine = await _prescriptionRepository.AddPrescLineAsync(prescription);
+
+                if (addPrescLine)
+                {
+                    TempData["msg"] = "Sucessfully Added";
+                    // After adding prescription line
+                    if (addPrescLine)
+                    {
+                        TempData["msg"] = "Successfully Added";
+
+                        // Check for patient allergies
+                        var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(prescription.CustomerID);
+
+                        if (allergicIngredients.Any())
+                        {
+                            // You can map IDs to names for clarity if needed
+                            TempData["AllergyAlert"] = "Warning: Patient is allergic to the following ingredients: "
+                                                       + string.Join(", ", allergicIngredients);
+                        }
+                    }
+                    else
+                    {
+                        TempData["msg"] = "Could not add prescription line";
+                    }
+
+                }
+                else
+                {
+                    TempData["msg"] = "Could not add";
+                }
+
+            var prescId = prescription;
+            prescId.PrescriptionID = prescId.PrescriptionID;
+            var custId = prescription;
+            custId.CustomerID = prescId.CustomerID;
+
+
+            var prescriptionss = await _prescriptionRepository.GetDispenseById(repLeft.PrescriptionID);
+
+            var prescriptionToUpdate = new PrescriptionModel
+            {
+                PrescriptionID = prescId.PrescriptionID
+            };
+            bool success = await _prescriptionRepository.UpdateDispnse(prescriptionToUpdate);
+            if (success)
+            {
+                var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(prescId.CustomerID);
+
+                if (allergicIngredients.Any())
+                {
+                    // You can map IDs to names for clarity if needed
+                    TempData["AllergyAlert"] = "Warning: Patient is allergic to the following ingredients: "
+                                               + string.Join(", ", allergicIngredients);
+
+                }
+                if (!string.IsNullOrEmpty(prescriptionss.Email))
+                {
+                    string emailBody = $@"
+                        <p>Hello {prescriptionss.FirstName},</p>
+                        <p>Your prescription has been dispensed successfully.</p>
+                        <p><strong>Medication(s):</strong> {prescriptionss.MedicineName}</p>
+                        <p><strong>Repeats:</strong> {prescriptionss.Repeats}</p>
+                        <p><strong>Repeats Left:</strong> {prescriptionss.RepeatsLeft}</p>
+                        <p><strong>Quantity:</strong> {prescriptionss.Quantity}</p>                       
+                        <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
+
+
+                    _emailService.Send(prescriptionss.Email, "Your Medication Has Been Dispensed", emailBody);
+
+                }
+                return RedirectToAction("GetUnprocessedPrescription", "UnproccessedPrescription");
+            }
+            else
+                return Json(new { success = false, message = "Failed to ." });
+
+
+            
         }
         [HttpPost]
         [ValidateAntiForgeryToken]

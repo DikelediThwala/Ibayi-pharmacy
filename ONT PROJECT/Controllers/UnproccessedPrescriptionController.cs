@@ -43,5 +43,20 @@ namespace ONT_PROJECT.Controllers
             }           
             return View("~/Views/UploadPrescription/CreatePrescriptions.cshtml", prescription);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetPrescByIDForImmediateDispense(int id)
+        {
+            var prescLine = await _prescriptionLineRepository.GetMedicineName();
+            ViewBag.MedicineID = new SelectList(prescLine.Select(prescLine => new { prescLine.MedicineID, prescLine.MedicineName }), "MedicineID", "MedicineName");
+            var doc = await _prescriptionRepository.GetDoctorName();
+            ViewBag.DoctorID = new SelectList(doc.Select(c => new { c.DoctorID, FullName = c.Name + " " + c.Surname }), "DoctorID", "FullName");
+
+            var prescription = await _unproccessedprescriptionRepository.GetPrescriptionByID(id);
+            if (prescription == null)
+            {
+                return NotFound();
+            }
+            return View("~/Views/UploadPrescription/CreatePrescForImmediateDispense.cshtml", prescription);
+        }
     }
 }
