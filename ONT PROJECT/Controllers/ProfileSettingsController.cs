@@ -26,6 +26,7 @@ namespace ONT_PROJECT.Controllers
             _environment = environment;
         }
 
+        // GET: Profile Settings Overview
         [HttpGet]
         public IActionResult Settings()
         {
@@ -38,6 +39,7 @@ namespace ONT_PROJECT.Controllers
             return View(user);
         }
 
+        // GET: Edit Profile
         [HttpGet]
         public IActionResult Index(bool? edit)
         {
@@ -73,6 +75,7 @@ namespace ONT_PROJECT.Controllers
             return View(user);
         }
 
+        // POST: Update Profile
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Index(TblUser model, List<int> SelectedAllergyIds)
@@ -124,6 +127,7 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("Index");
         }
 
+        // POST: Delete Account
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteAccount()
@@ -135,6 +139,7 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        // GET: Change Password
         [HttpGet]
         public IActionResult ChangePassword()
         {
@@ -147,6 +152,7 @@ namespace ONT_PROJECT.Controllers
             return View(user);
         }
 
+        // POST: Change Password
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ChangePassword(int UserId, string Password, string NewPassword, string ConfirmPassword)
@@ -173,6 +179,7 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("Index");
         }
 
+        // GET: Download Profile as PDF
         [HttpGet]
         public IActionResult DownloadProfilePdf()
         {
