@@ -76,26 +76,42 @@ namespace ONT_PROJECT.Controllers
             }
             return View(supplier);
         }
-
         [HttpPost]
-        public IActionResult Delete(int id, Dictionary<int, int> reassignments)
+        public IActionResult Delete(int id, IFormCollection form)
         {
             var supplier = _context.Suppliers.FirstOrDefault(s => s.SupplierId == id);
             if (supplier == null) return NotFound();
 
+            // Extract reassignment values manually
+            var reassignments = new Dictionary<int, int>();
+            foreach (var key in form.Keys)
+            {
+                if (key.StartsWith("reassignments["))
+                {
+                    var medIdStr = key.Replace("reassignments[", "").Replace("]", "");
+                    if (int.TryParse(medIdStr, out int medId) && int.TryParse(form[key], out int newSupplierId))
+                    {
+                        reassignments[medId] = newSupplierId;
+                    }
+                }
+            }
+
             var meds = _context.Medicines.Where(m => m.SupplierId == id).ToList();
             foreach (var med in meds)
             {
-                if (reassignments != null && reassignments.ContainsKey(med.MedicineId))
+                if (reassignments.ContainsKey(med.MedicineId))
                     med.SupplierId = reassignments[med.MedicineId];
             }
 
+            // Deactivate supplier
             supplier.Status = "Deactivated";
             _context.SaveChanges();
-            TempData["SuccessMessage"] = "Supplier deactivated and medications reassigned!";
+
+            TempData["SuccessMessage"] = "Supplier deactivated successfully!";
             ActivityLogger.LogActivity(_context, "Deactivate Supplier", $"Supplier {supplier.Name} was deactivated.");
 
-            return RedirectToAction(nameof(Index));
+            // Important: return OK to prevent $.post fail()
+            return Ok();
         }
 
         [HttpPost]

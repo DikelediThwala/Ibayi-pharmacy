@@ -139,16 +139,33 @@
         .sidebar.collapsed .profile-text {
             display: none;
         }
+
+        .profile-img {
+            width: 80%;
+            max-width: 100px;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        /* When sidebar is collapsed */
+        .sidebar.collapsed .profile-img {
+            width: 50%;
+            max-width: 40px;
+            margin: 0 auto;
+        }
+
     </style>
     @RenderSection("Styles", false)
 </head>
 <body>
     <div class="sidebar" id="sidebar">
         <div class="profile-header d-flex align-items-center p-3 border-bottom">
-            <img src="@profilePicSrc" alt="Profile Picture" style="width:100px;height:100px;object-fit:cover;border-radius:100%;" />
+         <img src="@profilePicSrc" alt="Profile Picture" class="profile-img" />
             <div class="profile-text">
                 <div class="fw-bold">@fullName</div>
-                <div style="color:cadetblue;">@role</div>
+                <div style="color:cadetblue;">Manager</div>
             </div>
         </div>
 

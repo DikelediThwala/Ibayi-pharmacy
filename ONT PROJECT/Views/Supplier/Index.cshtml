@@ -168,91 +168,115 @@
 
 <script>
     $(document).ready(function () {
-        $('#activeSuppliersTable, #deactivatedSuppliersTable').DataTable({ pageLength: 6, lengthChange: false });
+        // Initialize DataTables
+        $('#activeSuppliersTable, #deactivatedSuppliersTable').DataTable({
+            pageLength: 6,
+            lengthChange: false
+        });
 
-        // Auto-hide success alert
-        setTimeout(() => { var alert = document.getElementById('successAlert'); if (alert) new bootstrap.Alert(alert).close(); }, 4000);
+        // Auto-hide success alert after 4 seconds
+        setTimeout(() => {
+            var alert = document.getElementById('successAlert');
+            if (alert) new bootstrap.Alert(alert).close();
+        }, 4000);
 
         var selectedSupplierId = 0;
 
-        // Open modal for deactivation & reassign
-        $('.deactivate-btn').click(function () {
+        // 🟡 Handle Deactivate Button Click
+        $(document).on('click', '.deactivate-btn', function () {
             selectedSupplierId = $(this).data('id');
             $('#supplierId').val(selectedSupplierId);
 
             $.getJSON('/Supplier/GetSupplierMedications/' + selectedSupplierId, function (data) {
                 let medsHtml = '';
 
-                if (data.meds.length === 0) {
-                    medsHtml = '<p>This supplier has no medications. Deleting will simply deactivate.</p>';
-                } else {
-                    medsHtml += '<p>This supplier is assigned to the following medications. Please delegate each medication or cancel.</p>';
+                 if (data.meds.length === 0) {
+                    medsHtml = '<p>This supplier has no medications assigned. Click "Deactivate & Save" to confirm deactivation.</p>';
+                     $('#medicationsList').html(medsHtml);
+                    new bootstrap.Modal(document.getElementById('reassignModal')).show();
+                     return;
+                  }
+ 
 
-                    data.meds.forEach(med => {
-                        let optionsHtml = '<option value="">-- Select Supplier --</option>';
-                        data.otherSuppliers.forEach(s => optionsHtml += `<option value="${s.supplierId}">${s.name}</option>`);
+                // 🟠 Supplier has medications — show reassignment modal
+                medsHtml += '<p>This supplier is assigned to the following medications. Please delegate each medication or cancel.</p>';
 
-                        medsHtml += `<div class="d-flex align-items-center gap-3 mb-2">
-                                        <label class="mb-0 fw-bold" style="min-width:150px;">${med.medicineName}</label>
-                                        <select class="form-select w-auto" name="reassignments[${med.medicineId}]">${optionsHtml}</select>
-                                    </div>`;
+                data.meds.forEach(med => {
+                    let optionsHtml = '<option value="">-- Select Supplier --</option>';
+                    data.otherSuppliers.forEach(s => {
+                        optionsHtml += `<option value="${s.supplierId}">${s.name}</option>`;
                     });
-                }
+
+                    medsHtml += `
+                        <div class="d-flex align-items-center gap-3 mb-2">
+                            <label class="mb-0 fw-bold" style="min-width:150px;">${med.medicineName}</label>
+                            <select class="form-select w-auto" name="reassignments[${med.medicineId}]">
+                                ${optionsHtml}
+                            </select>
+                        </div>`;
+                });
 
                 $('#medicationsList').html(medsHtml);
                 new bootstrap.Modal(document.getElementById('reassignModal')).show();
             });
         });
 
-           $('#confirmDelete').click(function () {
-        var formData = $('#reassignForm').serialize();
-        $.post('/Supplier/Delete/' + selectedSupplierId, formData, function (data) {
-            // Close modal
-            var modalEl = document.getElementById('reassignModal');
-            var modal = bootstrap.Modal.getInstance(modalEl);
-            modal.hide();
+        // 🟢 Confirm Deactivation (with reassignment)
+        $('#confirmDelete').click(function () {
+            var formData = $('#reassignForm').serialize();
+            $.post('/Supplier/Delete/' + selectedSupplierId, formData, function () {
+                var modalEl = document.getElementById('reassignModal');
+                var modal = bootstrap.Modal.getInstance(modalEl);
+                modal.hide();
 
-            // Remove row from active table
+                removeSupplierFromActive(selectedSupplierId);
+                showSuccessAlert("Supplier deactivated successfully!");
+            }).fail(() => alert('Failed to deactivate supplier.'));
+        });
+
+        // 🟢 Activate Supplier
+        $(document).on('click', '.activate-btn', function () {
+            var supplierId = $(this).data('id');
+            $.post('/Supplier/Activate/' + supplierId, {}, function () {
+                location.reload();
+            }).fail(() => alert("Failed to activate supplier."));
+        });
+
+        // 🧩 Helper: Remove from active table and move to deactivated
+        function removeSupplierFromActive(supplierId) {
             var activeTable = $('#activeSuppliersTable').DataTable();
-            var row = $(`.deactivate-btn[data-id="${selectedSupplierId}"]`).parents('tr');
+            var row = $(`.deactivate-btn[data-id="${supplierId}"]`).parents('tr');
             var rowData = activeTable.row(row).data();
+
+            // Remove from active
             activeTable.row(row).remove().draw();
 
-            // Add row to deactivated table
+            // Add to deactivated
             var deactivatedTable = $('#deactivatedSuppliersTable').DataTable();
             deactivatedTable.row.add([
-                rowData[0], // # count
-                rowData[1], // Name
-                rowData[2], // Contact
-                rowData[3], // Email
-                `<button class="btn btn-sm btn-outline-success activate-btn" data-id="${selectedSupplierId}">
+                rowData[0],
+                rowData[1],
+                rowData[2],
+                rowData[3],
+                `<button class="btn btn-sm btn-outline-success activate-btn" data-id="${supplierId}">
                     <i class="material-icons">&#xE5CA;</i>
                  </button>`
             ]).draw();
+        }
 
-            // Show alert
-            var alertHtml = `<div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
-                                Successfully deleted supplier!
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                             </div>`;
+        // 🧩 Helper: Show Success Alert
+        function showSuccessAlert(message) {
+            var alertHtml = `
+                <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
             $('.container-xl').prepend(alertHtml);
 
-            // Re-bind activate button
-            $('.activate-btn').off('click').on('click', function () {
-                var supplierId = $(this).data('id');
-                $.post('/Supplier/Activate/' + supplierId, {}, function () {
-                    location.reload();
-                }).fail(() => alert("Failed to activate supplier."));
-            });
-
-        }).fail(() => alert('Failed to deactivate supplier.'));
-    });
-
-        // Activate supplier
-        $('.activate-btn').click(function () {
-            var supplierId = $(this).data('id');
-            $.post('/Supplier/Activate/' + supplierId, {}, function () { location.reload(); })
-            .fail(() => alert("Failed to activate supplier."));
-        });
+            setTimeout(() => {
+                var alert = document.getElementById('successAlert');
+                if (alert) new bootstrap.Alert(alert).close();
+            }, 4000);
+        }
     });
 </script>
