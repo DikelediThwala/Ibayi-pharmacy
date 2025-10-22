@@ -191,8 +191,11 @@
                                     </td>
                                     <td>
                                         <!-- Edit Button -->
-                                        <button class="btn btn-outline-secondary btn-sm ms-1 edit-btn" data-id="@p.UnprocessedPrescriptionId" data-dispense="@p.Dispense" title="Edit">
-                                            <i class="material-icons">&#xE254;</i> Edit
+                                        <button class="btn btn-outline-secondary btn-sm edit-btn"
+                                                data-id="@p.UnprocessedPrescriptionId"
+                                                data-dispense="@p.Dispense"
+                                                title="Edit">
+                                            <i class="material-icons">&#xE254;</i>
                                         </button>
 
                                         <form asp-action="Delete" asp-route-id="@p.UnprocessedPrescriptionId" method="post" class="d-inline"

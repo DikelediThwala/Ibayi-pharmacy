@@ -26,14 +26,12 @@ namespace ONT_PROJECT.Controllers
 
             var customer = await _context.Customers
                 .Include(c => c.CustomerNavigation)
-                .Include(c => c.CustomerAllergies)
-                    .ThenInclude(ca => ca.ActiveIngredient)
                 .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
 
             if (customer == null)
                 return NotFound();
 
-            // STEP 1: Load prescription lines safely
+            // Get prescription lines for this customer
             var lines = await _context.PrescriptionLines
                 .Include(pl => pl.Medicine)
                     .ThenInclude(m => m.MedIngredients)
@@ -43,39 +41,32 @@ namespace ONT_PROJECT.Controllers
                 .Where(pl => pl.Prescription.CustomerId == customer.CustomerId)
                 .ToListAsync();
 
-            // STEP 2: Load repeat histories
+            // Load histories directly and filter per line later
             var lineIds = lines.Select(l => l.PrescriptionLineId).ToList();
+
             var allHistories = await _context.RepeatHistories
                 .Where(rh => lineIds.Contains(rh.PrescriptionLineId))
                 .OrderByDescending(rh => rh.DateUsed)
                 .ToListAsync();
 
-            // STEP 3: Attach histories to lines safely
+            // Attach histories correctly to each line
             foreach (var line in lines)
             {
                 line.RepeatHistories = allHistories
                     .Where(rh => rh.PrescriptionLineId == line.PrescriptionLineId)
+                    .OrderByDescending(rh => rh.DateUsed)
                     .ToList();
 
-                // Initialize RepeatsLeft if null
                 if (!line.RepeatsLeft.HasValue && line.Repeats.HasValue)
                 {
                     line.RepeatsLeft = line.Repeats.Value;
                     _context.Update(line);
                 }
 
-                // Make sure related properties are not null to prevent view errors
-                if (line.Medicine == null)
-                    line.Medicine = new Medicine();
-
-                if (line.Prescription == null)
-                    line.Prescription = new Prescription();
-
-                if (line.Prescription.Doctor == null)
-                    line.Prescription.Doctor = new Doctor();
-
-                if (line.RepeatHistories == null)
-                    line.RepeatHistories = new List<RepeatHistory>();
+                line.Medicine ??= new Medicine();
+                line.Prescription ??= new Prescription();
+                line.Prescription.Doctor ??= new Doctor();
+                line.RepeatHistories ??= new List<RepeatHistory>();
             }
 
             await _context.SaveChangesAsync();

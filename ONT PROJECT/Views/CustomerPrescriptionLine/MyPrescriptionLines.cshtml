@@ -150,11 +150,11 @@
                             <tbody>
                                 @foreach (var line in prescriptionGroup)
                                 {
-                                    var allergicIngredients = line.Medicine?.MedIngredients
+                                    var allergicIngredients = line.Medicine?.MedIngredients?
                                     .Select(mi => mi.ActiveIngredient.Ingredients)
-                                    .Where(ing => line.Prescription.Customer.CustomerAllergies
+                                    .Where(ing => line.Prescription.Customer?.CustomerAllergies
                                     .Select(ca => ca.ActiveIngredient.Ingredients)
-                                    .Contains(ing))
+                                    .Contains(ing) ?? false)
                                     .ToList() ?? new List<string>();
 
                                     var isAllergic = allergicIngredients.Any();
@@ -186,21 +186,23 @@
                                         <td>
                                             @if (line.RepeatHistories != null && line.RepeatHistories.Any())
                                             {
-                                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#repeatModal@line.PrescriptionLineId">
+                                                <!-- Each medication gets its own modal -->
+                                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#repeatModal_@line.PrescriptionLineId">
                                                     View Repeats
                                                 </button>
 
-                                                <!-- Modal -->
-                                                <div class="modal fade" id="repeatModal@line.PrescriptionLineId" tabindex="-1" aria-labelledby="repeatModalLabel@line.PrescriptionLineId" aria-hidden="true">
+                                                <div class="modal fade" id="repeatModal_@line.PrescriptionLineId" tabindex="-1" aria-labelledby="repeatModalLabel_@line.PrescriptionLineId" aria-hidden="true">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h5 class="modal-title" id="repeatModalLabel@line.PrescriptionLineId">@line.Medicine.MedicineName - Repeat History</h5>
+                                                                <h5 class="modal-title" id="repeatModalLabel_@line.PrescriptionLineId">@line.Medicine.MedicineName - Repeat History</h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body">
                                                                 <ul class="repeat-history-list">
-                                                                    @foreach (var repeat in line.RepeatHistories.OrderByDescending(rh => rh.DateUsed))
+                                                                    @foreach (var repeat in line.RepeatHistories
+                                                                                                                        .Where(rh => rh.PrescriptionLineId == line.PrescriptionLineId)
+                                                                                                                        .OrderByDescending(rh => rh.DateUsed))
                                                                     {
                                                                         <li>@repeat.RepeatsDecremented repeat used on @repeat.DateUsed.ToString("yyyy-MM-dd")</li>
                                                                     }
