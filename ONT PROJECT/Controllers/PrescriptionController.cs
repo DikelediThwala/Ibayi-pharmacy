@@ -86,10 +86,12 @@ public class PrescriptionController : Controller
         {
             _context.UnprocessedPrescriptions.Remove(prescription);
             await _context.SaveChangesAsync();
+            TempData["DeleteSuccess"] = "Prescription deleted successfully!";
         }
 
         return RedirectToAction("Upload");
     }
+
 
     [HttpGet]
     public async Task<IActionResult> Edit(int id)

@@ -55,6 +55,14 @@
         right: 20px;
         z-index: 1055;
     }
+
+    .profile-picture {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-bottom: 10px;
+    }
 </style>
 
 <div class="container">
@@ -76,6 +84,18 @@
         @if (!isEditMode)
         {
             <!-- VIEW MODE -->
+            <div class="text-center mb-4">
+                @if (Model.ProfilePicture != null && Model.ProfilePicture.Length > 0)
+                {
+                    var base64 = Convert.ToBase64String(Model.ProfilePicture);
+                    <img src="data:image/png;base64,@base64" class="profile-picture img-thumbnail" />
+                }
+                else
+                {
+                    <img src="~/images/register/default-profile.png" class="profile-picture img-thumbnail" />
+                }
+            </div>
+
             <dl class="row">
                 <dt class="col-sm-3 profile-dt">First Name</dt>
                 <dd class="col-sm-9">@Model.FirstName</dd>
@@ -116,18 +136,30 @@
 
             <div class="text-center mt-4">
                 <a asp-action="Index" asp-route-edit="true" class="btn btn-primary btn-custom">Edit Profile</a>
-                <a asp-controller="ProfileSettings" asp-action="Settings" class="btn btn-secondary btn-custom ms-2">
-                    <i class="bi bi-arrow-left me-1"></i> Back to Settings
-                </a>
-                <a asp-action="DownloadProfilePdf" asp-controller="ProfileSettings" class="btn btn-danger btn-custom ms-2">
-                    <i class="bi bi-file-earmark-pdf me-1"></i> Download PDF
-                </a>
+                <a asp-controller="ProfileSettings" asp-action="Settings" class="btn btn-secondary btn-custom ms-2">Back to Settings</a>
+                <a asp-action="DownloadProfilePdf" asp-controller="ProfileSettings" class="btn btn-danger btn-custom ms-2">Download PDF</a>
             </div>
         }
         else
         {
             <!-- EDIT MODE -->
-            <form asp-action="Index" method="post">
+            <form asp-action="Index" method="post" enctype="multipart/form-data">
+                <div class="text-center mb-3">
+                    @if (Model.ProfilePicture != null && Model.ProfilePicture.Length > 0)
+                    {
+                        var base64 = Convert.ToBase64String(Model.ProfilePicture);
+                        <img src="data:image/png;base64,@base64" class="profile-picture img-thumbnail" />
+                    }
+                    else
+                    {
+                        <img src="~/images/register/default-profile.png" class="profile-picture img-thumbnail" />
+                    }
+
+                    <label class="form-label fw-semibold mt-2">Change Profile Picture</label>
+                    <input asp-for="ProfileFile" class="form-control" type="file" />
+                    <span asp-validation-for="ProfileFile" class="text-danger small"></span>
+                </div>
+
                 <dl class="row">
                     <dt class="col-sm-3 profile-dt">First Name</dt>
                     <dd class="col-sm-9">
@@ -188,9 +220,7 @@
 
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-success btn-custom">Save Changes</button>
-                    <a asp-controller="ProfileSettings" asp-action="Settings" class="btn btn-secondary btn-custom ms-2">
-                        <i class="bi bi-arrow-left me-1"></i> Back to Settings
-                    </a>
+                    <a asp-controller="ProfileSettings" asp-action="Settings" class="btn btn-secondary btn-custom ms-2">Back to Settings</a>
                 </div>
             </form>
         }

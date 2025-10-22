@@ -91,26 +91,37 @@
             font-size: 12px;
             text-align: left;
         }
-</style>
 
+    /* Alert fade out */
+    .fade-alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        min-width: 250px;
+    }
+</style>
+<!-- Upload Info -->
+<div class="mb-4 p-4 rounded shadow-sm bg-light border-start border-4 border-primary">
+    <p class="lead text-muted mb-0">
+        <i class="material-icons text-primary">&#xE24D;</i>
+        Select the medications you want and click "Place Order" to submit.
+    </p>
+</div>
 <div class="container-xl">
     <div class="table-wrapper">
         <div class="table-title">
             <h2>My <b>Prescriptions</b></h2>
         </div>
-
-        <div class="mb-3">
-            <span class="allergy-indicator"></span> Red indicates medication contains ingredients you are allergic to or no repeats left.
+        <!-- Upload Info -->
+        <div class="mb-4 p-4 rounded shadow-sm bg-light border-start border-4 border-primary">
+            <p class="lead text-muted mb-0">
+                <i class="material-icons text-primary">&#xE24D;</i>
+                Order Medication.
+            </p>
         </div>
-
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-        }
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-        }
+        <!-- Bootstrap Alert Container -->
+        <div id="alertContainer" class="fade-alert"></div>
 
         @if (!Model.Any())
         {
@@ -180,13 +191,10 @@
                                         <td>@line.Quantity</td>
                                         <td>@line.Instructions</td>
                                         <td>@line.Repeats</td>
-                                        <td>
-                                            @(line.RepeatsLeft > 0 ? line.RepeatsLeft.ToString() : "No repeats left")
-                                        </td>
+                                        <td>@(line.RepeatsLeft > 0 ? line.RepeatsLeft.ToString() : "No repeats left")</td>
                                         <td>
                                             @if (line.RepeatHistories != null && line.RepeatHistories.Any())
                                             {
-                                                <!-- Each medication gets its own modal -->
                                                 <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#repeatModal_@line.PrescriptionLineId">
                                                     View Repeats
                                                 </button>
@@ -235,11 +243,13 @@
 
 <script>
     $(document).ready(function () {
+        // Initialize Bootstrap tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
 
+        // Select all checkboxes
         $('#selectAll').click(function () {
             $('.line-checkbox').not(':disabled').prop('checked', this.checked);
         });
@@ -250,11 +260,37 @@
             $('#selectAll').prop('checked', allSelectable === checkedSelectable);
         });
 
+        // Form submission validation
         $('#placeOrderForm').on('submit', function (e) {
             if ($('.line-checkbox:checked').not(':disabled').length === 0) {
                 e.preventDefault();
-                alert('No medication selected. Please select at least one before placing an order.');
+                showAlert('No medication selected. Please select at least one before placing an order.', 'danger');
             }
         });
+
+        // Show alerts function
+        function showAlert(message, type) {
+            var alertHtml = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                                ${message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                             </div>`;
+            $("#alertContainer").append(alertHtml);
+            setTimeout(() => { $(".alert").alert('close'); }, 3000);
+        }
+
+        // TempData messages
+        @if (TempData["SuccessMessage"] != null)
+        {
+                <text>
+                    showAlert("@TempData["SuccessMessage"]", "success");
+                </text>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+                <text>
+                    showAlert("@TempData["ErrorMessage"]", "danger");
+                </text>
+        }
     });
 </script>
