@@ -230,10 +230,10 @@
 
 <div class="container" id="container">
     <!-- Success / Error Messages -->
-    @if (TempData["Success"] != null)
+    @* @if (TempData["Success"] != null)
     {
         <div class="alert alert-success text-center mt-2">@TempData["Success"]</div>
-    }
+    } *@
     @if (ViewData["LoginError"] != null)
     {
         <div class="alert alert-danger text-center mt-2">@ViewData["LoginError"]</div>
