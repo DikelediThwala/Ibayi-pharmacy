@@ -254,7 +254,7 @@ namespace ONT_PROJECT.Controllers
             {
                 TempData["msg"] = " Something went wrong!!!";
             }
-            return RedirectToAction("DispensePrescription", "Dispense");
+            return RedirectToAction("OrderMedication", "Order");
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -342,7 +342,7 @@ namespace ONT_PROJECT.Controllers
             {
                 TempData["msg"] = " Something went wrong!!!";
             }
-            return RedirectToAction("OrderMedication", "Order");
+            return RedirectToAction("DispensePrescription", "Dispense");
         }
 
 

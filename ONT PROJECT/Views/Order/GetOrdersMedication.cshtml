@@ -3,6 +3,11 @@
     ViewData["Title"] = "Orders";
     Layout = "PharmacistLayout";
 }
+@* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ *@
+
+
 
 <style>
     body {
@@ -261,8 +266,16 @@
         font-size: 13px;
     }
 </style>
-
-
+@* @if (TempData["msg"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'info',
+            title: '@TempData["msg"]',
+            confirmButtonText: 'OK'
+        });
+    </script>
+} *@
 <body>
     <div class="container-xl">
         <div class="table-responsive">

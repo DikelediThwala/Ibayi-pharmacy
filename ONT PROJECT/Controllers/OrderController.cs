@@ -67,7 +67,7 @@ namespace ONT_PROJECT.Controllers
         }
         public async Task<IActionResult> OrderMedication()
         {
-            var results = await _orderRepository.MedicationOrder();
+            var results = await _orderRepository.MedicationOrder();           
             return View(results);
         }
         public async Task<IActionResult> GetOrdersMedication()
