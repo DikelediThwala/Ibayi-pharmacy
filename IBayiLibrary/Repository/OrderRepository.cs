@@ -67,11 +67,7 @@ namespace IBayiLibrary.Repository
             string spName = "spTotalNumberOfOrders";
             return await _db.GetSingleValue<int, dynamic>(spName, new { });
         }
-        public async Task<int>NoOfReadyOrders()
-        {
-            string spName = "spReadyOrder";
-            return await _db.GetSingleValue<int, dynamic>(spName, new { });
-        }
+       
         public async Task<IEnumerable<tblOrder>> GetAllOrders()
         {
             string query = "spGetOrders";

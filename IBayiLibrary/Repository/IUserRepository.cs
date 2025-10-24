@@ -10,6 +10,9 @@ namespace IBayiLibrary.Repository
     public interface IUserRepository
     {
         Task<bool> AddAsync(tblUser user);
-        
+        Task<IEnumerable<PrescriptionViewModel>> GetCustomers();
+        Task<int> NoOfCustomer();
+        Task<tblUser> GetByIdAsync(int id);
+
     }
 }

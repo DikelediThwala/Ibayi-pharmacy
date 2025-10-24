@@ -30,6 +30,21 @@ namespace IBayiLibrary.Repository
                 return false;
             }
         }
-       
+        public async Task<IEnumerable<PrescriptionViewModel>> GetCustomers()
+        {
+            string query = "spGetCustomers";
+            return await _db.GetData<PrescriptionViewModel, dynamic>(query, new { });
+        }
+        public async Task<int> NoOfCustomer()
+        {
+            string spName = "spReadyOrder";
+            return await _db.GetSingleValue<int, dynamic>(spName, new { });
+        }
+        public async Task<tblUser> GetByIdAsync(int id)
+        {
+            IEnumerable<tblUser> result = await _db.GetData<tblUser, dynamic>("spgetUserByID", new { UserID = id });
+            return result.FirstOrDefault();
+        }
+
     }
 }
