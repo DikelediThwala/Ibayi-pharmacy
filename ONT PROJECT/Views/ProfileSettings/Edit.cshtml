@@ -7,39 +7,132 @@
 <div class="container mt-5">
     <h2 class="mb-4 text-center">Edit Profile</h2>
 
-    <form asp-action="Edit" method="post">
+    <form asp-action="Edit" method="post" id="profileForm">
         <input type="hidden" asp-for="UserId" />
 
-        <div class="form-group mb-3">
-            <label asp-for="FirstName"></label>
-            <input asp-for="FirstName" class="form-control" />
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label asp-for="FirstName"></label>
+                <input asp-for="FirstName" class="form-control" placeholder="First Name" />
+                <span asp-validation-for="FirstName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="LastName"></label>
+                <input asp-for="LastName" class="form-control" placeholder="Last Name" />
+                <span asp-validation-for="LastName" class="text-danger small"></span>
+            </div>
         </div>
 
-        <div class="form-group mb-3">
-            <label asp-for="LastName"></label>
-            <input asp-for="LastName" class="form-control" />
-        </div>
-
-        <div class="form-group mb-3">
-            <label asp-for="Idnumber"></label>
-            <input asp-for="Idnumber" class="form-control" />
-        </div>
-
-        <div class="form-group mb-3">
-            <label asp-for="PhoneNumber"></label>
-            <input asp-for="PhoneNumber" class="form-control" />
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label asp-for="Idnumber"></label>
+                <input asp-for="Idnumber" class="form-control" placeholder="ID Number" />
+                <span asp-validation-for="Idnumber" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="PhoneNumber"></label>
+                <input asp-for="PhoneNumber" class="form-control" placeholder="Phone Number" />
+                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+            </div>
         </div>
 
         <div class="form-group mb-3">
             <label asp-for="Email"></label>
             <input asp-for="Email" class="form-control" readonly />
+            <span asp-validation-for="Email" class="text-danger small"></span>
         </div>
 
+        <!-- Password fields -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label>New Password</label>
+                <input type="password" name="NewPassword" id="NewPassword" class="form-control" placeholder="New Password" />
+            </div>
+            <div class="col-md-6">
+                <label>Confirm Password</label>
+                <input type="password" name="ConfirmPassword" id="ConfirmPassword" class="form-control" placeholder="Confirm Password" />
+                <span id="passwordMatchError" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <!-- Allergy selection -->
         <div class="form-group mb-3">
-            <label asp-for="Allergies"></label>
-            <input asp-for="Allergies" class="form-control" />
+            <label>Allergies</label>
+            <div class="d-flex gap-2 mb-1">
+                <select id="allergySelect" class="form-control allergy-dropdown">
+                    <option value="">-- Select Allergy --</option>
+                    @foreach (var item in (List<SelectListItem>)ViewBag.ActiveIngredients)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+                <button type="button" id="addAllergyBtn" class="btn btn-sm btn-success">Add</button>
+            </div>
+            <ul id="selectedAllergiesList" class="list-group mb-1"></ul>
+            <div id="allergyHiddenInputs"></div>
+            <span asp-validation-for="SelectedAllergyIds" class="text-danger small"></span>
         </div>
 
         <button type="submit" class="btn btn-success w-100">Save Changes</button>
     </form>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.12/dist/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+    // Allergy add/remove
+    $('#addAllergyBtn').click(function () {
+        const select = $('#allergySelect')[0];
+        const value = select.value;
+        const text = select.options[select.selectedIndex]?.text;
+        if (!value) { alert("Please select an allergy."); return; }
+        if ($(`#allergyHiddenInputs input[value="${value}"]`).length) { alert("Allergy already added."); return; }
+
+        const li = $('<li class="list-group-item d-flex justify-content-between align-items-center">' + text + '<button type="button" class="btn btn-sm btn-danger">Remove</button></li>');
+        li.find('button').click(function () {
+            li.remove();
+            $(`#allergyHiddenInputs input[value="${value}"]`).remove();
+        });
+        $('#selectedAllergiesList').append(li);
+        $('#allergyHiddenInputs').append(`<input type="hidden" name="SelectedAllergyIds" value="${value}" />`);
+        select.value = "";
+    });
+
+    // Password match check
+    $('#profileForm').submit(function () {
+        let pwd = $('#NewPassword').val();
+        let confirmPwd = $('#ConfirmPassword').val();
+        if (pwd || confirmPwd) { // only check if user entered password
+            if (pwd !== confirmPwd) {
+                $('#passwordMatchError').text("Passwords do not match.");
+                return false;
+            }
+        }
+        return true;
+    });
+
+    // Client-side validation
+    $(function () {
+        $("#profileForm").validate({
+            onkeyup: function (element) { $(element).valid(); },
+            onfocusout: function (element) { $(element).valid(); },
+            errorClass: "text-danger small",
+            rules: {
+                FirstName: { required: true },
+                LastName: { required: true },
+                PhoneNumber: { required: true, digits: true, minlength: 10, maxlength: 10 },
+                Idnumber: { required: true, digits: true, minlength: 13, maxlength: 13 },
+                Email: { required: true, email: true }
+            },
+            messages: {
+                FirstName: "First Name is required",
+                LastName: "Last Name is required",
+                PhoneNumber: { required: "Phone number is required", digits: "Only numbers allowed", minlength: "Must be 10 digits", maxlength: "Must be 10 digits" },
+                Idnumber: { required: "ID Number is required", digits: "Only numbers allowed", minlength: "Must be 13 digits", maxlength: "Must be 13 digits" },
+                Email: { required: "Email is required", email: "Enter a valid email" }
+            }
+        });
+    });
+</script>
