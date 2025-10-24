@@ -143,41 +143,43 @@ namespace ONT_PROJECT.Controllers
         [HttpGet]
         public IActionResult ChangePassword()
         {
+            ViewData["ActiveTab"] = "password";
+            return View(new ChangePasswordViewModel());
+        }
+
+        // POST: Change Password
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
             var email = HttpContext.Session.GetString("UserEmail");
             if (email == null) return RedirectToAction("Login", "CustomerRegister");
 
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
             if (user == null) return NotFound();
 
-            return View(user);
-        }
-
-        // POST: Change Password
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult ChangePassword(int UserId, string Password, string NewPassword, string ConfirmPassword)
-        {
-            var user = _context.TblUsers.FirstOrDefault(u => u.UserId == UserId);
-            if (user == null) return RedirectToAction("Index", "Home");
-
-            if (user.Password != Password)
+            if (user.Password != model.CurrentPassword)
             {
-                ModelState.AddModelError("", "Current password is incorrect.");
-                return View(user);
+                ModelState.AddModelError("CurrentPassword", "Current password is incorrect.");
+                return View(model);
             }
 
-            if (NewPassword != ConfirmPassword)
+            if (model.NewPassword != model.ConfirmPassword)
             {
-                ModelState.AddModelError("", "New password and confirmation do not match.");
-                return View(user);
+                ModelState.AddModelError("ConfirmPassword", "New password and confirmation do not match.");
+                return View(model);
             }
 
-            user.Password = NewPassword;
+            user.Password = model.NewPassword;
             _context.SaveChanges();
 
             TempData["SuccessMessage"] = "Password updated successfully!";
-            return RedirectToAction("Index");
+            return RedirectToAction("ChangePassword");
         }
+
 
         // GET: Download Profile as PDF
         [HttpGet]
