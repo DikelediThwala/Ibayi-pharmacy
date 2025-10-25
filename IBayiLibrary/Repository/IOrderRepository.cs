@@ -18,6 +18,6 @@ namespace IBayiLibrary.Repository
         Task<int> TotalNumberOfOrders(); 
         //Task<tblOrder> UpdateOrder(int id,string status);
         Task<bool> UpdateOrder(int id, string status,DateTime?DateRecieved);
-
+        Task<bool> PackOrder(int id);
     }
 }
