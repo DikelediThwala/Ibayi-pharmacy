@@ -31,15 +31,7 @@
             </a>
         </div>
 
-        <div class="col-md">
-            <div class="info-card bg-soft-success text-dark">
-                <div class="info-icon text-success"><i class="bi bi-truck"></i></div>
-                <strong>Repeats</strong>
-                <div class="fs-4 fw-bold">@Model.RepeatCounts.Sum(r => r.Count)</div>
-                <div class="info-context">Total Repeats</div>
-            </div>
-        </div>
-
+        
         <div class="col-md">
             <a asp-controller="CustomerOrder" asp-action="OrderedMedication" class="text-decoration-none">
                 <div class="info-card bg-soft-info text-dark">
