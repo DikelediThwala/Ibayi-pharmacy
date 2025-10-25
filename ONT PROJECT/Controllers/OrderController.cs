@@ -9,16 +9,18 @@ namespace ONT_PROJECT.Controllers
 {
     public class OrderController : Controller
     {
-        
+
         private readonly IOrderRepository _orderRepository;
         private readonly IUserRepository _userRepository;
+
         private readonly EmailService _emailService;
 
-        public OrderController(IOrderRepository orderRepository,EmailService emailService, IUserRepository userRepository)
+        public OrderController(IOrderRepository orderRepository, EmailService emailService, IUserRepository userRepository)
         {
             _orderRepository = orderRepository;
             _emailService = emailService;
             _userRepository = userRepository;
+
         }
 
         public IActionResult CreateOrder()
@@ -31,7 +33,7 @@ namespace ONT_PROJECT.Controllers
         {
             try
             {
-                var date= order;
+                var date = order;
                 date.DatePlaced = DateTime.Now;
                 //var dateReceived = order;
                 //dateReceived.DateReceived = null;
@@ -73,7 +75,7 @@ namespace ONT_PROJECT.Controllers
         }
         public async Task<IActionResult> OrderMedication()
         {
-            var results = await _orderRepository.MedicationOrder();           
+            var results = await _orderRepository.MedicationOrder();
             return View(results);
         }
         public async Task<IActionResult> GetOrdersMedication()
@@ -85,23 +87,19 @@ namespace ONT_PROJECT.Controllers
         {
             var person = await _orderRepository.GetOrdersByID(id);
             return View(person);
-        }     
+        }
         [HttpPost]
-        public async Task<IActionResult> Update(tblOrder order,int id)
+        public async Task<IActionResult> Update(tblOrder order)
         {
             var date = order;
             date.DateRecieved = DateTime.Now;
 
-            var person = await _orderRepository.GetOrdersByID(id);
-            var success = await _orderRepository.UpdateOrder(order.OrderID, order.Status,order.DateRecieved);
+            var person = await _orderRepository.GetOrdersByID(order.OrderID);
+            var success = await _orderRepository.UpdateOrder(order.OrderID, order.Status, order.DateRecieved);
 
-            if (!success)
-                return NotFound();
-            if (success)
+            if (!string.IsNullOrEmpty(person.Email))
             {
-                if (!string.IsNullOrEmpty(person.Email))
-                {
-                    string emailBody = $@"
+                string emailBody = $@"
                         <p>Hello {person.FirstName}<br>{person.LastName}</p>                       
                         <p>Your Order is ready for collection</p>
                         <p><strong>#Order ID:</strong> {person.OrderID}</p>                      
@@ -112,17 +110,15 @@ namespace ONT_PROJECT.Controllers
                         <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
 
 
-                    _emailService.Send(person.Email, "Your Medication Has Been Dispensed", emailBody);
-
-                }
-                return Json(new { success = true, message = "Prescription dispensed." });
+                _emailService.Send(person.Email, "Your order has been collected", emailBody);
             }
-
-            //else
-            //    return Json(new { success = false, message = "Failed to ." });
-
             return RedirectToAction("GetOrdersMedication", new { id = order.OrderID });
         }
-
+        public async Task<IActionResult> Pack(tblOrder order)
+        {         
+            //var person = await _orderRepository.GetOrdersByID(order.OrderID);
+            var success = await _orderRepository.PackOrder(order.OrderID);
+            return View(success);
+        }
     }
 }
