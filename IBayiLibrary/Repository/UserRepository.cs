@@ -45,6 +45,11 @@ namespace IBayiLibrary.Repository
             IEnumerable<tblUser> result = await _db.GetData<tblUser, dynamic>("spgetUserByID", new { UserID = id });
             return result.FirstOrDefault();
         }
+        public async Task<tblUser> GetPharmacistByID(int id)
+        {
+            IEnumerable<tblUser> result = await _db.GetData<tblUser, dynamic>("spGetPharmacistID", new { UserID = id });
+            return result.FirstOrDefault();
+        }
 
     }
 }

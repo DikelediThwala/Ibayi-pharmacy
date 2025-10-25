@@ -13,6 +13,7 @@ namespace IBayiLibrary.Repository
         Task<IEnumerable<PrescriptionViewModel>> GetCustomers();
         Task<int> NoOfCustomer();
         Task<tblUser> GetByIdAsync(int id);
+        Task<tblUser> GetPharmacistByID(int id);
 
     }
 }

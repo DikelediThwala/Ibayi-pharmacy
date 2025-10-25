@@ -2,6 +2,7 @@
 using IBayiLibrary.Repository;
 using Microsoft.AspNetCore.Mvc;
 using ONT_PROJECT.Models;
+using System.Data;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace ONT_PROJECT.Controllers
@@ -10,12 +11,14 @@ namespace ONT_PROJECT.Controllers
     {
         
         private readonly IOrderRepository _orderRepository;
+        private readonly IUserRepository _userRepository;
         private readonly EmailService _emailService;
 
-        public OrderController(IOrderRepository orderRepository,EmailService emailService)
+        public OrderController(IOrderRepository orderRepository,EmailService emailService, IUserRepository userRepository)
         {
             _orderRepository = orderRepository;
             _emailService = emailService;
+            _userRepository = userRepository;
         }
 
         public IActionResult CreateOrder()
@@ -33,11 +36,14 @@ namespace ONT_PROJECT.Controllers
                 //var dateReceived = order;
                 //dateReceived.DateReceived = null;
                 var status = order;
-                status.Status = "Placed";
+                status.Status = "Walk-in";
                 var vat = order;
                 vat.VAT = 15;
                 var pharmacist = order;
-                pharmacist.PharmacistID = 1009;
+                var userId = HttpContext.Session.GetInt32("UserId");
+                var user = await _userRepository.GetPharmacistByID(userId.Value);
+                // if user found, build full nam                 
+                pharmacist.PharmacistID = user.UserID;
                 bool addPerson = await _orderRepository.AddOrder(order);
                 if (addPerson)
                 {

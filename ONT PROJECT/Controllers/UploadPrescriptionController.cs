@@ -17,13 +17,15 @@ namespace ONT_PROJECT.Controllers
         private readonly IPrescriptionRepository _prescriptionRepository;
         private readonly IPrescriptionLineRepository _prescriptionLineRepository;
         private readonly IUnproccessedPrescriptionRepository _unproccessedprescriptionRepository;
+        private readonly IUserRepository _userRepository;
         private readonly EmailService _emailService;
-        public UploadPrescriptionController(IPrescriptionRepository prescriptionRepository, IPrescriptionLineRepository prescriptionLineRepository, IUnproccessedPrescriptionRepository unproccessedprescriptionRepository, EmailService emailService)
+        public UploadPrescriptionController(IPrescriptionRepository prescriptionRepository, IPrescriptionLineRepository prescriptionLineRepository, IUnproccessedPrescriptionRepository unproccessedprescriptionRepository, EmailService emailService, IUserRepository userRepository)
         {
             _prescriptionRepository = prescriptionRepository;
             _prescriptionLineRepository = prescriptionLineRepository;
             _unproccessedprescriptionRepository = unproccessedprescriptionRepository;
             _emailService = emailService;
+            _userRepository = userRepository;
         }
         public async Task<IActionResult> CreatePrescForWalkins()
         {
@@ -76,7 +78,10 @@ namespace ONT_PROJECT.Controllers
 
 
                 var role = prescription;
-                role.PharmacistID = 1009;
+                var userId = HttpContext.Session.GetInt32("UserId");
+                var user = await _userRepository.GetPharmacistByID(userId.Value);
+                // if user found, build full nam                 
+                role.PharmacistID = user.UserID;
                 var status = prescription;
                 status.Status = "Proccessed";
                 var repLeft = prescription;
@@ -203,7 +208,11 @@ namespace ONT_PROJECT.Controllers
                 }
 
                 var role = prescription;
-                role.PharmacistID = 1009;
+
+                var userId = HttpContext.Session.GetInt32("UserId");                           
+                var user = await _userRepository.GetPharmacistByID(userId.Value);
+                // if user found, build full nam                 
+                role.PharmacistID = user.UserID;                               
                 var status = prescription;
                 status.Status = "Walk'ins";
                 var repLeft = prescription;
@@ -282,12 +291,12 @@ namespace ONT_PROJECT.Controllers
                     using var ms = new MemoryStream();
                     await prescription.PescriptionFile.CopyToAsync(ms);
                     prescription.PrescriptionPhoto = ms.ToArray();
-                }
-
-
-                
+                }               
                 var role = prescription;
-                role.PharmacistID = 1009;
+                var userId = HttpContext.Session.GetInt32("UserId");
+                var user = await _userRepository.GetPharmacistByID(userId.Value);
+                // if user found, build full nam                 
+                role.PharmacistID = user.UserID;
                 var status = prescription;
                 status.Status = "Proccessed";
                 var repLeft = prescription;
