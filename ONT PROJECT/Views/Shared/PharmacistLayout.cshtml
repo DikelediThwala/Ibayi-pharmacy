@@ -172,7 +172,28 @@
             <li class="nav-item"><a class="nav-link" asp-controller="UploadPrescription" asp-action="CreatePrescForWalkins" data-bs-toggle="tooltip"><i class="bi bi-collection"></i> <span>Load Prescription-Walk in's</span></a></li>
             <li class="nav-item"><a class="nav-link" asp-controller="UnproccessedPrescription" asp-action="GetUnprocessedPrescription" data-bs-toggle="tooltip"><i class="bi bi-box-seam"></i><span>Unproccessed Prescription</span></a></li>
             <li class="nav-item"><a class="nav-link" asp-controller="Dispense" asp-action="DispensePrescription" data-bs-toggle="tooltip"><i class="bi bi-pencil-square"></i> <span>Dispense Prescriptions</span></a></li>
-            <li class="nav-item"><a class="nav-link" asp-controller="Order" asp-action="GetOrdersMedication" data-bs-toggle="tooltip"><i class="fas fa-clipboard-list"></i> <span>Orders</span></a></li>
+
+
+
+            <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#medicationSubmenu">
+                    <span><i class="fas fa-clipboard-list"></i> <span>Order</span></span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <div class="collapse ps-3" id="medicationSubmenu">
+                    <ul class="nav flex-column">
+                        <li <a class="nav-link" asp-controller="Order" asp-action="GetOrdersMedication" data-bs-toggle="tooltip"><i class="bi bi-collection"></i> <span>View Orders</span></a></li>
+                        <li><a class="nav-link" asp-controller="Order" asp-action="Pack"><i class="bi bi-pencil-square"></i> Pack Order</a></li>                       
+                    </ul>
+                </div>
+            </li>
+
+
+
+
+
+
+            
             <li class="nav-item"><a class="nav-link" asp-controller="Pharmacist" asp-action="GetAllCustomers"><i class="bi bi-people"></i> <span>Customers</span></a></li>
             <li class="nav-item"><a class="nav-link" asp-controller="PharmacistReport" asp-action="PharmacistGenerateReport"><i class="bi bi-collection"></i> <span>Report</span></a></li>
         </ul>

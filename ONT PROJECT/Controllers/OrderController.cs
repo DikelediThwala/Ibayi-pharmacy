@@ -114,9 +114,9 @@ namespace ONT_PROJECT.Controllers
             }
             return RedirectToAction("GetOrdersMedication", new { id = order.OrderID });
         }
-        public async Task<IActionResult> Pack(int id)
+        public async Task<IActionResult> Pack()
         {
-            var success = await _orderRepository.PackOrder(id);
+            var success = await _orderRepository.PackOrder();
             return View(success);
         }
         public async Task<IActionResult> UpdatePackOrder(int id)
