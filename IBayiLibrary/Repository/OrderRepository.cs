@@ -80,15 +80,21 @@ namespace IBayiLibrary.Repository
             await _db.SaveData("spUpdateOrderStatus", new { OrderID = id, Status = status, DateRecieved = dateRecieved });
             return true;
         }
-        public async Task<bool> PackOrder(int id)
+        public async Task<IEnumerable<tblOrder>>PackOrder(int id)
         {
-            await _db.SaveData("spPackOrder", new { OrderID = id });
-            return true;
+            
+            string query = "spPackOrder";
+            return await _db.GetData<tblOrder, dynamic>(query, new { OrderID = id });
         }
         public async Task<tblOrder> GetOrdersByID(int id)
         {
             IEnumerable<tblOrder> result = await _db.GetData<tblOrder, dynamic>("GetOrderByID", new { OrderID = id });
             return result.FirstOrDefault();
+        }
+        public async Task<bool> UpdatePackOrder(int id)
+        {
+            await _db.SaveData("spUpdatePackedOrder", new { OrderID = id });
+            return true;
         }
     }
 }

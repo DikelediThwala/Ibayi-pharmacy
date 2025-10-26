@@ -114,10 +114,14 @@ namespace ONT_PROJECT.Controllers
             }
             return RedirectToAction("GetOrdersMedication", new { id = order.OrderID });
         }
-        public async Task<IActionResult> Pack(tblOrder order)
-        {         
-            //var person = await _orderRepository.GetOrdersByID(order.OrderID);
-            var success = await _orderRepository.PackOrder(order.OrderID);
+        public async Task<IActionResult> Pack(int id)
+        {
+            var success = await _orderRepository.PackOrder(id);
+            return View(success);
+        }
+        public async Task<IActionResult> UpdatePackOrder(int id)
+        {
+            var success = await _orderRepository.UpdatePackOrder(id);
             return View(success);
         }
     }
