@@ -61,8 +61,9 @@
                     </div>
                 </div>
             }          
-            <!-- Only show table if a search was made -->
+            
             <form asp-action="Process" method="post">
+               <input type="hidden" name="searchTerm" value="@ViewBag.SearchTerm" />
             <table class="table table-bordered table-hover mt-3">
                 <thead class="table-light">
                     <tr>
@@ -79,12 +80,15 @@
                     {
                         foreach (var item in Model)
                         {
-                            <tr>
+                                <tr class="@(item.RepeatsLeft <= 0 ? "table-secondary text-muted" : "")">>
+                                    
                                 <td>
                                     <input type="checkbox"
                                             name="medicineIds"
-                                            value="@item.PrescriptionLineID"
-                                            
+                                            value="@item.PrescriptionLineID"                                         
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="@(item.RepeatsLeft <= 0 ? "Cannot dispense — no repeats left" : "Select to dispense")"
                                             @(item.RepeatsLeft <= 0 ? "disabled" : "") />
                                 </td>
                             <td>@item.MedicineName</td>
@@ -105,9 +109,11 @@
                     }
                 </tbody>
             </table>
+            <div class="end-0">
             <button type="submit" class="btn btn-primary process-btn">                  
                 Dispense
             </button>
+            </div>
             </form>
         }
     </div>

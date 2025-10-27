@@ -106,7 +106,7 @@ namespace ONT_PROJECT.Controllers
         //    //    return Json(new { success = false, message = "Failed to ." });         
         //}
         [HttpPost]
-        public async Task<IActionResult> Process(int[] medicineIds)
+        public async Task<IActionResult> Process(int[] medicineIds, string searchTerm)
         {
             if (medicineIds != null && medicineIds.Any())
             {
@@ -116,7 +116,7 @@ namespace ONT_PROJECT.Controllers
                 }
             }
 
-            return RedirectToAction("DispensePrescription");
+            return RedirectToAction("DispensePrescription", new { searchTerm });
         }
 
 
