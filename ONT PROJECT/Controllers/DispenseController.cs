@@ -118,13 +118,5 @@ namespace ONT_PROJECT.Controllers
 
             return RedirectToAction("DispensePrescription", new { searchTerm });
         }
-
-
-
-
-
-
-
-
     }
 }

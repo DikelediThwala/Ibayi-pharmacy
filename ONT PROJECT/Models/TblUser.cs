@@ -42,12 +42,9 @@ public partial class TblUser
     [Display(Name = "Phone Number")]
     [RegularExpression(@"^(?:0|\+27)\d{9}$", ErrorMessage = "Invalid contact number")]
     public string PhoneNumber { get; set; } = null!;
-
-
     [Required(ErrorMessage = "Title is required")]
     public string Title { get; set; } = null!;
     public string Status { get; set; } = "Active";
-
     public string? Allergies { get; set; } = null!;
     [NotMapped]
     public List<int> SelectedAllergyIds { get; set; } = new();
@@ -55,8 +52,12 @@ public partial class TblUser
     public DateTime? TokenExpiry { get; set; }
     [NotMapped] // EF will ignore this
     public string HealthCounsilRegNo { get; set; }
+    //[Required(ErrorMessage = "ID Number is required")]
+    //[Display(Name = "ID Number")]
+    //[SaIdNumber(ErrorMessage = "Invalid South African ID Number")]
+    //[Remote(action: "ValidateIdNumber", controller: "User", ErrorMessage = "Invalid ID Number")]
+    //public string IDNumber { get; set; } = null!;
     public byte[]? ProfilePicture { get; set; }
-
     [NotMapped]
     public IFormFile? ProfileFile { get; set; }
     public virtual Customer? Customer { get; set; }

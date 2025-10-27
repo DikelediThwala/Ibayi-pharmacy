@@ -273,9 +273,11 @@
             </div>
             <div class="row mb-4">
                 <div class="col-md-4">
-                    <label asp-for="Date" class="form-label">Date <span class="text-danger">*</span></label>
-                    <input asp-for="Date" type="datetime" class="form-control"value ="@Model.Date" />
-                    
+                    <label asp-for="Date" class="form-label">Date</label>
+                    <input asp-for="Date"
+                           type="date"
+                           class="form-control"
+                           max="@DateTime.Now.ToString("yyyy-MM-dd")" />
                     <span asp-validation-for="Date" class="text-danger small"></span>
                 </div>
             </div>

@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IBayiLibrary.Models.Domain;
 using IBayiLibrary.Repository;
-using IBayiLibrary.Models.Domain;
-using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ONT_PROJECT.Models;
+using System;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -14,14 +15,18 @@ namespace ONT_PROJECT.Controllers
         private readonly IOrderRepository _orderRepository;
         private readonly IUserRepository _userRepository;
         private readonly IUnproccessedPrescriptionRepository _unproccessedPrescriptionRepository;
+        private readonly ApplicationDbContext _context;
+        private readonly EmailService _emailService;
 
-        public PharmacistController(IUserRepository personRepository, IPrescriptionRepository prescriptionRepository,IOrderRepository orderRepository, IUnproccessedPrescriptionRepository unproccessedPrescriptionRepository, IUserRepository userRepository)
+        public PharmacistController(IUserRepository personRepository, IPrescriptionRepository prescriptionRepository,IOrderRepository orderRepository, IUnproccessedPrescriptionRepository unproccessedPrescriptionRepository, IUserRepository userRepository,ApplicationDbContext context,EmailService emailService)
         {
             _personRepository = personRepository;
             _prescriptionRepository = prescriptionRepository;
             _orderRepository = orderRepository;
             _unproccessedPrescriptionRepository = unproccessedPrescriptionRepository;
             _userRepository = userRepository;
+            _context = context;
+            _emailService = emailService;
         }
         public static class PasswordGenerator
         {
@@ -99,21 +104,30 @@ namespace ONT_PROJECT.Controllers
                 string generatedPassword = PasswordGenerator.GeneratePassword();
                 newUser.Password = generatedPassword;
                 role.Role = "Customer";
-                bool addPerson = await _personRepository.AddAsync(user);
-                if (addPerson)
+
+                if (_context.TblUsers.Any(u => u.Idnumber == user.IDNumber))
                 {
-                    TempData["msg"] = "Sucessfully Added";
+                    TempData["ErrorMessage"] = "A user with this ID number already exists!";
+                    return View("CreateUser", user);
                 }
-                else
+                var person = await _personRepository.AddAsync(user);             
+                if (!string.IsNullOrEmpty(user.Email))
                 {
-                    TempData["msg"] = "Could not add";
+                    string emailBody = $@"
+                        <p>Hello {user.FirstName}<br>{user.LastName}</p>                       
+                        <p>Your Order is ready for collection</p>
+                        <p>Here's your passowrd {user.Password}</p> ";
+                        
+
+
+                    _emailService.Send(user.Email,"", emailBody);
                 }
             }
             catch (Exception ex)
             {
                 TempData["msg"] = " Something went wrong!!!";
             }
-            return RedirectToAction("Index");          
+            return RedirectToAction("GetAllCustomers");          
         }      
         
     }
