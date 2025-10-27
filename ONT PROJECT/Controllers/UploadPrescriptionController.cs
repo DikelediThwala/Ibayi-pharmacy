@@ -144,7 +144,7 @@ namespace ONT_PROJECT.Controllers
             {
                 PrescriptionID = prescId.PrescriptionID
             };
-            bool success = await _prescriptionRepository.UpdateDispnse(prescriptionToUpdate);
+            bool success = await _prescriptionRepository.UpdateDispnse(id);
             if (success)
             {
                 var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(prescId.CustomerID);

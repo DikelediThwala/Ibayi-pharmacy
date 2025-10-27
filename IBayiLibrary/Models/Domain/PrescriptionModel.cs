@@ -26,7 +26,7 @@ namespace IBayiLibrary.Models.Domain
             public int Quantity { get; set; }
             public string MedicineName { get; set; }
             public byte[] PrescriptionPhoto { get; set; }
-        
 
+        public int[] MedicineIds { get; set; }
     }
 }
