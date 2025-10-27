@@ -63,6 +63,19 @@
         border-radius: 50%;
         margin-bottom: 10px;
     }
+
+    .default-profile-icon {
+        width: 150px;
+        height: 150px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 80px;
+        color: #6c757d;
+        background-color: #e9ecef;
+        border-radius: 50%;
+        margin: 0 auto 10px auto;
+    }
 </style>
 
 <div class="container">
@@ -92,7 +105,9 @@
                 }
                 else
                 {
-                    <img src="~/images/register/default-profile.png" class="profile-picture img-thumbnail" />
+                    <div class="default-profile-icon">
+                        <i class="material-icons">person</i>
+                    </div>
                 }
             </div>
 
@@ -144,20 +159,26 @@
         {
             <!-- EDIT MODE -->
             <form asp-action="Index" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="RemoveProfilePicture" id="RemoveProfilePicture" value="false" />
+
                 <div class="text-center mb-3">
                     @if (Model.ProfilePicture != null && Model.ProfilePicture.Length > 0)
                     {
                         var base64 = Convert.ToBase64String(Model.ProfilePicture);
-                        <img src="data:image/png;base64,@base64" class="profile-picture img-thumbnail" />
+                        <img id="profilePic" src="data:image/png;base64,@base64" class="profile-picture img-thumbnail" />
                     }
                     else
                     {
-                        <img src="~/images/register/default-profile.png" class="profile-picture img-thumbnail" />
+                        <div id="profilePic" class="default-profile-icon">
+                            <i class="material-icons">person</i>
+                        </div>
                     }
 
                     <label class="form-label fw-semibold mt-2">Change Profile Picture</label>
                     <input asp-for="ProfileFile" class="form-control" type="file" />
                     <span asp-validation-for="ProfileFile" class="text-danger small"></span>
+
+                    <button type="button" id="removeProfileBtn" class="btn btn-outline-danger btn-sm mt-2">Remove Profile Picture</button>
                 </div>
 
                 <dl class="row">
@@ -234,6 +255,24 @@
         const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
         toast.show();
     }
+
+    // Remove profile picture
+    const removeBtn = document.getElementById('removeProfileBtn');
+    removeBtn?.addEventListener('click', function () {
+        const profileContainer = document.getElementById('profilePic');
+
+        // Replace with default icon
+        if (profileContainer.tagName.toLowerCase() === 'img') {
+            const div = document.createElement('div');
+            div.id = 'profilePic';
+            div.className = 'default-profile-icon';
+            div.innerHTML = '<i class="material-icons">person</i>';
+            profileContainer.replaceWith(div);
+        }
+
+        document.querySelector('input[type="file"]').value = "";
+        document.getElementById('RemoveProfilePicture').value = "true";
+    });
 
     // Allergy add/remove
     const addBtn = document.getElementById('addAllergyBtn');

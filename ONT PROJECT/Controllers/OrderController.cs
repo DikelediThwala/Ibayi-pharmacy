@@ -2,20 +2,25 @@
 using IBayiLibrary.Repository;
 using Microsoft.AspNetCore.Mvc;
 using ONT_PROJECT.Models;
+using System.Data;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace ONT_PROJECT.Controllers
 {
     public class OrderController : Controller
     {
-        
+
         private readonly IOrderRepository _orderRepository;
+        private readonly IUserRepository _userRepository;
+
         private readonly EmailService _emailService;
 
-        public OrderController(IOrderRepository orderRepository,EmailService emailService)
+        public OrderController(IOrderRepository orderRepository, EmailService emailService, IUserRepository userRepository)
         {
             _orderRepository = orderRepository;
             _emailService = emailService;
+            _userRepository = userRepository;
+
         }
 
         public IActionResult CreateOrder()
@@ -28,16 +33,19 @@ namespace ONT_PROJECT.Controllers
         {
             try
             {
-                var date= order;
+                var date = order;
                 date.DatePlaced = DateTime.Now;
                 //var dateReceived = order;
                 //dateReceived.DateReceived = null;
                 var status = order;
-                status.Status = "Placed";
+                status.Status = "Walk-in";
                 var vat = order;
                 vat.VAT = 15;
                 var pharmacist = order;
-                pharmacist.PharmacistID = 1009;
+                var userId = HttpContext.Session.GetInt32("UserId");
+                var user = await _userRepository.GetPharmacistByID(userId.Value);
+                // if user found, build full nam                 
+                pharmacist.PharmacistID = user.UserID;
                 bool addPerson = await _orderRepository.AddOrder(order);
                 if (addPerson)
                 {
@@ -47,7 +55,12 @@ namespace ONT_PROJECT.Controllers
                 {
                     TempData["msg"] = "Could not add";
                 }
+                var reult = await _orderRepository.GetLastOrderRow();
+                var lastRow = reult.FirstOrDefault();
 
+
+                int orderID = lastRow?.OrderID ?? 0;
+                order.OrderID = orderID;
                 //OrderLine
                 bool ad = await _orderRepository.AddOrderLine(order);
                 if (ad)
@@ -79,23 +92,19 @@ namespace ONT_PROJECT.Controllers
         {
             var person = await _orderRepository.GetOrdersByID(id);
             return View(person);
-        }     
+        }
         [HttpPost]
-        public async Task<IActionResult> Update(tblOrder order,int id)
+        public async Task<IActionResult> Update(tblOrder order)
         {
             var date = order;
             date.DateRecieved = DateTime.Now;
 
-            var person = await _orderRepository.GetOrdersByID(id);
-            var success = await _orderRepository.UpdateOrder(order.OrderID, order.Status,order.DateRecieved);
+            var person = await _orderRepository.GetOrdersByID(order.OrderID);
+            var success = await _orderRepository.UpdateOrder(order.OrderID, order.Status, order.DateRecieved);
 
-            if (!success)
-                return NotFound();
-            if (success)
+            if (!string.IsNullOrEmpty(person.Email))
             {
-                if (!string.IsNullOrEmpty(person.Email))
-                {
-                    string emailBody = $@"
+                string emailBody = $@"
                         <p>Hello {person.FirstName}<br>{person.LastName}</p>                       
                         <p>Your Order is ready for collection</p>
                         <p><strong>#Order ID:</strong> {person.OrderID}</p>                      
@@ -106,17 +115,29 @@ namespace ONT_PROJECT.Controllers
                         <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
 
 
-                    _emailService.Send(person.Email, "Your Medication Has Been Dispensed", emailBody);
-
-                }
-                return Json(new { success = true, message = "Prescription dispensed." });
+                _emailService.Send(person.Email, "Your order has been collected", emailBody);
             }
-
-            //else
-            //    return Json(new { success = false, message = "Failed to ." });
-
             return RedirectToAction("GetOrdersMedication", new { id = order.OrderID });
         }
+        public async Task<IActionResult> Pack()
+        {
+            var success = await _orderRepository.PackOrder();
+            return View(success);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdatePackOrders(int[] medicineIds)
+        {
+            if (medicineIds != null && medicineIds.Any())
+            {
+                foreach (var id in medicineIds)
+                {
+                    await _orderRepository.UpdatePackOrder(id); // this now matches MedicineID
+                }
+            }
+
+            return RedirectToAction("Pack");
+        }
+
 
     }
 }

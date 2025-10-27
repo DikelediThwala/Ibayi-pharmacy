@@ -49,6 +49,7 @@ namespace ONT_PROJECT.Controllers
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
             if (user == null) return NotFound();
 
+            // Allergies
             var customer = _context.Customers.FirstOrDefault(c => c.CustomerNavigation.UserId == user.UserId);
             var selectedAllergies = new List<int>();
             if (customer != null)
@@ -75,10 +76,9 @@ namespace ONT_PROJECT.Controllers
             return View(user);
         }
 
-        // POST: Update Profile
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index(TblUser model, List<int> SelectedAllergyIds)
+        public IActionResult Index(TblUser model, List<int> SelectedAllergyIds, string RemoveProfilePicture)
         {
             var email = HttpContext.Session.GetString("UserEmail");
             if (email == null) return RedirectToAction("Login", "CustomerRegister");
@@ -91,12 +91,19 @@ namespace ONT_PROJECT.Controllers
             user.Idnumber = model.Idnumber;
             user.PhoneNumber = model.PhoneNumber;
 
-            // Handle profile picture upload
-            if (model.ProfileFile != null && model.ProfileFile.Length > 0)
+            // Remove profile picture if requested
+            if (RemoveProfilePicture == "true")
             {
-                using var ms = new MemoryStream();
-                model.ProfileFile.CopyTo(ms);
-                user.ProfilePicture = ms.ToArray();
+                user.ProfilePicture = null;
+            }
+            // Otherwise, handle new uploaded file
+            else if (model.ProfileFile != null && model.ProfileFile.Length > 0)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    model.ProfileFile.CopyTo(ms);
+                    user.ProfilePicture = ms.ToArray();
+                }
             }
 
             // Update allergies
@@ -122,10 +129,10 @@ namespace ONT_PROJECT.Controllers
             }
 
             _context.SaveChanges();
-            TempData["SuccessMessage"] = "Your profile was updated successfully.";
-
+            TempData["SuccessMessage"] = "Profile updated successfully!";
             return RedirectToAction("Index");
         }
+
 
         // POST: Delete Account
         [HttpPost]
@@ -143,41 +150,43 @@ namespace ONT_PROJECT.Controllers
         [HttpGet]
         public IActionResult ChangePassword()
         {
+            ViewData["ActiveTab"] = "password";
+            return View(new ChangePasswordViewModel());
+        }
+
+        // POST: Change Password
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
             var email = HttpContext.Session.GetString("UserEmail");
             if (email == null) return RedirectToAction("Login", "CustomerRegister");
 
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
             if (user == null) return NotFound();
 
-            return View(user);
-        }
-
-        // POST: Change Password
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult ChangePassword(int UserId, string Password, string NewPassword, string ConfirmPassword)
-        {
-            var user = _context.TblUsers.FirstOrDefault(u => u.UserId == UserId);
-            if (user == null) return RedirectToAction("Index", "Home");
-
-            if (user.Password != Password)
+            if (user.Password != model.CurrentPassword)
             {
-                ModelState.AddModelError("", "Current password is incorrect.");
-                return View(user);
+                ModelState.AddModelError("CurrentPassword", "Current password is incorrect.");
+                return View(model);
             }
 
-            if (NewPassword != ConfirmPassword)
+            if (model.NewPassword != model.ConfirmPassword)
             {
-                ModelState.AddModelError("", "New password and confirmation do not match.");
-                return View(user);
+                ModelState.AddModelError("ConfirmPassword", "New password and confirmation do not match.");
+                return View(model);
             }
 
-            user.Password = NewPassword;
+            user.Password = model.NewPassword;
             _context.SaveChanges();
 
             TempData["SuccessMessage"] = "Password updated successfully!";
-            return RedirectToAction("Index");
+            return RedirectToAction("ChangePassword");
         }
+
 
         // GET: Download Profile as PDF
         [HttpGet]

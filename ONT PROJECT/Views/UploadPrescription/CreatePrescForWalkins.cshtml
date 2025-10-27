@@ -231,10 +231,20 @@
         <form asp-action="CreatePrescForWalkins" enctype="multipart/form-data" method="post">
             @if (TempData["AllergyAlert"] != null)
             {
-                <div class="alert alert-danger">
-                    @TempData["AllergyAlert"]
-                </div>
+                <script>
+                    
+                    const allergyAlertMessage = '@TempData["AllergyAlert"]';
+                    const patientHasAllergies = true;
+                </script>
             }
+            else
+            {
+                <script>
+                    const allergyAlertMessage = '';
+                    const patientHasAllergies = false;
+                </script>
+            }
+
 
             <div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
                 <i class="bi bi-info-circle-fill"></i>
@@ -316,7 +326,7 @@
                 <div class="row mb-3 medication-row align-items-end">
                     <!-- Medication -->
                     <div class="col-md-3">
-                        <label class="form-label">Medicine ID</label>
+                        <label class="form-label">Medicine Name</label>
                         <select asp-for="MedicineID" class="form-select" asp-items="@ViewBag.MedicineID">
                             <option value="">-- Select Medication --</option>
                         </select>
@@ -326,17 +336,16 @@
                         <label class="form-label">Quantity</label>
                         <input asp-for="Quantity" type="number" name="Quantity[]" value="0" min="1" max="100" step="1" class="form-control" />
 
+                    </div>                    
+                    
+                    <div class="col-md-2">
+                        <label>Repeats</label>
+                        <input asp-for="Repeats" type="number" value="0" min="1" max="100" step="1" class="form-control" />
                     </div>
-
-                    <!-- Instructions -->
                     <div class="col-md-2">
                         <label>Instructions</label>
                         <input asp-for="Instructions" type="text" name="Instructions[]" class="form-control" />
 
-                    </div>
-                    <div class="col-md-2">
-                        <label>Repeats</label>
-                        <input asp-for="Repeats" type="number" value="0" min="1" max="100" step="1" class="form-control" />
                     </div>
                     <!-- Buttons -->
                     <div class="col-md-2 d-flex gap-2">
@@ -386,17 +395,23 @@
         const container = document.getElementById('medicationContainer');
 
         container.addEventListener('click', function (e) {
-            // Add new row
+            // Add new medication row
             if (e.target.classList.contains('add-btn')) {
+
+                // ⚠️ Show allergy alert before adding
+                if (patientHasAllergies) {
+                    alert(allergyAlertMessage);
+                }
+
                 const row = e.target.closest('.medication-row');
                 const newRow = row.cloneNode(true);
 
-                // Reset values
+                // Reset all input/select/textarea values
                 newRow.querySelectorAll('select, input, textarea').forEach(el => el.value = '');
                 container.appendChild(newRow);
             }
 
-            // Remove row
+            // Remove medication row
             if (e.target.classList.contains('remove-btn')) {
                 const rows = container.querySelectorAll('.medication-row');
                 if (rows.length > 1) {

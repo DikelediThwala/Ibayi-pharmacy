@@ -42,7 +42,7 @@
             @Html.DisplayNameFor(model => model.LineTotal)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LineTotal)
+            R @Model.LineTotal.ToString("0.00")
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Status)

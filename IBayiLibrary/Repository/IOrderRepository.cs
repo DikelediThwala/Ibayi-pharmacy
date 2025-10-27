@@ -14,11 +14,12 @@ namespace IBayiLibrary.Repository
         Task<IEnumerable<tblOrder>> MedicationOrder();
         Task<IEnumerable<tblOrder>> GetAllOrders();
         //Task<IEnumerable<tblOrder>> ();
-        Task<tblOrder> GetOrdersByID(int id);
-        Task<int> NoOfReadyOrders();
+        Task<tblOrder> GetOrdersByID(int id);       
         Task<int> TotalNumberOfOrders(); 
         //Task<tblOrder> UpdateOrder(int id,string status);
         Task<bool> UpdateOrder(int id, string status,DateTime?DateRecieved);
-
+        Task<bool> UpdatePackOrder(int id);
+        Task<IEnumerable<tblOrder>> PackOrder();
+        Task<IEnumerable<tblOrder>> GetLastOrderRow();
     }
 }

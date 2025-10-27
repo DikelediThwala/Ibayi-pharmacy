@@ -12,14 +12,16 @@ namespace ONT_PROJECT.Controllers
         private readonly IUserRepository _personRepository;
         private readonly IPrescriptionRepository _prescriptionRepository;
         private readonly IOrderRepository _orderRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IUnproccessedPrescriptionRepository _unproccessedPrescriptionRepository;
 
-        public PharmacistController(IUserRepository personRepository, IPrescriptionRepository prescriptionRepository,IOrderRepository orderRepository, IUnproccessedPrescriptionRepository unproccessedPrescriptionRepository)
+        public PharmacistController(IUserRepository personRepository, IPrescriptionRepository prescriptionRepository,IOrderRepository orderRepository, IUnproccessedPrescriptionRepository unproccessedPrescriptionRepository, IUserRepository userRepository)
         {
             _personRepository = personRepository;
             _prescriptionRepository = prescriptionRepository;
             _orderRepository = orderRepository;
             _unproccessedPrescriptionRepository = unproccessedPrescriptionRepository;
+            _userRepository = userRepository;
         }
         public static class PasswordGenerator
         {
@@ -32,29 +34,52 @@ namespace ONT_PROJECT.Controllers
                   .Select(s => s[random.Next(s.Length)]).ToArray());
             }
         }
-        public async Task<IActionResult> GetOrdersMedication()
+        public async Task<IActionResult> GetAllCustomers()
         {
-            var results = await _orderRepository.GetAllOrders() ?? new List<tblOrder>();
+            var results = await _userRepository.GetCustomers();
+            return View(results);
+        }
+        public async Task<IActionResult> Index()
+        {
+            // --- Dashboard Stats ---
+            var totalOrders = await _orderRepository.TotalNumberOfOrders();
+            ViewBag.TotalOrders = totalOrders;
 
+            var unprocPresc = await _unproccessedPrescriptionRepository.NumberOfUnprocessedPresc();
+            ViewBag.NumberOfUnprocessedPresc = unprocPresc;
+
+            var readyOrders = await _userRepository.NoOfCustomer();
+            ViewBag.NoOfReadyOrders = readyOrders;
+
+            // --- Logged-in User Info ---
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId.HasValue)
+            {
+                var user = await _userRepository.GetByIdAsync(userId.Value);
+
+                // if user found, build full name
+                if (user != null)
+                {
+                    ViewBag.FullName = $"{user.FirstName} {user.LastName}";
+                }
+                else
+                {
+                    ViewBag.FullName = "Guest";
+                }
+            }
+            else
+            {
+                ViewBag.FullName = "Guest";
+            }
+
+            // --- Recent Orders ---
+            var results = await _orderRepository.GetAllOrders() ?? new List<tblOrder>();
             var top5 = results
                 .OrderByDescending(o => o.DatePlaced)
                 .Take(5);
 
             return View(top5);
         }
-
-
-        public async Task<IActionResult> Index()
-        {
-            var totalOrders = await _orderRepository.TotalNumberOfOrders();
-            ViewBag.TotalOrders = totalOrders;
-            var UnprocPresc = await _unproccessedPrescriptionRepository.NumberOfUnprocessedPresc();
-            ViewBag.NumberOfUnprocessedPresc = UnprocPresc;
-            var readyOrders = await _orderRepository.NoOfReadyOrders();
-            ViewBag.NoOfReadyOrders = readyOrders;
-            return View();
-        }
-
         public IActionResult CreateUser()
         {
 

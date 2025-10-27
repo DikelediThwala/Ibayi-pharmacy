@@ -4,11 +4,11 @@
 @{
     ViewData["Title"] = ViewData["Title"] ?? "Ibayi Pharmacy";
 
-    // Get logged-in user email from session
     var email = Context.Session.GetString("UserEmail");
-    string profilePicSrc = Url.Content("~/images/register/default-profile.png"); // fallback default
     string userFirstName = Context.Session.GetString("UserFirstName") ?? "";
     string userLastName = Context.Session.GetString("UserLastName") ?? "";
+
+    byte[]? profilePicture = null;
 
     if (!string.IsNullOrEmpty(email))
     {
@@ -17,16 +17,14 @@
         {
             userFirstName = user.FirstName;
             userLastName = user.LastName;
-
-            if (user.ProfilePicture != null && user.ProfilePicture.Length > 0)
-            {
-                var base64 = Convert.ToBase64String(user.ProfilePicture);
-                profilePicSrc = $"data:image/png;base64,{base64}";
-            }
+            profilePicture = user.ProfilePicture;
         }
     }
-}
 
+    string profilePicSrc = profilePicture != null && profilePicture.Length > 0
+        ? $"data:image/png;base64,{Convert.ToBase64String(profilePicture)}"
+        : "";
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,7 +37,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI',sans-serif;
         }
 
         .sidebar {
@@ -59,17 +57,20 @@
 
             .sidebar .nav-link {
                 color: #5C7C89;
-                white-space: nowrap;
                 display: flex;
                 align-items: center;
                 gap: 10px;
                 border-radius: 4px;
                 padding: 8px 12px;
+                white-space: nowrap;
+                transition: all 0.3s;
+                font-size: 0.95rem;
             }
 
                 .sidebar .nav-link:hover, .sidebar .nav-link.active {
                     background-color: #1F4959;
                     color: white;
+                    font-size: 0.95rem;
                 }
 
             .sidebar.collapsed .nav-link span {
@@ -82,6 +83,7 @@
                 align-items: center;
                 gap: 10px;
                 border-bottom: 1px solid rgba(255,255,255,0.2);
+                transition: all 0.3s;
             }
 
             .sidebar.collapsed .profile-text {
@@ -92,6 +94,35 @@
                 color: cadetblue;
                 font-size: 0.9rem;
             }
+
+        .profile-img-container {
+            width: 70px;
+            height: 70px;
+            transition: all 0.3s;
+        }
+
+        .sidebar.collapsed .profile-img-container {
+            width: 40px;
+            height: 40px;
+        }
+
+        .profile-img-container img, .profile-img-container .default-profile-icon {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            background-color: #e9ecef;
+            color: #6c757d;
+            transition: all 0.3s;
+        }
+
+        .sidebar.collapsed .profile-img-container img, .sidebar.collapsed .profile-img-container .default-profile-icon {
+            font-size: 18px;
+        }
 
         .collapse-button {
             cursor: pointer;
@@ -149,15 +180,21 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="profile-header">
-            <img src="@profilePicSrc"
-                 alt="Profile Picture"
-                 style="width:70px; height:70px; object-fit:cover; border-radius:50%;" />
+            <div class="profile-img-container">
+                @if (!string.IsNullOrEmpty(profilePicSrc))
+                {
+                    <img src="@profilePicSrc" alt="Profile Picture" />
+                }
+                else
+                {
+                    <div class="default-profile-icon"><i class="bi bi-person"></i></div>
+                }
+            </div>
             <div class="profile-text ms-2">
                 @userFirstName @userLastName
                 <div>Customer</div>
             </div>
         </div>
-
 
         <div class="collapse-button" onclick="toggleSidebar()">
             <i class="bi bi-list fs-4" id="collapse-icon"></i>
@@ -181,10 +218,18 @@
             <img src="~/images/logo_3-removebg-preview.png" alt="Thor Logo" class="img-fluid" style="height:50px;" />
             <div class="dropdown">
                 <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-bell me-3 fs-5"></i>
-                    <i class="bi bi-envelope me-3 fs-5"></i>
+                   
                     @userFirstName @userLastName
-                    <img src="@profilePicSrc" alt="Profile Picture" class="rounded-circle ms-2" style="width:32px;height:32px;object-fit:cover;" />
+                    @if (!string.IsNullOrEmpty(profilePicSrc))
+                    {
+                        <img src="@profilePicSrc" alt="Profile Picture" class="rounded-circle ms-2" style="width:32px;height:32px;object-fit:cover;" />
+                    }
+                    else
+                    {
+                        <div class="default-profile-icon" style="width:32px;height:32px;font-size:16px;margin-left:4px;">
+                            <i class="bi bi-person"></i>
+                        </div>
+                    }
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li><a class="dropdown-item" asp-controller="ProfileSettings" asp-action="Settings"><i class="bi bi-gear me-2"></i> Settings</a></li>

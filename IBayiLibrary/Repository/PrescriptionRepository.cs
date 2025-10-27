@@ -81,12 +81,12 @@ namespace IBayiLibrary.Repository
         }
 
 
-        public async Task<bool> UpdateDispnse(PrescriptionModel prescriptions)
+        public async Task<bool> UpdateDispnse(int id)
         {
             try
             {
                 await _db.SaveData("spUpdateDispense",
-                    new { PrescriptionID = prescriptions.PrescriptionID });
+                    new { PrescriptionLineID = id });
                 return true;
             }
             catch (Exception ex)

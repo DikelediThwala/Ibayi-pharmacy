@@ -29,7 +29,7 @@ namespace IBayiLibrary.Repository
                     tblOrder.TotalDue,
                     tblOrder.VAT,
                     tblOrder.DatePlaced,
-                    tblOrder.DateRecieved
+                    
                 });
                 return true;
             }
@@ -48,6 +48,7 @@ namespace IBayiLibrary.Repository
                     tblOrder.MedicineID,
                     tblOrder.Quantity,
                     tblOrder.Price,
+                    tblOrder.Status,
                     tblOrder.LineTotal,
                 });
                 return true;
@@ -67,11 +68,7 @@ namespace IBayiLibrary.Repository
             string spName = "spTotalNumberOfOrders";
             return await _db.GetSingleValue<int, dynamic>(spName, new { });
         }
-        public async Task<int>NoOfReadyOrders()
-        {
-            string spName = "spReadyOrder";
-            return await _db.GetSingleValue<int, dynamic>(spName, new { });
-        }
+       
         public async Task<IEnumerable<tblOrder>> GetAllOrders()
         {
             string query = "spGetOrders";
@@ -84,12 +81,25 @@ namespace IBayiLibrary.Repository
             await _db.SaveData("spUpdateOrderStatus", new { OrderID = id, Status = status, DateRecieved = dateRecieved });
             return true;
         }
-
+        public async Task<IEnumerable<tblOrder>> PackOrder()
+        {        
+            string query = "spPackOrder";
+            return await _db.GetData<tblOrder, dynamic>(query, new {});
+        }
         public async Task<tblOrder> GetOrdersByID(int id)
         {
             IEnumerable<tblOrder> result = await _db.GetData<tblOrder, dynamic>("GetOrderByID", new { OrderID = id });
             return result.FirstOrDefault();
         }
-
+        public async Task<bool> UpdatePackOrder(int id)
+        {
+            await _db.SaveData("spUpdatePackedOrder", new { OrderLineID = id });
+            return true;
+        }
+        public async Task<IEnumerable<tblOrder>> GetLastOrderRow()
+        {
+            string query = "spGetOrderLastRow";
+            return await _db.GetData<tblOrder, dynamic>(query, new { });
+        }
     }
 }
