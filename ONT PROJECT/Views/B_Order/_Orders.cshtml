@@ -49,15 +49,8 @@
 <div class="container-xl my-4">
     <div class="table-wrapper">
         <div class="table-title d-flex justify-content-between align-items-center mb-2">
-            <h2><i class="fas fa-clipboard-list"></i> Previous <b>Orders</b></h2>
-            <div>
-                <label for="statusFilter" class="form-label text-white me-2 mb-0" style="font-weight: 600; font-size: 0.9rem;">Filter by Status:</label>
-                <select id="statusFilter" class="form-select form-select-sm d-inline-block w-auto" style="font-size: 0.85rem;">
-                    <option value="">All</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Received">Received</option>
-                </select>
-            </div>
+           <h2><i class="fas fa-clipboard-list"></i> Previous <b>Orders</b></h2>
+           
         </div>
 
         <div id="TableWrapper">
@@ -77,14 +70,12 @@
                     {
                         var orderStatus = order.BOrderLines.All(l => l.Status == "Received") ? "Received" : "Pending";
 
-                        <!-- Order header row -->
                         <tr class="order-header" data-order-status="@orderStatus">
                             <td>@order.BOrderId</td>
                             <td>@order.DatePlaced.ToShortDateString()</td>
-                            <td colspan="3"></td> <!-- fill remaining columns -->
+                            <td colspan="3"></td> 
                         </tr>
 
-                        <!-- Supplier lines grouped by Supplier -->
                         var supplierGroups = order.BOrderLines
                         .Where(l => l.Medicine != null && l.Medicine.Supplier != null)
                         .GroupBy(l => l.Medicine!.Supplier!.Name)
@@ -121,7 +112,7 @@
                                         <form asp-action="MarkSupplierLinesAsReceived" asp-controller="B_Order" method="post">
                                             <input type="hidden" name="orderId" value="@order.BOrderId" />
                                             <input type="hidden" name="supplierName" value="@group.Key" />
-                                            <button type="submit" class="btn btn-sm btn-success">Mark Supplier Received</button>
+                                            <button type="submit" class="btn btn-sm btn-success">Received</button>
                                         </form>
                                     }
                                 </td>

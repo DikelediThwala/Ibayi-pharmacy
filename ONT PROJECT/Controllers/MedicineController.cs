@@ -259,22 +259,19 @@ namespace ONT_PROJECT.Controllers
             return View(medicine);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Deactivate(int id)
+        [HttpPost("Medicine/Deactivate/{id}")]
+        public IActionResult Deactivate(int id)
         {
-            var medicine = await _context.Medicines.FindAsync(id);
-            if (medicine == null) return NotFound();
+            var med = _context.Medicines.FirstOrDefault(m => m.MedicineId == id);
+            if (med == null)
+                return NotFound();
 
-            medicine.Status = "Deactivated";
-            _context.Update(medicine);
-            await _context.SaveChangesAsync();
-
-            ActivityLogger.LogActivity(_context, "Deactivate Medicine", $"Medicine {medicine.MedicineName} was deactivated.");
-
+            med.Status = "Deactivated";
+            _context.Update(med);
+            _context.SaveChanges();
 
             return Json(new { success = true });
         }
-
         [HttpPost]
         public async Task<IActionResult> Activate(int id)
         {

@@ -226,7 +226,7 @@ namespace ONT_PROJECT.Controllers
             var fromAddress = new MailAddress(smtpUser, "ONT App");
 
             var toAddress = new MailAddress(email);
-            const string subject = "Password Reset Request";
+            const string subject = "GRP-04-04:Password Reset Request";
             string body = $@"
         <p>Hello,</p>
         <p>Click the link below to reset your password:</p>

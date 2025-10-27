@@ -14,7 +14,7 @@
     </p>
 
     <form asp-action="GenerateReport" asp-controller="ManagerReport" method="post">
-        <!-- Grouping Options -->
+
         <div class="mb-3">
             <label class="form-label fw-bold">📌 Group Report By</label>
             <select class="form-select" name="GroupBy" id="groupBySelect" required>
@@ -25,7 +25,6 @@
             </select>
         </div>
 
-        <!-- Dynamic Filter -->
         <div class="mb-3" id="dynamicFilter" style="display:none;">
             <label class="form-label fw-bold" id="dynamicLabel"></label>
             <select class="form-select" name="FilterValue" id="dynamicSelect">
@@ -33,8 +32,6 @@
             </select>
         </div>
 
-
-        <!-- Medication Selection -->
         <div class="mb-3">
             <label class="form-label fw-bold">💊 Select Medications</label>
             <select multiple class="form-select" name="SelectedMedications">
@@ -47,7 +44,6 @@
             <div class="form-text">Hold CTRL to select multiple medicines.</div>
         </div>
 
-        <!-- Stock Level Filter -->
         <div class="mb-3">
             <label class="form-label fw-bold">⚙️ Stock Level</label>
             <select class="form-select" name="StockLevel">
@@ -57,10 +53,9 @@
             </select>
         </div>
 
-        <!-- Report Date -->
         <div class="mb-3">
             <label class="form-label fw-bold"></label>
-            <!-- Hidden Report Date -->
+
             <input type="hidden" name="ReportDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
         </div>
         <div class="text-center">

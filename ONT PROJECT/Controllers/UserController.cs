@@ -117,14 +117,16 @@ namespace ONT_PROJECT.Controllers
                 _context.Customers.Add(new ONT_PROJECT.Models.Customer { CustomerId = newUserId });
             else if (user.Role == "Pharmacist")
             {
-                var regNo = Request.Form["HealthCounsilRegNo"].ToString();
-
-                var pharmacist = new Pharmacist
+                if (user.Role == "Pharmacist")
                 {
-                    PharmacistId = newUserId,
-                    HealthCounsilRegNo = regNo
-                };
-                _context.Pharmacists.Add(pharmacist);
+                    var pharmacist = new Pharmacist
+                    {
+                        PharmacistId = newUserId,
+                        HealthCounsilRegNo = user.HealthCounsilRegNo // directly from model
+                    };
+                    _context.Pharmacists.Add(pharmacist);
+                }
+
             }
 
             else if (user.Role == "PharmacyManager")
@@ -142,7 +144,7 @@ namespace ONT_PROJECT.Controllers
             <p>Please reset your password by clicking the link below:</p>
             <p><a href='{resetLink}'>Reset Password</a></p>";
 
-            _emailService.Send(user.Email, "Your Temporary Password", emailBody);
+            _emailService.Send(user.Email, "GRP-04-04:Temporary Password", emailBody);
 
             return RedirectToAction("Index");
         }
@@ -168,7 +170,6 @@ namespace ONT_PROJECT.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(TblUser model)
         {
-            // Remove title/idnumber from model validation
             ModelState.Remove("Title");
             ModelState.Remove("Idnumber");
 
@@ -190,7 +191,6 @@ namespace ONT_PROJECT.Controllers
                     existingUser.ProfilePicture = ms.ToArray();
                 }
 
-                // Update HealthCouncilRegNo only if role is Pharmacist
                 if (model.Role == "Pharmacist")
                 {
                     string regNo = Request.Form["HealthCouncilRegNo"];

@@ -32,24 +32,26 @@ namespace ONT_PROJECT.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Check if doctor already exists
                 bool exists = _context.Suppliers.Any(d =>
-                    d.Name.ToLower() == supplier.Name.ToLower() 
-                 );
+                  d.Name.ToLower() == supplier.Name.ToLower() ||
+                  d.Email.ToLower() == supplier.Email.ToLower()
+                );
 
                 if (exists)
                 {
                     TempData["ErrorMessage"] = "Supplier already exists in the system!";
                     return RedirectToAction(nameof(Create));
                 }
+
                 _context.Suppliers.Add(supplier);
                 _context.SaveChanges();
-                TempData["SuccessMessage"] = "Supplier added successfully!";
 
+                TempData["SuccessMessage"] = "Supplier added successfully!";
                 ActivityLogger.LogActivity(_context, "Create Supplier", $"Supplier {supplier.Name} was added to the system.");
 
                 return RedirectToAction(nameof(Index));
             }
+
             return View(supplier);
         }
 
@@ -60,6 +62,7 @@ namespace ONT_PROJECT.Controllers
             {
                 return NotFound();
             }
+
             return View(supplier);
         }
 
@@ -71,18 +74,21 @@ namespace ONT_PROJECT.Controllers
             {
                 _context.Suppliers.Update(supplier);
                 _context.SaveChanges();
+
                 TempData["SuccessMessage"] = "Supplier updated successfully!";
                 return RedirectToAction(nameof(Index));
             }
+
             return View(supplier);
         }
+
         [HttpPost]
         public IActionResult Delete(int id, IFormCollection form)
         {
             var supplier = _context.Suppliers.FirstOrDefault(s => s.SupplierId == id);
-            if (supplier == null) return NotFound();
+            if (supplier == null)
+                return NotFound();
 
-            // Extract reassignment values manually
             var reassignments = new Dictionary<int, int>();
             foreach (var key in form.Keys)
             {
@@ -103,14 +109,12 @@ namespace ONT_PROJECT.Controllers
                     med.SupplierId = reassignments[med.MedicineId];
             }
 
-            // Deactivate supplier
             supplier.Status = "Deactivated";
             _context.SaveChanges();
 
             TempData["SuccessMessage"] = "Supplier deactivated successfully!";
             ActivityLogger.LogActivity(_context, "Deactivate Supplier", $"Supplier {supplier.Name} was deactivated.");
 
-            // Important: return OK to prevent $.post fail()
             return Ok();
         }
 
@@ -118,10 +122,12 @@ namespace ONT_PROJECT.Controllers
         public IActionResult Activate(int id)
         {
             var supplier = _context.Suppliers.FirstOrDefault(s => s.SupplierId == id);
-            if (supplier == null) return NotFound();
+            if (supplier == null)
+                return NotFound();
 
             supplier.Status = "Active";
             _context.SaveChanges();
+
             TempData["SuccessMessage"] = "Supplier activated successfully!";
             ActivityLogger.LogActivity(_context, "Activate Supplier", $"Supplier {supplier.Name} was activated.");
 
@@ -133,11 +139,21 @@ namespace ONT_PROJECT.Controllers
         {
             var meds = _context.Medicines
                 .Where(m => m.SupplierId == id && m.Status == "Active")
-                .Select(m => new { m.MedicineId, m.MedicineName }).ToList();
+                .Select(m => new
+                {
+                    m.MedicineId,
+                    m.MedicineName
+                })
+                .ToList();
 
             var otherSuppliers = _context.Suppliers
                 .Where(s => s.SupplierId != id && s.Status == "Active")
-                .Select(s => new { s.SupplierId, s.Name }).ToList();
+                .Select(s => new
+                {
+                    supplierId = s.SupplierId,
+                    name = s.Name
+                })
+                .ToList();
 
             return Json(new { meds, otherSuppliers });
         }

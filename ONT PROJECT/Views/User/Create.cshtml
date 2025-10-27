@@ -115,7 +115,8 @@
                     <div class="row mb-4" id="healthCouncilSection" style="display: none;">
                         <div class="col-md-6">
                             <label for="HealthCouncilRegNo" class="form-label">Health Council Reg. No <span class="text-danger">*</span></label>
-                            <input name="HealthCouncilRegNo" class="form-control" placeholder="e.g., HPCSA123456" />
+                            <input asp-for="HealthCounsilRegNo" class="form-control" placeholder="e.g., HPCSA123456" />
+                            <span asp-validation-for="HealthCounsilRegNo" class="text-danger small"></span>
                         </div>
                     </div>
                 </div>

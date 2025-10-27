@@ -40,68 +40,11 @@
 
     <div class="row mb-3">
         <div class="col-md-6">
-            <label class="form-label">Ingredients <span class="text-danger">*</span></label>
-            <table class="table table-bordered" id="ingredientsTable">
-                <thead class="table-light">
-                    <tr>
-                        <th>Ingredient <span class="text-danger">*</span></th>
-                        <th>Strength <span class="text-danger">*</span></th> <!-- Added strength header -->
-                        <th style="width: 120px;">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="ingredientsTableBody">
-                    @if (Model.MedIngredients != null && Model.MedIngredients.Any())
-                    {
-                        foreach (var medIngredient in Model.MedIngredients)
-                        {
-                            <tr>
-                                <td>
-                                    <select name="selectedIngredientIds[]" class="form-select" required>
-                                        <option value="">-- Select Ingredient --</option>
-                                        @foreach (var ingredient in (List<SelectListItem>)ViewBag.Ingredients)
-                                        {
-                                            var isSelected = ingredient.Value == medIngredient.ActiveIngredientId.ToString();
-                                            <option value="@ingredient.Value" selected="@(isSelected ? "selected" : null)">
-                                                @ingredient.Text
-                                            </option>
-                                        }
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="text" name="strengths[]" class="form-control" required value="@medIngredient.Strength" />  <!-- Added strength input -->
-                                </td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
-                                        <i class="bi bi-x-circle"></i> Remove
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td>
-                                <select name="selectedIngredientIds[]" class="form-select" required>
-                                    <option value="">-- Select Ingredient --</option>
-                                    @foreach (var ingredient in (List<SelectListItem>)ViewBag.Ingredients)
-                                    {
-                                        <option value="@ingredient.Value">@ingredient.Text</option>
-                                    }
-                                </select>
-                            </td>
-                            <td>
-                                <input type="text" name="strengths[]" class="form-control" required />  <!-- Added empty strength input -->
-                            </td>
-                            <td></td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-
-            <button type="button" class="btn btn-outline-primary" onclick="addIngredientRow()">
-                <i class="bi bi-plus-circle"></i> Add Ingredient
-            </button>
+            <label asp-for="SupplierId" class="form-label">Supplier <span class="text-danger">*</span></label>
+            <select asp-for="SupplierId" class="form-select" asp-items="ViewBag.Suppliers">
+                <option value="">-- Select Supplier --</option>
+            </select>
+            <span asp-validation-for="SupplierId" class="text-danger small"></span>
         </div>
 
         <div class="col-md-6">
@@ -134,17 +77,11 @@
             <span asp-validation-for="FormId" class="text-danger small"></span>
         </div>
 
-        <div class="col-md-6">
-            <label asp-for="SupplierId" class="form-label">Supplier <span class="text-danger">*</span></label>
-            <select asp-for="SupplierId" class="form-select" asp-items="ViewBag.Suppliers">
-                <option value="">-- Select Supplier --</option>
-            </select>
-            <span asp-validation-for="SupplierId" class="text-danger small"></span>
-        </div>
+      
     </div>
 
     <div class="d-flex justify-content-between mt-4">
-        <a asp-action="Index" class="btn btn-secondary">
+        <a asp-controller="Supplier" asp-action="Index" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Back
         </a>
         <button type="submit" class="btn btn-primary">

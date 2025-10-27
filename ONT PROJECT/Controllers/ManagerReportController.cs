@@ -39,7 +39,7 @@ namespace ONT_PROJECT.Controllers
         [HttpPost]
         public IActionResult GenerateReport(
             string GroupBy,
-            string FilterValue,                     // Make sure form posts FilterValue
+            string FilterValue,                     
             List<int> SelectedMedications,
             DateTime ReportDate,
             string StockLevel)
@@ -48,7 +48,6 @@ namespace ONT_PROJECT.Controllers
             var lastName = _httpContextAccessor.HttpContext.Session.GetString("UserLastName") ?? "";
             var managerName = $"{firstName} {lastName}".Trim();
 
-            // Default report date to today if not provided
             if (ReportDate == default)
                 ReportDate = DateTime.Now;
 
@@ -56,7 +55,6 @@ namespace ONT_PROJECT.Controllers
                                           .Include(m => m.Supplier)
                                           .AsQueryable();
 
-            // Apply filtering by dynamic selection
             if (!string.IsNullOrEmpty(FilterValue))
             {
                 if (GroupBy == "Supplier")
@@ -65,11 +63,9 @@ namespace ONT_PROJECT.Controllers
                     query = query.Where(m => m.Form.FormName == FilterValue);
             }
 
-            // Apply selected medicines filter
             if (SelectedMedications != null && SelectedMedications.Any() && !SelectedMedications.Contains(-1))
                 query = query.Where(m => SelectedMedications.Contains(m.MedicineId));
 
-            // Apply stock level filter
             if (StockLevel == "low")
                 query = query.Where(m => m.Quantity <= m.ReorderLevel);
             else if (StockLevel == "out")
@@ -77,7 +73,6 @@ namespace ONT_PROJECT.Controllers
 
             var medicines = query.ToList();
 
-            // Group medicines by selected option
             IEnumerable<IGrouping<string, Medicine>> grouped = GroupBy switch
             {
                 "DosageForm" => medicines.GroupBy(m => m.Form?.FormName ?? "Unknown"),
@@ -86,7 +81,6 @@ namespace ONT_PROJECT.Controllers
                 _ => new List<IGrouping<string, Medicine>>() { medicines.GroupBy(m => "All").FirstOrDefault() }
             };
 
-            // Generate PDF
             var pdfBytes = Document.Create(container =>
             {
                 container.Page(page =>
@@ -124,7 +118,6 @@ namespace ONT_PROJECT.Controllers
 
                         foreach (var group in grouped)
                         {
-                            // Skip empty groups
                             if (!group.Any())
                                 continue;
 
@@ -137,19 +130,25 @@ namespace ONT_PROJECT.Controllers
 
                                     col.Item().Table(table =>
                                     {
+                                        bool showScheduleColumn = GroupBy != "Schedule";
+
                                         table.ColumnsDefinition(columns =>
                                         {
-                                            columns.RelativeColumn(4);
-                                            columns.RelativeColumn(2);
-                                            columns.RelativeColumn(2);
-                                            columns.RelativeColumn(2);
-                                            columns.RelativeColumn(3);
+                                            columns.RelativeColumn(4); 
+                                            if (showScheduleColumn)
+                                                columns.RelativeColumn(2);
+                                            columns.RelativeColumn(2); 
+                                            columns.RelativeColumn(2); 
+                                            columns.RelativeColumn(3); 
                                         });
 
                                         table.Header(header =>
                                         {
                                             header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Medication").Bold();
-                                            header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Schedule").Bold();
+
+                                            if (showScheduleColumn)
+                                                header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Schedule").Bold();
+
                                             header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Reorder Level").Bold();
                                             header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Quantity").Bold();
                                             header.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Notes").Bold();
@@ -161,7 +160,10 @@ namespace ONT_PROJECT.Controllers
                                             var bgColor = alternate ? Colors.Grey.Lighten5 : Colors.White;
 
                                             table.Cell().Background(bgColor).Border(1).BorderColor(Colors.Grey.Medium).Text(med.MedicineName);
-                                            table.Cell().Background(bgColor).Border(1).BorderColor(Colors.Grey.Medium).Text(med.Schedule.ToString());
+
+                                            if (showScheduleColumn)
+                                                table.Cell().Background(bgColor).Border(1).BorderColor(Colors.Grey.Medium).Text(med.Schedule.ToString());
+
                                             table.Cell().Background(bgColor).Border(1).BorderColor(Colors.Grey.Medium).Text(med.ReorderLevel.ToString());
                                             table.Cell().Background(bgColor).Border(1).BorderColor(Colors.Grey.Medium).Text(med.Quantity.ToString());
                                             table.Cell().Background(bgColor).Border(1).BorderColor(Colors.Grey.Medium).Text("");
@@ -171,11 +173,13 @@ namespace ONT_PROJECT.Controllers
 
                                         table.Footer(footer =>
                                         {
-                                            footer.Cell().ColumnSpan(3).Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Sub-total:").Bold();
+                                            uint colSpan = (uint)(showScheduleColumn ? 3 : 2);
+                                            footer.Cell().ColumnSpan(colSpan).Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("Sub-total:").Bold();
                                             footer.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text(group.Sum(m => m.Quantity).ToString()).Bold();
                                             footer.Cell().Background(Colors.Grey.Lighten2).Border(1).BorderColor(Colors.Black).Text("");
                                         });
                                     });
+
                                 });
                             });
 

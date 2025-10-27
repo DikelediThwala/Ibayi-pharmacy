@@ -345,7 +345,10 @@
                         <tbody>
                             @foreach (var order in Model.RecentOrders)
                             {
-                                <tr data-status="@order.Status">
+                                <tr class="order-row"
+                                    data-href="@Url.Action("Index", "B_Order", new { tab = "orders", id = order.BOrderId })"
+                                    data-status="@order.Status">
+
                                     <td>@order.BOrderId</td>
                                     <td>@order.DatePlaced.ToShortDateString()</td>
                                     <td>
@@ -418,4 +421,32 @@
             });
         }
     </script>
+
+    
+    <script>
+        function filterOrdersByStatus() {
+            const filterValue = document.getElementById('statusFilter').value;
+            const rows = document.querySelectorAll('#recentOrdersTable tbody tr');
+            rows.forEach(row => {
+                const status = row.getAttribute('data-status');
+                row.style.display = (!filterValue || status === filterValue) ? '' : 'none';
+            });
+        }
+
+        // 🟢 Make rows clickable
+        document.addEventListener("DOMContentLoaded", function () {
+            const rows = document.querySelectorAll(".order-row");
+            rows.forEach(row => {
+                row.addEventListener("click", function () {
+                    const href = this.getAttribute("data-href");
+                    if (href) {
+                        window.location.href = href;
+                    }
+                });
+                // Optional: Change cursor for UX
+                row.style.cursor = "pointer";
+            });
+        });
+    </script>
+
 }
