@@ -53,7 +53,7 @@ public partial class TblUser
     public List<int> SelectedAllergyIds { get; set; } = new();
     public string? ResetToken { get; set; }
     public DateTime? TokenExpiry { get; set; }
-    [NotMapped] // EF will ignore this
+    [NotMapped] 
     public string HealthCounsilRegNo { get; set; }
     public byte[]? ProfilePicture { get; set; }
 
