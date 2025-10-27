@@ -55,7 +55,12 @@ namespace ONT_PROJECT.Controllers
                 {
                     TempData["msg"] = "Could not add";
                 }
+                var reult = await _orderRepository.GetLastOrderRow();
+                var lastRow = reult.FirstOrDefault();
 
+
+                int orderID = lastRow?.OrderID ?? 0;
+                order.OrderID = orderID;
                 //OrderLine
                 bool ad = await _orderRepository.AddOrderLine(order);
                 if (ad)

@@ -20,5 +20,6 @@ namespace IBayiLibrary.Repository
         Task<bool> UpdateOrder(int id, string status,DateTime?DateRecieved);
         Task<bool> UpdatePackOrder(int id);
         Task<IEnumerable<tblOrder>> PackOrder();
+        Task<IEnumerable<tblOrder>> GetLastOrderRow();
     }
 }

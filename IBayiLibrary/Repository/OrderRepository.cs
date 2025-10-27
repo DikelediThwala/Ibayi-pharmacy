@@ -98,8 +98,8 @@ namespace IBayiLibrary.Repository
         }
         public async Task<IEnumerable<tblOrder>> GetLastOrderRow()
         {
-            string query = "spGetLastPrescriptioRow";
-            return await _db.GetData<Prescriptio, dynamic>(query, new { });
+            string query = "spGetOrderLastRow";
+            return await _db.GetData<tblOrder, dynamic>(query, new { });
         }
     }
 }
