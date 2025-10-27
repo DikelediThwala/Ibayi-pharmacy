@@ -281,39 +281,36 @@
                     <span asp-validation-for="Date" class="text-danger small"></span>
                 </div>
             </div>
+
             <div id="medicationContainer">
                 <div class="row mb-3 medication-row align-items-end">
-                    <!-- Medication -->
                     <div class="col-md-3">
-                        <label class="form-label">Medicine Name<span class="text-danger">*</span></label>
-                        <select asp-for="MedicineID" class="form-select" asp-items="@ViewBag.MedicineID">
+                        <label class="form-label">Medicine Name</label>
+                        <select name="MedicationList[0].MedicineID" class="form-select" asp-items="@ViewBag.MedicineID">
                             <option value="">-- Select Medication --</option>
                         </select>
-                        
-                    </div>                 
-                    <!-- Quantity -->
+                    </div>
+
                     <div class="col-md-2">
-                        <label class="form-label">Quantity<span class="text-danger">*</span></label>
-                        <input asp-for="Quantity" type="number" name="Quantity[]" value="0" min="1" max="100" step="1" class="form-control" />
-
+                        <label class="form-label">Quantity</label>
+                        <input name="MedicationList[0].Quantity" type="number" min="1" max="100" class="form-control" />
                     </div>
+
                     <div class="col-md-2">
-                        <label>Repeats<span class="text-danger">*</span></label>
-                        <input asp-for="Repeats" type="number" value="0" min="1" max="100" step="1" class="form-control"/>
+                        <label>Repeats</label>
+                        <input name="MedicationList[0].Repeats" type="number" min="0" max="6" class="form-control" />
                     </div>
 
-                    <div class="col-md-3">
-                        <label>Instructions<span class="text-danger">*</span></label>
-                        <input asp-for="Instructions" type="text" name="Instructions[]" class="form-control"/>
-
+                    <div class="col-md-2">
+                        <label>Instructions</label>
+                        <input name="MedicationList[0].Instructions" type="text" class="form-control" />
                     </div>
-                    <!-- Buttons -->
+
                     <div class="col-md-2 d-flex gap-2">
                         <button type="button" class="btn btn-outline-primary add-btn">+</button>
                         <button type="button" class="btn btn-outline-danger remove-btn">–</button>
                     </div>
                 </div>
-
             </div>
             @if (Model.PrescriptionPhoto != null && Model.PrescriptionPhoto.Length > 0)
             {
@@ -384,46 +381,71 @@
         const container = document.getElementById('medicationContainer');
 
         container.addEventListener('click', function (e) {
-            // Add new row
+            // ➕ Add new medication row
             if (e.target.classList.contains('add-btn')) {
+
+                // ⚠️ Show allergy alert before adding a new medication row
+                if (typeof patientHasAllergies !== 'undefined' && patientHasAllergies) {
+                    alert(allergyAlertMessage);
+                }
+
                 const row = e.target.closest('.medication-row');
                 const newRow = row.cloneNode(true);
 
-                // Reset values
+                // Reset all select/input/textarea values
                 newRow.querySelectorAll('select, input, textarea').forEach(el => el.value = '');
+
+                // Get the current number of rows to determine the next index
+                const index = container.querySelectorAll('.medication-row').length;
+
+                // Update input/select name attributes with the correct index for model binding
+                newRow.querySelectorAll('select, input, textarea').forEach(el => {
+                    if (el.name) {
+                        el.name = el.name.replace(/\[\d+\]/, `[${index}]`);
+                    }
+                });
+
                 container.appendChild(newRow);
             }
 
-            // Remove row
+            // ➖ Remove a medication row
             if (e.target.classList.contains('remove-btn')) {
                 const rows = container.querySelectorAll('.medication-row');
                 if (rows.length > 1) {
                     e.target.closest('.medication-row').remove();
+
+                    // Re-index remaining rows to keep model binding consistent
+                    const allRows = container.querySelectorAll('.medication-row');
+                    allRows.forEach((row, newIndex) => {
+                        row.querySelectorAll('select, input, textarea').forEach(el => {
+                            if (el.name) {
+                                el.name = el.name.replace(/\[\d+\]/, `[${newIndex}]`);
+                            }
+                        });
+                    });
                 }
             }
         });
 
-        // Validate duplicate MedicineID selections
+        // 🔁 Check for duplicate medication selections
         container.addEventListener('change', function (e) {
-            if (e.target.matches('select[name="MedicineID"]')) {
-                const allSelects = Array.from(container.querySelectorAll('select[name="MedicineID"]'));
+            if (e.target.matches('select[name*="MedicineID"]')) {
+                const allSelects = Array.from(container.querySelectorAll('select[name*="MedicineID"]'));
                 const selectedValues = allSelects.map(sel => sel.value).filter(v => v !== '');
 
-                // Check for duplicates
                 const duplicates = selectedValues.filter((v, i, arr) => arr.indexOf(v) !== i);
-
                 if (duplicates.length > 0) {
                     alert("You cannot select the same medication more than once!");
-                    e.target.value = ''; // Reset the duplicated selection
+                    e.target.value = ''; // Reset duplicate
                 }
             }
         });
 
-        // Optional: Validate before form submission
+        // 🧾 Validate before submission (block duplicates)
         const form = document.querySelector('form');
         if (form) {
             form.addEventListener('submit', function (e) {
-                const allSelects = Array.from(container.querySelectorAll('select[name="MedicineID"]'));
+                const allSelects = Array.from(container.querySelectorAll('select[name*="MedicineID"]'));
                 const selectedValues = allSelects.map(sel => sel.value).filter(v => v !== '');
                 const duplicates = selectedValues.filter((v, i, arr) => arr.indexOf(v) !== i);
 

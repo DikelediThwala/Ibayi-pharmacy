@@ -90,8 +90,7 @@
                     {
                         foreach (var item in Model)
                         {
-                                <tr class="@(item.RepeatsLeft <= 0 ? "table-secondary text-muted" : "")">>
-                                    
+                                <tr class="@(item.RepeatsLeft <= 0 ? "table-secondary text-muted" : "")">                                 
                                 <td>
                                     <input type="checkbox"
                                             name="medicineIds"
@@ -128,7 +127,5 @@
         }
     </div>
 </div>
-
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 

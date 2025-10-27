@@ -41,6 +41,7 @@ namespace IBayiLibrary.Models.Domain
         public IFormFile? PescriptionFile { get; set; }
         [ForeignKey("DoctorID")]
         public int DoctorID { get; set; }
-        
+        public List<PrescriptionViewModel> MedicationList { get; set; } = new();
+
     }
 }

@@ -28,5 +28,6 @@ namespace IBayiLibrary.Models.Domain
             public byte[] PrescriptionPhoto { get; set; }
 
         public int[] MedicineIds { get; set; }
+      
     }
 }
