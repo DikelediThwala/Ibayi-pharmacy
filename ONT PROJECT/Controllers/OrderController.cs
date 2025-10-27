@@ -119,10 +119,20 @@ namespace ONT_PROJECT.Controllers
             var success = await _orderRepository.PackOrder();
             return View(success);
         }
-        public async Task<IActionResult> UpdatePackOrder(int id)
+        [HttpPost]
+        public async Task<IActionResult> UpdatePackOrders(int[] medicineIds)
         {
-            var success = await _orderRepository.UpdatePackOrder(id);
-            return View(success);
+            if (medicineIds != null && medicineIds.Any())
+            {
+                foreach (var id in medicineIds)
+                {
+                    await _orderRepository.UpdatePackOrder(id); // this now matches MedicineID
+                }
+            }
+
+            return RedirectToAction("Pack");
         }
+
+
     }
 }

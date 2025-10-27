@@ -29,7 +29,7 @@ namespace IBayiLibrary.Repository
                     tblOrder.TotalDue,
                     tblOrder.VAT,
                     tblOrder.DatePlaced,
-                    tblOrder.DateRecieved
+                    
                 });
                 return true;
             }
@@ -48,6 +48,7 @@ namespace IBayiLibrary.Repository
                     tblOrder.MedicineID,
                     tblOrder.Quantity,
                     tblOrder.Price,
+                    tblOrder.Status,
                     tblOrder.LineTotal,
                 });
                 return true;
@@ -92,8 +93,13 @@ namespace IBayiLibrary.Repository
         }
         public async Task<bool> UpdatePackOrder(int id)
         {
-            await _db.SaveData("spUpdatePackedOrder", new { OrderID = id });
+            await _db.SaveData("spUpdatePackedOrder", new { OrderLineID = id });
             return true;
+        }
+        public async Task<IEnumerable<tblOrder>> GetLastOrderRow()
+        {
+            string query = "spGetLastPrescriptioRow";
+            return await _db.GetData<Prescriptio, dynamic>(query, new { });
         }
     }
 }
