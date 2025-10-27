@@ -11,7 +11,6 @@ using QuestPDF.Infrastructure;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace ONT_PROJECT.Controllers
 {
@@ -26,17 +25,15 @@ namespace ONT_PROJECT.Controllers
             _environment = environment;
         }
 
-        // GET: Settings Overview
+        // GET: Profile Settings Overview
         [HttpGet]
         public IActionResult Settings()
         {
             var email = HttpContext.Session.GetString("UserEmail");
-            if (email == null)
-                return RedirectToAction("Login", "CustomerRegister");
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "CustomerRegister");
 
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
-            if (user == null)
-                return NotFound();
+            if (user == null) return NotFound();
 
             return View(user);
         }
@@ -46,26 +43,19 @@ namespace ONT_PROJECT.Controllers
         public IActionResult Index(bool? edit)
         {
             var email = HttpContext.Session.GetString("UserEmail");
-            if (email == null)
-                return RedirectToAction("Login", "CustomerRegister");
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "CustomerRegister");
 
-            var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
-            if (user == null)
-                return NotFound();
+            var user = _context.TblUsers
+                .Include(u => u.Customer)
+                    .ThenInclude(c => c.CustomerAllergies)
+                .FirstOrDefault(u => u.Email == email);
 
-            // Allergies
-            var customer = _context.Customers
-                .Include(c => c.CustomerAllergies)
-                .FirstOrDefault(c => c.CustomerNavigation.UserId == user.UserId);
+            if (user == null) return NotFound();
 
-            var selectedAllergies = new List<int>();
-            if (customer != null)
-            {
-                selectedAllergies = _context.CustomerAllergies
-                    .Where(ca => ca.CustomerId == customer.CustomerId)
-                    .Select(ca => ca.ActiveIngredientId)
-                    .ToList();
-            }
+            // Selected allergies
+            var selectedAllergies = user.Customer?.CustomerAllergies
+                .Select(ca => ca.ActiveIngredientId)
+                .ToList() ?? new List<int>();
 
             var allAllergies = _context.ActiveIngredient
                 .Select(ai => new SelectListItem
@@ -83,71 +73,56 @@ namespace ONT_PROJECT.Controllers
             return View(user);
         }
 
-        // POST: Edit Profile
+        // POST: Update Profile
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Index(TblUser model, List<int> SelectedAllergyIds, string RemoveProfilePicture)
         {
             var email = HttpContext.Session.GetString("UserEmail");
-            if (email == null)
-                return RedirectToAction("Login", "CustomerRegister");
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "CustomerRegister");
 
-            var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
-            if (user == null)
-                return NotFound();
+            var user = _context.TblUsers
+                .Include(u => u.Customer)
+                    .ThenInclude(c => c.CustomerAllergies)
+                .FirstOrDefault(u => u.Email == email);
 
-            // Only update non-null fields to prevent overwriting
-            if (!string.IsNullOrEmpty(model.FirstName))
-                user.FirstName = model.FirstName;
+            if (user == null) return NotFound();
 
-            if (!string.IsNullOrEmpty(model.LastName))
-                user.LastName = model.LastName;
+            // Update required fields safely
+            user.FirstName = model.FirstName ?? user.FirstName;
+            user.LastName = model.LastName ?? user.LastName;
+            user.Idnumber = model.Idnumber ?? user.Idnumber;
+            user.PhoneNumber = model.PhoneNumber ?? user.PhoneNumber;
 
-            if (!string.IsNullOrEmpty(model.Idnumber))
-                user.Idnumber = model.Idnumber;
-
-            if (!string.IsNullOrEmpty(model.PhoneNumber))
-                user.PhoneNumber = model.PhoneNumber;
-
-            // Handle profile picture logic
+            // Handle profile picture
             if (RemoveProfilePicture == "true")
-            {
                 user.ProfilePicture = null;
-            }
             else if (model.ProfileFile != null && model.ProfileFile.Length > 0)
             {
-                using (var ms = new MemoryStream())
-                {
-                    model.ProfileFile.CopyTo(ms);
-                    user.ProfilePicture = ms.ToArray();
-                }
+                using var ms = new MemoryStream();
+                model.ProfileFile.CopyTo(ms);
+                user.ProfilePicture = ms.ToArray();
             }
 
-            // Handle allergies
-            var customer = _context.Customers.FirstOrDefault(c => c.CustomerNavigation.UserId == user.UserId);
-            if (customer != null)
+            // Update allergies
+            if (user.Customer != null)
             {
-                var existingAllergies = _context.CustomerAllergies
-                    .Where(ca => ca.CustomerId == customer.CustomerId)
-                    .ToList();
+                _context.CustomerAllergies.RemoveRange(user.Customer.CustomerAllergies);
 
-                _context.CustomerAllergies.RemoveRange(existingAllergies);
-
-                if (SelectedAllergyIds != null && SelectedAllergyIds.Any())
+                if (SelectedAllergyIds != null)
                 {
-                    foreach (var allergyId in SelectedAllergyIds)
+                    foreach (var id in SelectedAllergyIds)
                     {
-                        _context.CustomerAllergies.Add(new CustomerAllergy
+                        user.Customer.CustomerAllergies.Add(new CustomerAllergy
                         {
-                            CustomerId = customer.CustomerId,
-                            ActiveIngredientId = allergyId
+                            CustomerId = user.Customer.CustomerId,
+                            ActiveIngredientId = id
                         });
                     }
                 }
             }
 
             _context.SaveChanges();
-
             TempData["SuccessMessage"] = "Profile updated successfully!";
             return RedirectToAction("Index");
         }
@@ -157,9 +132,25 @@ namespace ONT_PROJECT.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteAccount()
         {
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-                return RedirectToAction("Index", "Home");
+            var email = HttpContext.Session.GetString("UserEmail");
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "CustomerRegister");
+
+            var user = _context.TblUsers
+                .Include(u => u.Customer)
+                    .ThenInclude(c => c.CustomerAllergies)
+                .FirstOrDefault(u => u.Email == email);
+
+            if (user != null)
+            {
+                if (user.Customer != null)
+                {
+                    _context.CustomerAllergies.RemoveRange(user.Customer.CustomerAllergies);
+                    _context.Customers.Remove(user.Customer);
+                }
+
+                _context.TblUsers.Remove(user);
+                _context.SaveChanges();
+            }
 
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
@@ -178,16 +169,13 @@ namespace ONT_PROJECT.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult ChangePassword(ChangePasswordViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            if (!ModelState.IsValid) return View(model);
 
             var email = HttpContext.Session.GetString("UserEmail");
-            if (email == null)
-                return RedirectToAction("Login", "CustomerRegister");
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "CustomerRegister");
 
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
-            if (user == null)
-                return NotFound();
+            if (user == null) return NotFound();
 
             if (user.Password != model.CurrentPassword)
             {
@@ -208,33 +196,26 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("ChangePassword");
         }
 
-        // GET: Download Profile PDF
+        // GET: Download Profile as PDF
         [HttpGet]
         public IActionResult DownloadProfilePdf()
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
             var email = HttpContext.Session.GetString("UserEmail");
-            if (email == null)
-                return RedirectToAction("Login", "CustomerRegister");
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "CustomerRegister");
 
-            var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
-            if (user == null)
-                return NotFound();
+            var user = _context.TblUsers
+                .Include(u => u.Customer)
+                    .ThenInclude(c => c.CustomerAllergies)
+                        .ThenInclude(ca => ca.ActiveIngredient)
+                .FirstOrDefault(u => u.Email == email);
 
-            var customer = _context.Customers.FirstOrDefault(c => c.CustomerNavigation.UserId == user.UserId);
+            if (user == null) return NotFound();
 
-            var selectedAllergies = new List<string>();
-            if (customer != null)
-            {
-                selectedAllergies = _context.CustomerAllergies
-                    .Where(ca => ca.CustomerId == customer.CustomerId)
-                    .Join(_context.ActiveIngredient,
-                        ca => ca.ActiveIngredientId,
-                        ai => ai.ActiveIngredientId,
-                        (ca, ai) => ai.Ingredients)
-                    .ToList();
-            }
+            var allergies = user.Customer?.CustomerAllergies
+                .Select(ca => ca.ActiveIngredient.Ingredients)
+                .ToList() ?? new List<string>();
 
             var logoPath = Path.Combine(_environment.WebRootPath, "images", "Logo_2-removebg-preview.png");
 
@@ -278,7 +259,6 @@ namespace ONT_PROJECT.Controllers
                     // Content
                     page.Content().Column(col =>
                     {
-                        // Profile Picture
                         if (user.ProfilePicture != null && user.ProfilePicture.Length > 0)
                         {
                             col.Item().Element(pic =>
@@ -306,9 +286,9 @@ namespace ONT_PROJECT.Controllers
                         AddDetail("Email:", user.Email);
 
                         col.Item().PaddingTop(10).Text("Allergies:").SemiBold();
-                        if (selectedAllergies.Any())
+                        if (allergies.Any())
                         {
-                            foreach (var allergy in selectedAllergies)
+                            foreach (var allergy in allergies)
                                 col.Item().Text($"• {allergy}");
                         }
                         else
