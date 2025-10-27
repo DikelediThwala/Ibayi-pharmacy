@@ -76,9 +76,9 @@ namespace IBayiLibrary.Repository
             return orders ?? new List<tblOrder>(); // fallback to empty list
         }
 
-        public async Task<bool> UpdateOrder(int id, string status, DateTime? dateRecieved)
+        public async Task<bool> UpdateOrder(int id, string status)
         {
-            await _db.SaveData("spUpdateOrderStatus", new { OrderID = id, Status = status, DateRecieved = dateRecieved });
+            await _db.SaveData("spUpdateOrderStatus", new { OrderLineID = id, Status = status});
             return true;
         }
         public async Task<IEnumerable<tblOrder>> PackOrder()
@@ -88,7 +88,7 @@ namespace IBayiLibrary.Repository
         }
         public async Task<tblOrder> GetOrdersByID(int id)
         {
-            IEnumerable<tblOrder> result = await _db.GetData<tblOrder, dynamic>("GetOrderByID", new { OrderID = id });
+            IEnumerable<tblOrder> result = await _db.GetData<tblOrder, dynamic>("GetOrderByID", new { OrderLineID = id });
             return result.FirstOrDefault();
         }
         public async Task<bool> UpdatePackOrder(int id)
