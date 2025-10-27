@@ -94,13 +94,13 @@ namespace ONT_PROJECT.Controllers
             return View(person);
         }
         [HttpPost]
-        public async Task<IActionResult> Update(tblOrder order)
+        public async Task<IActionResult> Update(tblOrder person)
         {
-            var date = order;
+            
+            var date = person;
             date.DateRecieved = DateTime.Now;
-
-            var person = await _orderRepository.GetOrdersByID(order.OrderID);
-            var success = await _orderRepository.UpdateOrder(order.OrderID, order.Status, order.DateRecieved);
+            
+            var success = await _orderRepository.UpdateOrder(person.OrderLineID,person.Status);
 
             if (!string.IsNullOrEmpty(person.Email))
             {
@@ -117,7 +117,7 @@ namespace ONT_PROJECT.Controllers
 
                 _emailService.Send(person.Email, "Your order has been collected", emailBody);
             }
-            return RedirectToAction("GetOrdersMedication", new { id = order.OrderID });
+            return RedirectToAction("GetOrdersMedication", new { id = person.OrderID });
         }
         public async Task<IActionResult> Pack()
         {

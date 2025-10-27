@@ -17,7 +17,7 @@ namespace IBayiLibrary.Repository
         Task<tblOrder> GetOrdersByID(int id);       
         Task<int> TotalNumberOfOrders(); 
         //Task<tblOrder> UpdateOrder(int id,string status);
-        Task<bool> UpdateOrder(int id, string status,DateTime?DateRecieved);
+        Task<bool> UpdateOrder(int id, string status);
         Task<bool> UpdatePackOrder(int id);
         Task<IEnumerable<tblOrder>> PackOrder();
         Task<IEnumerable<tblOrder>> GetLastOrderRow();

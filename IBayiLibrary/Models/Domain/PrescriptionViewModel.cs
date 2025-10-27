@@ -11,12 +11,12 @@ namespace IBayiLibrary.Models.Domain
     public class PrescriptionViewModel
     {
         public string FirstName {  get; set; }
-         public string Name { get; set; }
+        public string Name { get; set; }
         public string Email { get; set; }
         public string Title { get; set; }
         public string FullName { get; set; }
         public string MedicineName { get; set; }
-        public int PrescrptionLineID { get; set; }
+        public int PrescriptionLineID { get; set; }
         public int Schedule { get; set; }
         public int NoOfReadyOrders { get; set; }
         public int NumberOfUnprocessedPresc { get; set; }

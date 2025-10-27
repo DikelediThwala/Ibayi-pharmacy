@@ -7,7 +7,7 @@
 <div>
     <h4>Order Details</h4>
     <hr />
-    <dl class="row">
+    <dl class="row">      
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.OrderID)
         </dt>
@@ -49,10 +49,21 @@
         </dt>
         <dd class="col-sm-6">
             <form asp-action="Update" method="post">
-                <input type="hidden" asp-for="OrderID" />
+                <input type="hidden" asp-for="OrderLineID" />
                 <input type="hidden" asp-for="DateRecieved" />
-                <div class="form-group">
-                    
+
+
+                <input type="hidden" asp-for="OrderID" />
+                <input type="hidden" asp-for="OrderLineID" />
+                <input type="hidden" asp-for="DateRecieved" />
+                <input type="hidden" asp-for="Email" />
+                <input type="hidden" asp-for="FirstName" />
+                <input type="hidden" asp-for="LastName" />
+                <input type="hidden" asp-for="MedicineName" />
+                <input type="hidden" asp-for="Quantity" />
+                <input type="hidden" asp-for="LineTotal" />
+                <input type="hidden" asp-for="DatePlaced" />
+                <div class="form-group">                   
                     <select asp-for="Status" class="form-select">
                         <option value="">-- Select Status --</option>                      
                         <option value="Collected">Collected</option>                       

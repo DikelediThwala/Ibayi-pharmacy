@@ -63,7 +63,17 @@
             }          
             
             <form asp-action="Process" method="post">
-               <input type="hidden" name="searchTerm" value="@ViewBag.SearchTerm" />
+              <input type="hidden" name="searchTerm" value="@ViewBag.SearchTerm" />
+
+
+                <input type="hidden" asp-for="@items.Email" name="Email" value="@items.Email" />
+                <input type="hidden" asp-for="@items.FirstName" name="FirstName" value="@items.FirstName" />
+
+                <!-- Optionally include medication details -->
+                <input type="hidden" name="MedicineName" value="@string.Join(", ", Model.Select(m => m.MedicineName))" />
+                <input type="hidden" name="Repeats" value="@items.Repeats" />
+                <input type="hidden" name="RepeatsLeft" value="@items.RepeatsLeft" />
+                <input type="hidden" name="Quantity" value="@items.Quantity" />
             <table class="table table-bordered table-hover mt-3">
                 <thead class="table-light">
                     <tr>
@@ -95,7 +105,7 @@
                             <td>@item.Repeats</td>
                             <td>@item.RepeatsLeft</td>
                             <td>@item.Name</td>
-                            <td>@item.Date.ToString("yyyy-MM-dd")</td>                                                            
+                            <td>@item.Date</td>                                                            
                             </tr>
                         }
                     }
