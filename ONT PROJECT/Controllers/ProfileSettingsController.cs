@@ -26,15 +26,17 @@ namespace ONT_PROJECT.Controllers
             _environment = environment;
         }
 
-        // GET: Profile Settings Overview
+        // GET: Settings Overview
         [HttpGet]
         public IActionResult Settings()
         {
             var email = HttpContext.Session.GetString("UserEmail");
-            if (email == null) return RedirectToAction("Login", "CustomerRegister");
+            if (email == null)
+                return RedirectToAction("Login", "CustomerRegister");
 
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
-            if (user == null) return NotFound();
+            if (user == null)
+                return NotFound();
 
             return View(user);
         }
@@ -44,13 +46,18 @@ namespace ONT_PROJECT.Controllers
         public IActionResult Index(bool? edit)
         {
             var email = HttpContext.Session.GetString("UserEmail");
-            if (email == null) return RedirectToAction("Login", "CustomerRegister");
+            if (email == null)
+                return RedirectToAction("Login", "CustomerRegister");
 
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
-            if (user == null) return NotFound();
+            if (user == null)
+                return NotFound();
 
             // Allergies
-            var customer = _context.Customers.FirstOrDefault(c => c.CustomerNavigation.UserId == user.UserId);
+            var customer = _context.Customers
+                .Include(c => c.CustomerAllergies)
+                .FirstOrDefault(c => c.CustomerNavigation.UserId == user.UserId);
+
             var selectedAllergies = new List<int>();
             if (customer != null)
             {
@@ -76,27 +83,37 @@ namespace ONT_PROJECT.Controllers
             return View(user);
         }
 
+        // POST: Edit Profile
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Index(TblUser model, List<int> SelectedAllergyIds, string RemoveProfilePicture)
         {
             var email = HttpContext.Session.GetString("UserEmail");
-            if (email == null) return RedirectToAction("Login", "CustomerRegister");
+            if (email == null)
+                return RedirectToAction("Login", "CustomerRegister");
 
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
-            if (user == null) return NotFound();
+            if (user == null)
+                return NotFound();
 
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.Idnumber = model.Idnumber;
-            user.PhoneNumber = model.PhoneNumber;
+            // Only update non-null fields to prevent overwriting
+            if (!string.IsNullOrEmpty(model.FirstName))
+                user.FirstName = model.FirstName;
 
-            // Remove profile picture if requested
+            if (!string.IsNullOrEmpty(model.LastName))
+                user.LastName = model.LastName;
+
+            if (!string.IsNullOrEmpty(model.Idnumber))
+                user.Idnumber = model.Idnumber;
+
+            if (!string.IsNullOrEmpty(model.PhoneNumber))
+                user.PhoneNumber = model.PhoneNumber;
+
+            // Handle profile picture logic
             if (RemoveProfilePicture == "true")
             {
                 user.ProfilePicture = null;
             }
-            // Otherwise, handle new uploaded file
             else if (model.ProfileFile != null && model.ProfileFile.Length > 0)
             {
                 using (var ms = new MemoryStream())
@@ -106,16 +123,17 @@ namespace ONT_PROJECT.Controllers
                 }
             }
 
-            // Update allergies
+            // Handle allergies
             var customer = _context.Customers.FirstOrDefault(c => c.CustomerNavigation.UserId == user.UserId);
             if (customer != null)
             {
                 var existingAllergies = _context.CustomerAllergies
                     .Where(ca => ca.CustomerId == customer.CustomerId)
                     .ToList();
+
                 _context.CustomerAllergies.RemoveRange(existingAllergies);
 
-                if (SelectedAllergyIds != null)
+                if (SelectedAllergyIds != null && SelectedAllergyIds.Any())
                 {
                     foreach (var allergyId in SelectedAllergyIds)
                     {
@@ -129,10 +147,10 @@ namespace ONT_PROJECT.Controllers
             }
 
             _context.SaveChanges();
+
             TempData["SuccessMessage"] = "Profile updated successfully!";
             return RedirectToAction("Index");
         }
-
 
         // POST: Delete Account
         [HttpPost]
@@ -140,7 +158,8 @@ namespace ONT_PROJECT.Controllers
         public IActionResult DeleteAccount()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null) return RedirectToAction("Index", "Home");
+            if (userId == null)
+                return RedirectToAction("Index", "Home");
 
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
@@ -163,10 +182,12 @@ namespace ONT_PROJECT.Controllers
                 return View(model);
 
             var email = HttpContext.Session.GetString("UserEmail");
-            if (email == null) return RedirectToAction("Login", "CustomerRegister");
+            if (email == null)
+                return RedirectToAction("Login", "CustomerRegister");
 
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
-            if (user == null) return NotFound();
+            if (user == null)
+                return NotFound();
 
             if (user.Password != model.CurrentPassword)
             {
@@ -187,29 +208,31 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("ChangePassword");
         }
 
-
-        // GET: Download Profile as PDF
+        // GET: Download Profile PDF
         [HttpGet]
         public IActionResult DownloadProfilePdf()
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
             var email = HttpContext.Session.GetString("UserEmail");
-            if (email == null) return RedirectToAction("Login", "CustomerRegister");
+            if (email == null)
+                return RedirectToAction("Login", "CustomerRegister");
 
             var user = _context.TblUsers.FirstOrDefault(u => u.Email == email);
-            if (user == null) return NotFound();
+            if (user == null)
+                return NotFound();
 
             var customer = _context.Customers.FirstOrDefault(c => c.CustomerNavigation.UserId == user.UserId);
+
             var selectedAllergies = new List<string>();
             if (customer != null)
             {
                 selectedAllergies = _context.CustomerAllergies
                     .Where(ca => ca.CustomerId == customer.CustomerId)
                     .Join(_context.ActiveIngredient,
-                          ca => ca.ActiveIngredientId,
-                          ai => ai.ActiveIngredientId,
-                          (ca, ai) => ai.Ingredients)
+                        ca => ca.ActiveIngredientId,
+                        ai => ai.ActiveIngredientId,
+                        (ca, ai) => ai.Ingredients)
                     .ToList();
             }
 
@@ -255,7 +278,7 @@ namespace ONT_PROJECT.Controllers
                     // Content
                     page.Content().Column(col =>
                     {
-                        // Profile picture
+                        // Profile Picture
                         if (user.ProfilePicture != null && user.ProfilePicture.Length > 0)
                         {
                             col.Item().Element(pic =>
@@ -272,7 +295,7 @@ namespace ONT_PROJECT.Controllers
                             col.Item().Row(row =>
                             {
                                 row.RelativeItem().Text(label).SemiBold();
-                                row.RelativeItem().Text(value);
+                                row.RelativeItem().Text(value ?? "N/A");
                             });
                         }
 
