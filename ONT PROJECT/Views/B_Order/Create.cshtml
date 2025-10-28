@@ -305,8 +305,8 @@
                 success: function (response) {
                     if (response.success) {
                         Swal.fire({ icon: "success", title: "Success!", text: response.message })
-                            .then(() => window.location.href = "/B_Order/Index?tab=orders");
-                    } else {
+                              .then(() => window.location.href = '@Url.Action("Index", "B_Order", new { tab = "orders" })');
+                        } else {
                         Swal.fire({ icon: "warning", title: "Warning", text: response.message });
                     }
                 },

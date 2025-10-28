@@ -136,7 +136,7 @@ namespace ONT_PROJECT.Controllers
             TempData["GeneratedPassword"] = plainPassword;
 
 
-            var resetLink = Url.Action("ResetPassword", "User", new { email = user.Email }, protocol: Request.Scheme);
+            var resetLink = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/User/ResetPassword?email={user.Email}";
 
             string emailBody = $@" <p>Hello {user.FirstName},</p>
             <p>Your account has been created. Here is your temporary password:</p>
