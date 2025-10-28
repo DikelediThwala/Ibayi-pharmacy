@@ -272,13 +272,14 @@
             $('#deactivateSelected').addClass('d-none');
         });
 
-        // Deactivate supplier
-        $('#confirmDelete').click(function () {
-            const formData = $('#reassignForm').serialize();
-             $.post('@Url.Action("Delete", "Supplier")/' + selectedSupplierId, formData, function () {
-                 bootstrap.Modal.getInstance(document.getElementById('reassignModal')).hide();
-                location.reload();
-         }).fail(() => alert('Failed to deactivate supplier.'));
+       $('#confirmDelete').click(function () {
+    const formData = $('#reassignForm').serialize(); // includes __RequestVerificationToken & supplierId
+    $.post('@Url.Action("Delete", "Supplier")', formData, function () {
+        bootstrap.Modal.getInstance(document.getElementById('reassignModal')).hide();
+        location.reload();
+    }).fail(() => alert('Failed to deactivate supplier.'));
+});
+
 
         });
     });
