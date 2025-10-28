@@ -177,88 +177,100 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('#activeSuppliersTable').DataTable();
-        $('#deactivatedSuppliersTable').DataTable();
-        setTimeout(() => $('#successAlert').fadeOut('slow'), 3000);
 
-        let selectedSupplierId = 0;
+                    <script>
+$(document).ready(function () {
+    // Initialize DataTables
+    $('#activeSuppliersTable').DataTable();
+    $('#deactivatedSuppliersTable').DataTable();
 
-        // Open modal on deactivate supplier
-        $(document).on('click', '.deactivate-btn', function () {
-            selectedSupplierId = $(this).data('id');
-            $('#supplierId').val(selectedSupplierId);
+    // Auto-hide success alert
+    setTimeout(() => $('#successAlert').fadeOut('slow'), 3000);
 
-            $.getJSON('/Supplier/GetSupplierMedications/' + selectedSupplierId, function (data) {
-                let medsHtml = '';
+    // URL for supplier deletion
+    const deleteSupplierUrl = '@Url.Action("Delete", "Supplier")';
 
-                if (data.meds.length === 0) {
-                    medsHtml = '<p>This supplier has no medications. Click "Deactivate Supplier" to continue.</p>';
-                } else {
-                    medsHtml += '<p>Select medications to deactivate or reassign:</p>';
-                    data.meds.forEach(med => {
-                        let optionsHtml = '<option value="">-- Select Supplier --</option>';
-                        data.otherSuppliers.forEach(s => optionsHtml += `<option value="${s.supplierId}">${s.name}</option>`);
+    let selectedSupplierId = 0;
 
-                        medsHtml += `
-                        <div class="d-flex align-items-center gap-3 mb-2 border p-2 rounded">
-                            <input type="checkbox" class="form-check-input deactivate-checkbox" data-medid="${med.medicineId}">
-                            <label class="mb-0 fw-bold flex-grow-1">${med.medicineName}</label>
-                            <select class="form-select form-select-sm w-auto" name="reassignments[${med.medicineId}]">
-                                ${optionsHtml}
-                            </select>
-                            <button type="button" class="btn btn-sm btn-outline-warning deactivate-med-btn d-none" data-medid="${med.medicineId}">Deactivate</button>
-                        </div>`;
+    // Open modal on deactivate supplier
+    $(document).on('click', '.deactivate-btn', function () {
+        selectedSupplierId = $(this).data('id');
+        $('#supplierId').val(selectedSupplierId);
+
+        $.getJSON('/Supplier/GetSupplierMedications/' + selectedSupplierId, function (data) {
+            let medsHtml = '';
+
+            if (!data.meds || data.meds.length === 0) {
+                medsHtml = '<p>This supplier has no medications. Click "Deactivate Supplier" to continue.</p>';
+            } else {
+                medsHtml += '<p>Select medications to deactivate or reassign:</p>';
+                data.meds.forEach(med => {
+                    let optionsHtml = '<option value="">-- Select Supplier --</option>';
+                    data.otherSuppliers.forEach(s => {
+                        optionsHtml += `<option value="${s.supplierId}">${s.name}</option>`;
                     });
+
+                    medsHtml += `
+                    <div class="d-flex align-items-center gap-3 mb-2 border p-2 rounded">
+                        <input type="checkbox" class="form-check-input deactivate-checkbox" data-medid="${med.medicineId}">
+                        <label class="mb-0 fw-bold flex-grow-1">${med.medicineName}</label>
+                        <select class="form-select form-select-sm w-auto" name="reassignments[${med.medicineId}]">
+                            ${optionsHtml}
+                        </select>
+                        <button type="button" class="btn btn-sm btn-outline-warning deactivate-med-btn d-none" data-medid="${med.medicineId}">Deactivate</button>
+                    </div>`;
+                });
+            }
+
+            $('#medicationsList').html(medsHtml);
+            new bootstrap.Modal(document.getElementById('reassignModal')).show();
+        });
+    });
+
+    // Show/hide individual deactivate button for each medicine
+    $(document).on('change', '.deactivate-checkbox', function () {
+        const medId = $(this).data('medid');
+        const btn = $(`.deactivate-med-btn[data-medid="${medId}"]`);
+        btn.toggleClass('d-none', !$(this).is(':checked'));
+
+        $('#deactivateSelected').toggleClass('d-none', $('.deactivate-checkbox:checked').length === 0);
+    });
+
+    // Deactivate single medicine
+    $(document).on('click', '.deactivate-med-btn', function () {
+        const medId = $(this).data('medid');
+        const token = $('input[name="__RequestVerificationToken"]').val();
+
+        $.post({
+            url: '/Medicine/Deactivate/' + medId,
+            data: { __RequestVerificationToken: token },
+            success: function (res) {
+                if (res.success) {
+                    const medDiv = $(`.deactivate-med-btn[data-medid="${medId}"]`).closest('div.mb-2');
+                    medDiv.addClass('bg-light text-muted');
+                    medDiv.find('select').prop('disabled', true);
+                    medDiv.find('.deactivate-med-btn').text('Deactivated').prop('disabled', true);
+                    medDiv.find('.deactivate-checkbox').prop('checked', false).prop('disabled', true);
+                } else {
+                    alert(res.message || 'Failed to deactivate medicine.');
                 }
-
-                $('#medicationsList').html(medsHtml);
-                new bootstrap.Modal(document.getElementById('reassignModal')).show();
-            });
+            },
+            error: function () { alert('Failed to deactivate medicine.'); }
         });
+    });
 
-        // Show/hide individual deactivate button
-        $(document).on('change', '.deactivate-checkbox', function () {
-            const medId = $(this).data('medid');
-            const btn = $(`.deactivate-med-btn[data-medid="${medId}"]`);
-            btn.toggleClass('d-none', !$(this).is(':checked'));
+    // Deactivate selected medicines
+    $('#deactivateSelected').click(function () {
+        const selectedMeds = $('.deactivate-checkbox:checked').map(function () { return $(this).data('medid'); }).get();
+        if (!selectedMeds.length) return;
+        if (!confirm(`Deactivate ${selectedMeds.length} selected medication(s)?`)) return;
 
-            $('#deactivateSelected').toggleClass('d-none', $('.deactivate-checkbox:checked').length === 0);
-        });
-
-        // Deactivate single medicine
-        $(document).on('click', '.deactivate-med-btn', function () {
-            const medId = $(this).data('medid');
-            const token = $('input[name="__RequestVerificationToken"]').val();
-
+        const token = $('input[name="__RequestVerificationToken"]').val();
+        selectedMeds.forEach(id => {
             $.post({
-                url: '/Medicine/Deactivate/' + medId,
+                url: '/Medicine/Deactivate/' + id,
                 data: { __RequestVerificationToken: token },
                 success: function (res) {
-                    if (res.success) {
-                        const medDiv = $(`.deactivate-med-btn[data-medid="${medId}"]`).closest('div.mb-2');
-                        medDiv.addClass('bg-light text-muted');
-                        medDiv.find('select').prop('disabled', true);
-                        medDiv.find('.deactivate-med-btn').text('Deactivated').prop('disabled', true);
-                        medDiv.find('.deactivate-checkbox').prop('checked', false).prop('disabled', true);
-                    } else {
-                        alert(res.message || 'Failed to deactivate medicine.');
-                    }
-                },
-                error: function () { alert('Failed to deactivate medicine.'); }
-            });
-        });
-
-        // Deactivate selected medicines
-        $('#deactivateSelected').click(function () {
-            const selectedMeds = $('.deactivate-checkbox:checked').map(function () { return $(this).data('medid'); }).get();
-            if (!selectedMeds.length) return;
-            if (!confirm(`Deactivate ${selectedMeds.length} selected medication(s)?`)) return;
-
-            const token = $('input[name="__RequestVerificationToken"]').val();
-            selectedMeds.forEach(id => {
-                $.post({ url: '/Medicine/Deactivate/' + id, data: { __RequestVerificationToken: token }, success: function (res) {
                     if (res.success) {
                         const medDiv = $(`.deactivate-med-btn[data-medid="${id}"]`).closest('div.mb-2');
                         medDiv.addClass('bg-light text-muted');
@@ -266,21 +278,20 @@
                         medDiv.find('.deactivate-med-btn').text('Deactivated').prop('disabled', true);
                         medDiv.find('.deactivate-checkbox').prop('checked', false).prop('disabled', true);
                     }
-                }});
+                }
             });
-
-            $('#deactivateSelected').addClass('d-none');
         });
 
-       $('#confirmDelete').click(function () {
-    const formData = $('#reassignForm').serialize(); // includes __RequestVerificationToken & supplierId
-    $.post('@Url.Action("Delete", "Supplier")', formData, function () {
-        bootstrap.Modal.getInstance(document.getElementById('reassignModal')).hide();
-        location.reload();
-    }).fail(() => alert('Failed to deactivate supplier.'));
-});
-
-
-        });
+        $('#deactivateSelected').addClass('d-none');
     });
+
+    // Deactivate supplier
+    $('#confirmDelete').click(function () {
+        const formData = $('#reassignForm').serialize(); // includes supplierId & anti-forgery token
+        $.post(deleteSupplierUrl, formData, function () {
+            bootstrap.Modal.getInstance(document.getElementById('reassignModal')).hide();
+            location.reload();
+        }).fail(() => alert('Failed to deactivate supplier.'));
+    });
+});
 </script>
