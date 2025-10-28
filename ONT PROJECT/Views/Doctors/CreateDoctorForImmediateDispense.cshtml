@@ -103,81 +103,82 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Restrict input to only letters for names
-    function allowOnlyLetters(event) {
-        const regex = /^[a-zA-Z]$/;
-        if (!regex.test(event.key)) event.preventDefault();
-    }
+    document.addEventListener('DOMContentLoaded', function () {
+        // Restrict input to only letters for names
+        function allowOnlyLetters(event) {
+            const regex = /^[a-zA-Z]$/;
+            if (!regex.test(event.key)) event.preventDefault();
+        }
 
-    // Restrict input to only digits for numeric fields
-    function allowOnlyDigits(event) {
-        if (!/[0-9]/.test(event.key)) event.preventDefault();
-    }
+        // Restrict input to only digits for numeric fields
+        function allowOnlyDigits(event) {
+            if (!/[0-9]/.test(event.key)) event.preventDefault();
+        }
 
-    const nameEl = document.getElementById("Name");
-    const surnameEl = document.getElementById("Surname");
-    const practiceEl = document.getElementById("PracticeNo");
-    const contactEl = document.getElementById("ContactNo");
-    const emailEl = document.getElementById("Email");
-    const form = document.getElementById("doctorForm");
+        const nameEl = document.getElementById("Name");
+        const surnameEl = document.getElementById("Surname");
+        const practiceEl = document.getElementById("PracticeNo");
+        const contactEl = document.getElementById("ContactNo");
+        const emailEl = document.getElementById("Email");
+        const form = document.getElementById("doctorForm");
 
-    if (nameEl) nameEl.addEventListener("keypress", allowOnlyLetters);
-    if (surnameEl) surnameEl.addEventListener("keypress", allowOnlyLetters);
-    if (practiceEl) practiceEl.addEventListener("keypress", allowOnlyDigits);
-    if (contactEl) contactEl.addEventListener("keypress", allowOnlyDigits);
+        if (nameEl) nameEl.addEventListener("keypress", allowOnlyLetters);
+        if (surnameEl) surnameEl.addEventListener("keypress", allowOnlyLetters);
+        if (practiceEl) practiceEl.addEventListener("keypress", allowOnlyDigits);
+        if (contactEl) contactEl.addEventListener("keypress", allowOnlyDigits);
 
-    // Remove red border when typing
-    form.querySelectorAll('input, select, textarea').forEach(el => {
-        el.addEventListener('input', () => el.classList.remove('is-invalid'));
-    });
-
-    // Form submission validation
-    form.addEventListener('submit', function (e) {
-        e.preventDefault(); // stop form temporarily
-        let isFormValid = true;
-        const requiredEls = form.querySelectorAll('[required]');
-
-        requiredEls.forEach(el => {
-            const value = (el.value || "").trim();
-
-            if (value === "") {
-                el.classList.add('is-invalid');
-                isFormValid = false;
-            } else {
-                el.classList.remove('is-invalid');
-            }
-
-            // Email check using HTML5 validity
-            if (el === emailEl && !emailEl.checkValidity()) {
-                emailEl.classList.add('is-invalid');
-                isFormValid = false;
-            }
+        // Remove red border when typing
+        form.querySelectorAll('input, select, textarea').forEach(el => {
+            el.addEventListener('input', () => el.classList.remove('is-invalid'));
         });
 
-        // ✅ Contact number validation: must start with 0 and be exactly 10 digits
-        if (contactEl) {
-            const phoneValue = contactEl.value.trim();
-            const phonePattern = /^0\d{9}$/; // starts with 0, followed by 9 digits = 10 total
-            if (!phonePattern.test(phoneValue)) {
-                contactEl.classList.add('is-invalid');
-                contactEl.nextElementSibling.textContent = "Contact number must start with 0 and be exactly 10 digits.";
-                isFormValid = false;
-            } else {
-                contactEl.classList.remove('is-invalid');
+        // Form submission validation
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); // stop form temporarily
+            let isFormValid = true;
+            const requiredEls = form.querySelectorAll('[required]');
+
+            requiredEls.forEach(el => {
+                const value = (el.value || "").trim();
+
+                if (value === "") {
+                    el.classList.add('is-invalid');
+                    isFormValid = false;
+                } else {
+                    el.classList.remove('is-invalid');
+                }
+
+                // Email check using HTML5 validity
+                if (el === emailEl && !emailEl.checkValidity()) {
+                    emailEl.classList.add('is-invalid');
+                    isFormValid = false;
+                }
+            });
+
+            // ✅ Contact number validation: must start with 0 and be exactly 10 digits
+            if (contactEl) {
+                const phoneValue = contactEl.value.trim();
+                const phonePattern = /^0\d{9}$/; // starts with 0, followed by 9 digits = 10 total
+                if (!phonePattern.test(phoneValue)) {
+                    contactEl.classList.add('is-invalid');
+                    contactEl.nextElementSibling.textContent = "Contact number must start with 0 and be exactly 10 digits.";
+                    isFormValid = false;
+                } else {
+                    contactEl.classList.remove('is-invalid');
+                }
             }
-        }
 
-        // Prevent submission if invalid
-        if (!isFormValid) {
-            const firstInvalid = form.querySelector('.is-invalid');
-            if (firstInvalid) firstInvalid.focus();
-            return;
-        }
+            // Prevent submission if invalid
+            if (!isFormValid) {
+                const firstInvalid = form.querySelector('.is-invalid');
+                if (firstInvalid) firstInvalid.focus();
+                return;
+            }
 
-        // ✅ All checks passed — submit form
-        form.submit();
+            // ✅ All checks passed — submit form
+            form.submit();
+        });
     });
-});
 </script>
+
 
