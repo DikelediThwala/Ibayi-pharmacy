@@ -258,8 +258,7 @@ namespace ONT_PROJECT.Controllers
 
             return View(medicine);
         }
-
-        [HttpPost]
+        [HttpPost("{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult Deactivate(int id)
         {
