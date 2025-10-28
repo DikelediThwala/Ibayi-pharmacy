@@ -239,31 +239,64 @@
     $(document).ready(function () {
         var medIdToDeactivate = 0;
 
-        // Init DataTables
-        $('#activeTable').DataTable({ pageLength: 6, lengthChange: false, ordering: false });
-        $('#deactivatedTable').DataTable({ pageLength: 4, lengthChange: false, ordering: false });
+        // Get anti-forgery token from hidden input or meta tag
+        var token = $('input[name="__RequestVerificationToken"]').val() || $('meta[name="csrf-token"]').attr('content');
 
-        // Deactivate modal
+        // Initialize DataTables
+        $('#activeTable, #deactivatedTable').DataTable({
+            pageLength: 6,
+            lengthChange: false,
+            ordering: false
+        });
+
+        // Show Deactivate Modal
         $(document).on('click', '.deactivate-btn', function () {
             medIdToDeactivate = $(this).data('id');
+            var medName = $(this).data('name') || '';
+            $('#medicineName').text(medName);
             new bootstrap.Modal(document.getElementById('deactivateModal')).show();
         });
 
         // Confirm Deactivate
         $('#confirmDeactivate').click(function () {
-            if (medIdToDeactivate) {
-                $.post('/Medicine/Deactivate', { id: medIdToDeactivate })
-                    .done(function () { location.reload(); })
-                    .fail(function () { alert('Failed to deactivate medicine.'); });
-            }
+            if (!medIdToDeactivate) return;
+
+            $.ajax({
+                url: '/Medicine/Deactivate/' + medIdToDeactivate, // include ID in URL
+                type: 'POST',
+                headers: { 'RequestVerificationToken': token }, // CSRF token
+                success: function (res) {
+                    if (res.success) {
+                        location.reload();
+                    } else {
+                        alert('Failed to deactivate medicine.');
+                    }
+                },
+                error: function () {
+                    alert('Failed to deactivate medicine.');
+                }
+            });
         });
 
         // Activate Medicine
         $(document).on('click', '.activate-btn', function () {
             var medId = $(this).data('id');
-            $.post('/Medicine/Activate', { id: medId })
-                .done(function () { location.reload(); })
-                .fail(function () { alert('Failed to activate medicine.'); });
+            $.ajax({
+                url: '/Medicine/Activate/' + medId, // include ID in URL
+                type: 'POST',
+                headers: { 'RequestVerificationToken': token }, // CSRF token
+                success: function (res) {
+                    if (res.success) {
+                        location.reload();
+                    } else {
+                        alert('Failed to activate medicine.');
+                    }
+                },
+                error: function () {
+                    alert('Failed to activate medicine.');
+                }
+            });
         });
     });
 </script>
+

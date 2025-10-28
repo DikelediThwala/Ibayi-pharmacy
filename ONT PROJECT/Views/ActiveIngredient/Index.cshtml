@@ -184,17 +184,22 @@
     $(document).ready(function() {
         var ingredientIdToDeactivate = 0;
 
-        // Initialize DataTables
+        // ✅ Correct table IDs for DataTables
         $('#activeIngredientsTable, #deactivatedIngredientsTable').DataTable({
             pageLength: 8,
             lengthChange: false,
             ordering: true,
             columnDefs: [{ orderable: false, targets: 2 }],
-            language: { search: "Search table:", paginate: { previous: "← Previous", next: "Next →" } }
+            language: {
+                search: "Search table:",
+                paginate: { previous: "← Previous", next: "Next →" }
+            }
         });
 
         // Auto-close alerts
-        setTimeout(() => $('.alert').each(function() { new bootstrap.Alert(this).close(); }), 4000);
+        setTimeout(() => $('.alert').each(function() {
+            new bootstrap.Alert(this).close();
+        }), 4000);
 
         // Deactivate button click
         $(document).on('click', '.deactivate-btn', function() {
@@ -208,17 +213,20 @@
         $('#confirmDeactivateIngredient').click(function() {
             if (ingredientIdToDeactivate) {
                 $.post('/ActiveIngredient/Deactivate', { id: ingredientIdToDeactivate })
-                .done(function() { location.reload(); })
-                .fail(function() { alert('Failed to deactivate ingredient.'); });
+                    .done(function() { location.reload(); })
+                    .fail(function() { alert('Failed to deactivate ingredient.'); });
             }
         });
 
-        // Activate ingredient
+        // Activate button click
         $(document).on('click', '.activate-btn', function() {
             var id = $(this).data('id');
             $.post('/ActiveIngredient/Activate', { id: id })
-            .done(function() { location.reload(); })
-            .fail(function() { alert('Failed to activate ingredient.'); });
+                .done(function() { location.reload(); })
+                .fail(function() { alert('Failed to activate ingredient.'); });
         });
     });
 </script>
+
+
+

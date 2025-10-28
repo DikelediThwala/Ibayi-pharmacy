@@ -225,20 +225,36 @@
         });
 
         // Confirm deactivate
-        $('#confirmDeactivateDoctor').click(function() {
-            if (doctorIdToDeactivate) {
-                $.post('/Doctor/SoftDelete', { id: doctorIdToDeactivate })
-                .done(function() { location.reload(); })
-                .fail(function() { alert('Failed to deactivate doctor.'); });
-            }
-        });
+            // Deactivate
+    $('#confirmDeactivateDoctor').click(function() {
+        if (doctorIdToDeactivate) {
+            $.ajax({
+                url: '@Url.Action("SoftDelete", "Doctor")',
+                type: 'POST',
+                data: { id: doctorIdToDeactivate },
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function() { location.reload(); },
+                error: function() { alert('Failed to deactivate doctor.'); }
+            });
+        }
+    });
 
-        // Activate doctor
-        $(document).on('click', '.activate-btn', function() {
-            var doctorId = $(this).data('id');
-            $.post('/Doctor/Activate', { id: doctorId })
-            .done(function() { location.reload(); })
-            .fail(function() { alert('Failed to activate doctor.'); });
+    // Activate
+    $(document).on('click', '.activate-btn', function() {
+        var doctorId = $(this).data('id');
+        $.ajax({
+            url: '@Url.Action("Activate", "Doctor")',
+            type: 'POST',
+            data: { id: doctorId },
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function() { location.reload(); },
+            error: function() { alert('Failed to activate doctor.'); }
         });
+    });
+
     });
 </script>

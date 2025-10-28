@@ -184,7 +184,7 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         var formIdToDeactivate = 0;
 
         // Initialize DataTables
@@ -197,10 +197,10 @@
         });
 
         // Auto-close alerts
-        setTimeout(() => $('.alert').each(function() { new bootstrap.Alert(this).close(); }), 4000);
+        setTimeout(() => $('.alert').each(function () { new bootstrap.Alert(this).close(); }), 4000);
 
         // Deactivate button click
-        $(document).on('click', '.deactivate-btn', function() {
+        $(document).on('click', '.deactivate-btn', function () {
             formIdToDeactivate = $(this).data('id');
             var formName = $(this).data('name');
             $('#formName').text(formName);
@@ -208,20 +208,43 @@
         });
 
         // Confirm deactivate
-        $('#confirmDeactivateForm').click(function() {
+        $('#confirmDeactivateForm').click(function () {
             if (formIdToDeactivate) {
-                $.post('/DosageForm/Deactivate', { id: formIdToDeactivate })
-                .done(function() { location.reload(); })
-                .fail(function() { alert('Failed to deactivate dosage form.'); });
+                $.ajax({
+                    url: '@Url.Action("Deactivate", "DosageForm")',
+                    type: 'POST',
+                    data: { id: formIdToDeactivate },
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function () {
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('Failed to deactivate dosage form.');
+                    }
+                });
             }
         });
 
         // Activate dosage form
-        $(document).on('click', '.activate-btn', function() {
+        $(document).on('click', '.activate-btn', function () {
             var formId = $(this).data('id');
-            $.post('/DosageForm/Activate', { id: formId })
-            .done(function() { location.reload(); })
-            .fail(function() { alert('Failed to activate dosage form.'); });
+            $.ajax({
+                url: '@Url.Action("Activate", "DosageForm")',
+                type: 'POST',
+                data: { id: formId },
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Failed to activate dosage form.');
+                }
+            });
         });
     });
 </script>
+
