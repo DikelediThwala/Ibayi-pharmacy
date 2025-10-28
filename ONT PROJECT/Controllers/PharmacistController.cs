@@ -96,7 +96,11 @@ namespace ONT_PROJECT.Controllers
         {
             try
             {
-                
+                if (!ModelState.IsValid)
+                {
+                    return View(user);
+                }
+
                 var newUser = user;
                 var role = user;
                 // Auto-generate password
@@ -109,6 +113,7 @@ namespace ONT_PROJECT.Controllers
                     ModelState.AddModelError("IDNumber", "This ID Number is already registered.");
                     return View(user);
                 }
+                
                 var person = await _personRepository.AddAsync(user);             
                 if (!string.IsNullOrEmpty(user.Email))
                 {

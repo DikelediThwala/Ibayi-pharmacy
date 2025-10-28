@@ -18,9 +18,12 @@
     <div class="alert alert-danger shadow-sm">
         <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i> Please fix the following errors:</h5>
         <ul class="mb-0">
-            @foreach (var state in ViewData.ModelState.Values)
+            @foreach (var kvp in ViewData.ModelState)
             {
-                foreach (var error in state.Errors)
+                // Skip Password and Role
+                if (kvp.Key == "Password" || kvp.Key == "Role") continue;
+
+                foreach (var error in kvp.Value.Errors)
                 {
                     <li>@error.ErrorMessage</li>
                 }
@@ -28,6 +31,7 @@
         </ul>
     </div>
 }
+
 
 
 <!-- Page Header -->

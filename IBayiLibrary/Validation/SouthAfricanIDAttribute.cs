@@ -9,31 +9,45 @@ using System.Globalization;
 
 namespace IBayiLibrary.Validation
 {
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class SouthAfricanIDAttribute : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var id = value as string;
+            var idNumber = value as string;
 
-            if (string.IsNullOrEmpty(id))
-                return new ValidationResult("ID Number is required.");
+            if (string.IsNullOrEmpty(idNumber))
+                return ValidationResult.Success; // Required attribute will handle empty
 
-            if (!System.Text.RegularExpressions.Regex.IsMatch(id, @"^\d{13}$"))
-                return new ValidationResult("ID Number must be 13 digits.");
+            if (idNumber.Length < 6)
+                return new ValidationResult("ID Number must have at least 6 digits.");
 
-            // Extract first 6 digits as YYMMDD
-            var dobPart = id.Substring(0, 6);
+            string dobPart = idNumber.Substring(0, 6);
 
-            // Parse YYMMDD to a valid date
-            if (!DateTime.TryParseExact(dobPart, "yyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dob))
+            string yearPart = dobPart.Substring(0, 2);
+            string monthPart = dobPart.Substring(2, 2);
+            string dayPart = dobPart.Substring(4, 2);
+
+            if (!int.TryParse(yearPart, out int year) ||
+                !int.TryParse(monthPart, out int month) ||
+                !int.TryParse(dayPart, out int day))
             {
-                return new ValidationResult("The first 6 digits must represent a valid date (YYMMDD).");
+                return new ValidationResult("ID Number contains invalid digits for date of birth.");
             }
 
-            // Optional: Check if DOB is not in the future
-            if (dob > DateTime.Now)
+            // Determine century
+            int currentYearTwoDigits = DateTime.Now.Year % 100;
+            year += year > currentYearTwoDigits ? 1900 : 2000;
+
+            try
             {
-                return new ValidationResult("Date of birth cannot be in the future.");
+                var dob = new DateTime(year, month, day);
+                if (dob > DateTime.Now || dob < DateTime.Now.AddYears(-120))
+                    return new ValidationResult("ID Number contains an invalid date of birth.");
+            }
+            catch
+            {
+                return new ValidationResult("ID Number contains an invalid date of birth.");
             }
 
             return ValidationResult.Success;
