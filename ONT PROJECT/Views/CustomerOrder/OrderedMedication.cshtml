@@ -144,8 +144,8 @@
                     </table>
 
                     <div class="text-end fw-bold mt-2">
-                        Total: @($"R{order.TotalDue:0.00}") |
-                        VAT (15%): @($"R{order.Vat:0.00}")
+                        Total: @($"R{order.TotalDue:0.00}") 
+                        @* VAT (15%): @($"R{order.Vat:0.00}") *@
                     </div>
                 </div>
             }
