@@ -232,16 +232,30 @@
 </style>
 
 
-
-<div id="popupNotification" class="popup">
-    <strong>⚠️Warning!</strong>
-    Customer has an allergy for this Medication!
+<!-- Allergy Modal -->
+<div class="modal fade" id="allergyModal" tabindex="-1" aria-labelledby="allergyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-warning">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="allergyModalLabel">⚠️ Allergy Alert</h5>
+            </div>
+            <div class="modal-body" id="allergyModalBody">
+                <!-- Filled dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
 </div>
+
 <hr style="height: 4px; background-color: #011425; border: none;" />
 <div class="card shadow p-4">
     <div class="card-body">
 
         <form asp-action="CreatePrescForImmediateDispense" asp-controller="UploadPrescription" enctype="multipart/form-data" method="post">
+
+            <input type="hidden" asp-for="UnprocessedPrescriptionID" />
             <div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
                 <i class="bi bi-info-circle-fill"></i>
                 Please ensure all details are accurate before saving. Fields marked with <span class="text-danger">*</span> are required.
@@ -495,4 +509,27 @@
         }
     });
 </script>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const customerId = '@Model.CustomerID';
+
+            if (customerId) {
+                fetch(`/UploadPrescription/CheckCustomerAllergies?customerId=${customerId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.hasAllergies) {
+                            const modalBody = document.getElementById('allergyModalBody');
+                            modalBody.innerHTML = data.message;
+
+                            // Show Bootstrap modal
+                            const allergyModal = new bootstrap.Modal(document.getElementById('allergyModal'));
+                            allergyModal.show();
+                        }
+                    })
+                    .catch(err => console.error("Error checking allergies:", err));
+            }
+        });
+    </script>
+}
 

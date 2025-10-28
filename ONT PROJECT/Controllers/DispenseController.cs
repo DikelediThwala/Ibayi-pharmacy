@@ -54,57 +54,6 @@ namespace ONT_PROJECT.Controllers
             return View(grouped);
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Process(int id, PrescriptionViewModel prescription, int[] medicineIds)
-        //{
-        //    var status = prescription;
-        //    status.PrescriptionID = status.PrescriptionID;
-        //    var prescriptionss = await _prescriptionRepository.GetDispenseById(status.PrescriptionID);
-
-        //    //var prescriptionToUpdate = new PrescriptionModel
-        //    //{
-        //    //    PrescriptionID = id
-        //    //};
-
-        //    if (medicineIds != null && medicineIds.Any())
-        //    {
-        //        foreach (var ids in medicineIds)
-        //        {
-        //            await _prescriptionRepository.UpdateDispnse(ids);
-        //        }
-        //    }
-        //    //if (success)
-        //    //{
-        //    //    //var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(prescriptionss.CustomerID);
-
-        //    //    //if (allergicIngredients.Any())
-        //    //    //{
-        //    //    //    // You can map IDs to names for clarity if needed
-        //    //    //    TempData["AllergyAlert"] = "Warning: Patient is allergic to the following ingredients: "
-        //    //    //                               + string.Join(", ", allergicIngredients);
-
-        //    //    //}
-        //    //    if (!string.IsNullOrEmpty(prescriptionss.Email))
-        //    //    {
-        //    //        string emailBody = $@"
-        //    //            <p>Hello {prescriptionss.FirstName},</p>
-        //    //            <p>Your prescription has been dispensed successfully.</p>
-        //    //            <p><strong>Medication(s):</strong> {prescriptionss.MedicineName}</p>
-        //    //            <p><strong>Repeats:</strong> {prescriptionss.Repeats}</p>
-        //    //            <p><strong>Repeats Left:</strong> {prescriptionss.RepeatsLeft}</p>
-        //    //            <p><strong>Quantity:</strong> {prescriptionss.Quantity}</p>                       
-        //    //            <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
-
-
-        //    //        _emailService.Send(prescriptionss.Email, "Your Medication Has Been Dispensed", emailBody);
-
-        //    //    }
-        //    return RedirectToAction("DispensePrescription");
-        //    //}
-
-        //    //else
-        //    //    return Json(new { success = false, message = "Failed to ." });         
-        //}
         [HttpPost]
         public async Task<IActionResult> Process(int[] medicineIds, string searchTerm, PrescriptionViewModel prescriptionss)
         {          

@@ -3,7 +3,6 @@ using IBayiLibrary.Repository;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Mvc;
-
 namespace ONT_PROJECT.Controllers
 {
     public class PharmacistReportController : Controller
@@ -183,8 +182,5 @@ namespace ONT_PROJECT.Controllers
                 return File(ms.ToArray(), "application/pdf", $"PharmacistReport_{DateTime.Now:yyyyMMdd}.pdf");
             }
         }
-
-
-
     }
 }

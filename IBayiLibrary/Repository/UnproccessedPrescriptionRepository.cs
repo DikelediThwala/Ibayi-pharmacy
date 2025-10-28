@@ -33,9 +33,8 @@ namespace IBayiLibrary.Repository
             {
                 await _db.SaveData(
                     "spProcessPrescription",
-                    new { UnproccessedPrescriptionID = unprocessedPrescriptionId, Status = "Processed" }
+                    new { UnproccessedPrescriptionID = unprocessedPrescriptionId}
                 );
-
                 return true; // If no exception, assume success
             }
             catch
@@ -43,12 +42,12 @@ namespace IBayiLibrary.Repository
                 return false; // Something went wrong
             }
         }       
-        public async Task<bool> UpdateUnprocessedPrescription(UnproccessedPrescription unproccessedPrescription)
+        public async Task<bool> UpdateUnprocessedPrescription(int id)
         {
             try
             {
                 await _db.SaveData("spUpdateUnprocessedPrescription",
-                    new { UnprocessedPrescriptionID = unproccessedPrescription.UnprocessedPrescriptionID });
+                    new { UnprocessedPrescriptionID = id });
                 return true;
             }
             catch (Exception ex)

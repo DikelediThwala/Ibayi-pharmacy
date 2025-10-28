@@ -51,7 +51,7 @@ namespace ONT_PROJECT.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePrescForImmediateDispense(PrescriptionViewModel prescription, int id)
+        public async Task<IActionResult> CreatePrescForImmediateDispense(PrescriptionViewModel prescription, int id, int[] medicineIds)
         {
             
                 if (prescription.PescriptionFile != null && prescription.PescriptionFile.Length > 0)
@@ -86,7 +86,7 @@ namespace ONT_PROJECT.Controllers
                 var status = prescription;
                 status.Status = "Proccessed";
                 var repLeft = prescription;
-                repLeft.RepeatsLeft = repLeft.Repeats;
+               
                 bool addPerson = await _prescriptionRepository.AddAsync(prescription);
                 if (addPerson)
                 {
@@ -96,6 +96,9 @@ namespace ONT_PROJECT.Controllers
                 {
                     TempData["msg"] = "Could not add";
                 }
+            var statu = prescription;
+            statu.UnprocessedPrescriptionID = statu.UnprocessedPrescriptionID;
+            await _unproccessedprescriptionRepository.UpdateUnprocessedPrescription(statu.UnprocessedPrescriptionID);
                 var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
                 var lastRow = result.FirstOrDefault();
 
@@ -113,36 +116,6 @@ namespace ONT_PROJECT.Controllers
                     await _prescriptionRepository.AddPrescLineAsync(med);
                 }
             }
-
-            //if (addPrescLine)
-            //    {
-            //        TempData["msg"] = "Sucessfully Added";
-            //        // After adding prescription line
-            //        if (addPrescLine)
-            //        {
-            //            TempData["msg"] = "Successfully Added";
-
-            //            // Check for patient allergies
-            //            var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(prescription.CustomerID);
-
-            //            if (allergicIngredients.Any())
-            //            {
-            //                // You can map IDs to names for clarity if needed
-            //                TempData["AllergyAlert"] = "Warning: Patient is allergic to the following ingredients: "
-            //                                           + string.Join(", ", allergicIngredients);
-            //            }
-            //        }
-            //        else
-            //        {
-            //            TempData["msg"] = "Could not add prescription line";
-            //        }
-
-            //    }
-            //    else
-            //    {
-            //        TempData["msg"] = "Could not add";
-            //    }
-
             var prescId = prescription;
             prescId.PrescriptionID = prescId.PrescriptionID;
             var custId = prescription;
@@ -155,28 +128,28 @@ namespace ONT_PROJECT.Controllers
             {
                 PrescriptionID = prescId.PrescriptionID
             };
-            bool success = await _prescriptionRepository.UpdateDispnse(id);
-            if (success)
-            {              
-                if (!string.IsNullOrEmpty(prescription.Email))
+            if (medicineIds != null && medicineIds.Any())
+            {
+                foreach (var ids in medicineIds)
                 {
-                    string emailBody = $@"
-                        <p>Hello {prescription.FirstName},</p>
-                        <p>Your prescription has been dispensed successfully.</p>
-                        <p><strong>Medication(s):</strong> {prescription.MedicineName}</p>
-                        <p><strong>Repeats:</strong> {prescription.Repeats}</p>
-                        <p><strong>Repeats Left:</strong> {prescription.RepeatsLeft}</p>
-                        <p><strong>Quantity:</strong> {prescription.Quantity}</p>                       
-                        <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
-
-
-                    _emailService.Send(prescription.Email, "Your Medication Has Been Dispensed", emailBody);
-
+                    await _prescriptionRepository.UpdateDispnse(ids);
                 }
-                return RedirectToAction("GetUnprocessedPrescription", "UnproccessedPrescription");
             }
-            else
-                return Json(new { success = false, message = "Failed to ." });            
+            if (!string.IsNullOrEmpty(prescriptionss.Email))
+            {
+                string emailBody = $@"
+                    <p>Hello {prescriptionss.FirstName},</p>
+                    <p>Your prescription has been dispensed successfully.</p>
+                    <p><strong>Medication(s):</strong> {prescriptionss.MedicineName}</p>
+                    <p><strong>Repeats:</strong> {prescriptionss.Repeats}</p>
+                    <p><strong>Repeats Left:</strong> {prescriptionss.RepeatsLeft}</p>
+                    <p><strong>Quantity:</strong> {prescriptionss.Quantity}</p>                       
+                    <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
+                _emailService.Send(prescriptionss.Email, "Your Medication Has Been Dispensed", emailBody);
+            }
+            return RedirectToAction("GetUnprocessedPrescription", "UnproccessedPrescription");
+            
+                        
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -215,33 +188,8 @@ namespace ONT_PROJECT.Controllers
                 var repLeft = prescription;
                 repLeft.RepeatsLeft = repLeft.Repeats;
 
-
-                var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(prescription.CustomerID);
-                if (allergicIngredients.Any())
-                {
-                    // You can map IDs to names for clarity if needed
-                    TempData["AllergyAlert"] = "Warning: Patient is allergic to the following ingredients: "
-                                               + string.Join(", ", allergicIngredients);
-
-                }
                 bool addPerson = await _prescriptionRepository.AddAsync(prescription);
-                //if (addPerson)
-                //{
-                //    TempData["msg"] = "Sucessfully Added";
-                //    var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(prescription.CustomerID);
-
-                //    if (allergicIngredients.Any())
-                //    {
-                //        // You can map IDs to names for clarity if needed
-                //        TempData["AllergyAlert"] = "Warning: Patient is allergic to the following ingredients: "
-                //                                   + string.Join(", ", allergicIngredients);
-                //    }
-                //}
-                //else
-                //{
-                //    TempData["msg"] = "Could not add";
-                //}
-
+               
                 var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
                 var lastRow = result.FirstOrDefault();
 
@@ -333,35 +281,6 @@ namespace ONT_PROJECT.Controllers
                         await _prescriptionRepository.AddPrescLineAsync(med);
                     }
                 }
-
-                //if (addPrescLine)
-                //{
-                //    TempData["msg"] = "Sucessfully Added";
-                //    // After adding prescription line
-                //    if (addPrescLine)
-                //    {
-                //        TempData["msg"] = "Successfully Added";
-
-                //        // Check for patient allergies
-                //        var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(prescription.CustomerID);
-
-                //        if (allergicIngredients.Any())
-                //        {
-                //            // You can map IDs to names for clarity if needed
-                //            TempData["AllergyAlert"] = "Warning: Patient is allergic to the following ingredients: "
-                //                                       + string.Join(", ", allergicIngredients);
-                //        }
-                //    }
-                //    else
-                //    {
-                //        TempData["msg"] = "Could not add prescription line";
-                //    }
-
-                //}
-                //else
-                //{
-                //    TempData["msg"] = "Could not add";
-                //}
             }
             catch (Exception ex)
             {
@@ -439,7 +358,6 @@ namespace ONT_PROJECT.Controllers
                 data = new { firstName = customer.FirstName,idNumber = customer.IDNumber }
             });
         }
-
         [HttpGet]
         public async Task<IActionResult> CreatePrescriptions(int id)
         {
@@ -461,6 +379,20 @@ namespace ONT_PROJECT.Controllers
 
             return View(viewModel);
         }
+        [HttpGet]
+        public async Task<IActionResult> CheckCustomerAllergies(int customerId)
+        {
+            var allergicIngredients = await _prescriptionRepository.GetAllergicIngredients(customerId);
+            if (allergicIngredients.Any())
+            {
+                return Json(new
+                {
+                    hasAllergies = true,
+                    message = "⚠️ Warning: This customer is allergic to: " + string.Join(", ", allergicIngredients)
+                });
+            }
 
+            return Json(new { hasAllergies = false });
+        }
     }
 }

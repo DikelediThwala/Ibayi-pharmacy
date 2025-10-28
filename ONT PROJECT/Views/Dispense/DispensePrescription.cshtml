@@ -47,84 +47,89 @@
 
         @if (!string.IsNullOrEmpty(ViewBag.SearchTerm))
         {
-            @if (items != null)
+            if (items != null)
             {
                 <div class="row mb-4">
                     <div class="col-md-4">
                         <label for="CustomerID" class="form-label">First Name</label>
-                        <input for="CustomerID" type="type" name="name" value="@items.FirstName" class="form-control" disabled />                      
+                        <input type="text" name="name" value="@items.FirstName" class="form-control" disabled />
                     </div>
 
                     <div class="col-md-4">
-                        <label for="Date Of Birth" class="form-label">ID Number</label>
-                        <input for="CustomerID" type="type" name="name" value="@items.IDNumber" class="form-control" disabled />                       
+                        <label for="DateOfBirth" class="form-label">ID Number</label>
+                        <input type="text" name="name" value="@items.IDNumber" class="form-control" disabled />
                     </div>
                 </div>
-            }          
-            
-            <form asp-action="Process" method="post">
-              <input type="hidden" name="searchTerm" value="@ViewBag.SearchTerm" />
 
+                <form asp-action="Process" method="post">
+                    <input type="hidden" name="searchTerm" value="@ViewBag.SearchTerm" />
+                    <input type="hidden" name="Email" value="@items.Email" />
+                    <input type="hidden" name="FirstName" value="@items.FirstName" />
+                    <input type="hidden" name="Repeats" value="@items.Repeats" />
+                    <input type="hidden" name="RepeatsLeft" value="@items.RepeatsLeft" />
+                    <input type="hidden" name="Quantity" value="@items.Quantity" />
 
-                <input type="hidden" asp-for="@items.Email" name="Email" value="@items.Email" />
-                <input type="hidden" asp-for="@items.FirstName" name="FirstName" value="@items.FirstName" />
+                    <input type="hidden" name="MedicineName" value="@string.Join(", ", Model.Select(m => m.MedicineName))" />
 
-                <!-- Optionally include medication details -->
-                <input type="hidden" name="MedicineName" value="@string.Join(", ", Model.Select(m => m.MedicineName))" />
-                <input type="hidden" name="Repeats" value="@items.Repeats" />
-                <input type="hidden" name="RepeatsLeft" value="@items.RepeatsLeft" />
-                <input type="hidden" name="Quantity" value="@items.Quantity" />
-            <table class="table table-bordered table-hover mt-3">
-                <thead class="table-light">
-                    <tr>
-                        <th></th>
-                        <th>Medications</th>                                  
-                        <th>Repeats</th>
-                        <th>Repeats Left</th>
-                        <th>Doctor</th>
-                        <th>Date</th>                                           
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var item in Model)
-                        {
-                                <tr class="@(item.RepeatsLeft <= 0 ? "table-secondary text-muted" : "")">                                 
-                                <td>
-                                    <input type="checkbox"
-                                            name="medicineIds"
-                                            value="@item.PrescriptionLineID"                                         
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="top"
-                                            title="@(item.RepeatsLeft <= 0 ? "Cannot dispense — no repeats left" : "Select to dispense")"
-                                            @(item.RepeatsLeft <= 0 ? "disabled" : "") />
-                                </td>
-                            <td>@item.MedicineName</td>
-                            <td>@item.Repeats</td>
-                            <td>@item.RepeatsLeft</td>
-                            <td>@item.Name</td>
-                            <td>@item.Date</td>                                                            
+                    <table class="table table-bordered table-hover mt-3">
+                        <thead class="table-light">
+                            <tr>
+                                <th></th>
+                                <th>Medications</th>
+                                <th>Repeats</th>
+                                <th>Repeats Left</th>
+                                <th>Doctor</th>
+                                <th>Date</th>
                             </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="8" class="text-center text-muted">
-                                No prescriptions found for "@ViewBag.SearchTerm".
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <div class="end-0">
-            <button type="submit" class="btn btn-primary process-btn">                  
-                Dispense
-            </button>
-            </div>
-            </form>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr class="@(item.RepeatsLeft <= 0 ? "table-secondary text-muted" : "")">
+                                        <td>
+                                            <input type="checkbox"
+                                                   name="medicineIds"
+                                                   value="@item.PrescriptionLineID"
+                                                   data-bs-toggle="tooltip"
+                                                   data-bs-placement="top"
+                                                   title="@(item.RepeatsLeft <= 0 ? "Cannot dispense — no repeats left" : "Select to dispense")"
+                                                   @(item.RepeatsLeft <= 0 ? "disabled" : "") />
+                                        </td>
+                                        <td>@item.MedicineName</td>
+                                        <td>@item.Repeats</td>
+                                        <td>@item.RepeatsLeft</td>
+                                        <td>@item.Name</td>
+                                        <td>@item.Date</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">
+                                        No prescriptions found for "@ViewBag.SearchTerm".
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="end-0">
+                        <button type="submit" class="btn btn-primary process-btn">
+                            Dispense
+                        </button>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <div class="alert alert-warning mt-3">
+                    No user found for "@ViewBag.SearchTerm".
+                </div>
+            }
         }
+
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
