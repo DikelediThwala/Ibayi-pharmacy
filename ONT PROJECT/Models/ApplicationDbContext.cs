@@ -365,15 +365,31 @@ public partial class ApplicationDbContext : DbContext
         {
             entity.ToTable("Supplier");
 
-            entity.Property(e => e.SupplierId).HasColumnName("SupplierID");
-            entity.Property(e => e.ContactNo).HasMaxLength(11);
-            entity.Property(e => e.Email).HasMaxLength(50);
-            entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.SupplierId)
+                .HasColumnName("SupplierID");
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.ContactName)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.ContactSurname)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(50);
+
             entity.Property(e => e.Status)
-              .IsRequired()
-              .HasMaxLength(20)
-              .HasDefaultValue("Active");
+                .IsRequired()
+                .HasMaxLength(20)
+                .HasDefaultValue("Active");
         });
+
 
         modelBuilder.Entity<TblUser>(entity =>
         {

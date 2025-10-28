@@ -4,6 +4,7 @@
     ViewData["Title"] = "Add Supplier";
     Layout = "_ManagerLayout";
 }
+
 @if (TempData["ErrorMessage"] != null)
 {
     <div id="errorAlert" class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -11,6 +12,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-dark">
         <i class="bi bi-person-lines-fill me-2 text-primary"></i> Add Supplier
@@ -33,24 +35,35 @@
         <form asp-action="Create" method="post">
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label asp-for="Name" class="form-label">Name<span class="text-danger">*</span></label>
-                    <input asp-for="Name" class="form-control"  />
+                    <label asp-for="Name" class="form-label">Supplier Name<span class="text-danger">*</span></label>
+                    <input asp-for="Name" class="form-control" />
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <label asp-for="ContactNo" class="form-label">Contact Number<span class="text-danger">*</span></label>
-                    <input asp-for="ContactNo" class="form-control"  />
-                    <span asp-validation-for="ContactNo" class="text-danger"></span>
+                    <label asp-for="ContactName" class="form-label">Contact Name<span class="text-danger">*</span></label>
+                    <input asp-for="ContactName" class="form-control" />
+                    <span asp-validation-for="ContactName" class="text-danger"></span>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label asp-for="Email" class="form-label">Email<span class="text-danger">*</span></label>
+                    <label asp-for="ContactSurname" class="form-label">Contact Surname<span class="text-danger">*</span></label>
+                    <input asp-for="ContactSurname" class="form-control" />
+                    <span asp-validation-for="ContactSurname" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label">E-mail Address<span class="text-danger">*</span></label>
                     <input asp-for="Email" class="form-control" type="text" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
+            </div>
+
+            <div class="row mb-3">
+                <input type="hidden" asp-for="Status" value="Active" />
+
             </div>
 
             <div class="d-flex justify-content-between mt-4">
@@ -74,7 +87,6 @@
 
 <script>
     setTimeout(function () {
-
         var error = document.getElementById('errorAlert');
         if (error) {
             var bsAlert = new bootstrap.Alert(error);
