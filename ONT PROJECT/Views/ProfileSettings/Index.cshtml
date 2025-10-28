@@ -91,6 +91,18 @@
         </div>
     }
 
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="material-icons">error</i> @TempData["ErrorMessage"]
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+
     <div class="profile-card">
         <h2>My Profile</h2>
 
@@ -136,7 +148,6 @@
                     }
                     else
                     {
-
                         <span class="text-muted">No allergies listed.</span>
                     }
                 </dd>
@@ -152,6 +163,7 @@
         {
             <!-- EDIT MODE -->
             <form asp-action="Index" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="UserId" />
                 <input type="hidden" name="RemoveProfilePicture" id="RemoveProfilePicture" value="false" />
 
                 <div class="text-center mb-3">
@@ -161,7 +173,6 @@
                     }
                     else
                     {
-
                         <div id="profilePic" class="default-profile-icon"><i class="material-icons">person</i></div>
                     }
 
@@ -173,19 +184,34 @@
 
                 <dl class="row">
                     <dt class="col-sm-3 profile-dt">First Name</dt>
-                    <dd class="col-sm-9"><input asp-for="FirstName" class="form-control" /><span asp-validation-for="FirstName" class="text-danger"></span></dd>
+                    <dd class="col-sm-9">
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </dd>
 
                     <dt class="col-sm-3 profile-dt">Last Name</dt>
-                    <dd class="col-sm-9"><input asp-for="LastName" class="form-control" /><span asp-validation-for="LastName" class="text-danger"></span></dd>
+                    <dd class="col-sm-9">
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </dd>
 
                     <dt class="col-sm-3 profile-dt">ID Number</dt>
-                    <dd class="col-sm-9"><input asp-for="Idnumber" class="form-control" /><span asp-validation-for="Idnumber" class="text-danger"></span></dd>
+                    <dd class="col-sm-9">
+                        <input asp-for="Idnumber" class="form-control" />
+                        <span asp-validation-for="Idnumber" class="text-danger"></span>
+                    </dd>
 
                     <dt class="col-sm-3 profile-dt">Phone Number</dt>
-                    <dd class="col-sm-9"><input asp-for="PhoneNumber" class="form-control" /><span asp-validation-for="PhoneNumber" class="text-danger"></span></dd>
+                    <dd class="col-sm-9">
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </dd>
 
                     <dt class="col-sm-3 profile-dt">Email</dt>
-                    <dd class="col-sm-9">@Model.Email</dd>
+                    <dd class="col-sm-9">
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </dd>
 
                     <dt class="col-sm-3 profile-dt">Allergies</dt>
                     <dd class="col-sm-9">
@@ -225,31 +251,67 @@
     </div>
 </div>
 
-<script>
-    // Toast display
-    const toastEl = document.getElementById('profileToast');
-    if (toastEl) { const toast = new bootstrap.Toast(toastEl, { delay: 3000 }); toast.show(); }
 
-    // Remove profile picture
-    document.getElementById('removeProfileBtn')?.addEventListener('click', function () {
-        const profileContainer = document.getElementById('profilePic');
-        const div = document.createElement('div'); div.id='profilePic'; div.className='default-profile-icon'; div.innerHTML='<i class="material-icons">person</i>';
-        profileContainer.replaceWith(div);
-        document.querySelector('input[type="file"]').value = ""; document.getElementById('RemoveProfilePicture').value = "true";
-    });
+    <partial name="_ValidationScriptsPartial" />
 
-    // Allergy add/remove
-    const addBtn = document.getElementById('addAllergyBtn');
-    addBtn.addEventListener('click', function () {
-        const select = document.getElementById('allergySelect');
-        const selectedValue = select.value; const selectedText = select.options[select.selectedIndex]?.text;
-        if (!selectedValue) { alert('Please select an allergy.'); return; }
-        if ([...document.querySelectorAll('#selectedAllergiesList input')].some(i=>i.value===selectedValue)){ alert('Allergy already added.'); return; }
-        const li = document.createElement('li'); li.className="list-group-item d-flex justify-content-between align-items-center";
-        li.innerHTML=`${selectedText} <button type="button" class="btn btn-sm btn-danger remove-btn">Remove</button><input type="hidden" name="SelectedAllergyIds" value="${selectedValue}" />`;
-        li.querySelector('.remove-btn').addEventListener('click',()=>li.remove());
-        document.getElementById('selectedAllergiesList').appendChild(li); select.value="";
-    });
+    <script>
+        // Toast display
+        const toastEl = document.getElementById('profileToast');
+        if (toastEl) {
+            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            toast.show();
+        }
 
-    document.querySelectorAll('.remove-btn').forEach(btn=>btn.addEventListener('click',()=>btn.parentElement.remove()));
-</script>
+        const errorToast = document.getElementById('errorToast');
+        if (errorToast) {
+            const toast = new bootstrap.Toast(errorToast, { delay: 5000 });
+            toast.show();
+        }
+
+        // Remove profile picture
+        document.getElementById('removeProfileBtn')?.addEventListener('click', function () {
+            const profileContainer = document.getElementById('profilePic');
+            const div = document.createElement('div');
+            div.id = 'profilePic';
+            div.className = 'default-profile-icon';
+            div.innerHTML = '<i class="material-icons">person</i>';
+            profileContainer.replaceWith(div);
+            document.querySelector('input[type="file"]').value = "";
+            document.getElementById('RemoveProfilePicture').value = "true";
+        });
+
+        // Allergy add/remove
+        const addBtn = document.getElementById('addAllergyBtn');
+        addBtn.addEventListener('click', function () {
+            const select = document.getElementById('allergySelect');
+            const selectedValue = select.value;
+            const selectedText = select.options[select.selectedIndex]?.text;
+
+            if (!selectedValue) {
+                alert('Please select an allergy.');
+                return;
+            }
+
+            if ([...document.querySelectorAll('#selectedAllergiesList input')].some(i => i.value === selectedValue)) {
+                alert('Allergy already added.');
+                return;
+            }
+
+            const li = document.createElement('li');
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `${selectedText} <button type="button" class="btn btn-sm btn-danger remove-btn">Remove</button><input type="hidden" name="SelectedAllergyIds" value="${selectedValue}" />`;
+
+            li.querySelector('.remove-btn').addEventListener('click', function() {
+                li.remove();
+            });
+
+            document.getElementById('selectedAllergiesList').appendChild(li);
+            select.value = "";
+        });
+
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                btn.parentElement.remove();
+            });
+        });
+    </script>
