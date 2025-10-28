@@ -122,6 +122,27 @@ namespace ONT_PROJECT.Controllers
 
             return View(orders);
         }
+        // ✅ NEW: Order History (all past orders)
+        public async Task<IActionResult> OrderHistory()
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+
+            var customer = await _context.Customers
+                .Include(c => c.CustomerNavigation)
+                .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
+
+            if (customer == null) return NotFound();
+
+            var orderHistory = await _context.Orders
+                .Include(o => o.OrderLines)
+                    .ThenInclude(ol => ol.Medicine)
+                .Where(o => o.CustomerId == customer.CustomerId)
+                .OrderByDescending(o => o.DatePlaced)
+                .ToListAsync();
+
+            return View(orderHistory);
+        }
 
         // Delete a specific order (and its lines)
         [HttpPost]

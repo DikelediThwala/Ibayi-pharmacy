@@ -175,7 +175,6 @@ namespace ONT_PROJECT.Controllers
                                             columns.RelativeColumn(3); // Medicine
                                             columns.RelativeColumn();   // Quantity
                                             columns.RelativeColumn();   // Price
-                                            columns.RelativeColumn();   // Line Total
                                         });
 
                                         table.Header(header =>
@@ -183,7 +182,6 @@ namespace ONT_PROJECT.Controllers
                                             header.Cell().Background(Colors.Blue.Lighten4).Border(1).Text("Medicine").Bold();
                                             header.Cell().Background(Colors.Blue.Lighten4).Border(1).Text("Quantity").Bold();
                                             header.Cell().Background(Colors.Blue.Lighten4).Border(1).Text("Price").Bold();
-                                            header.Cell().Background(Colors.Blue.Lighten4).Border(1).Text("Line Total").Bold();
                                         });
 
                                         foreach (var line in order.OrderLines)
@@ -191,13 +189,12 @@ namespace ONT_PROJECT.Controllers
                                             table.Cell().Border(1).Text(line.Medicine?.MedicineName ?? "N/A");
                                             table.Cell().Border(1).Text(line.Quantity.ToString());
                                             table.Cell().Border(1).Text($"R{line.Price:0.00}");
-                                            table.Cell().Border(1).Text($"R{line.LineTotal:0.00}");
                                         }
 
                                         table.Footer(footer =>
                                         {
-                                            footer.Cell().ColumnSpan(4).AlignRight()
-                                                  .Text($"Order Total: R{order.TotalDue:0.00}  |  VAT: R{order.Vat:0.00}")
+                                            footer.Cell().ColumnSpan(3).AlignRight()
+                                                  .Text($"Order Total: R{order.TotalDue:0.00}")
                                                   .Bold();
                                         });
                                     });
