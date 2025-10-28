@@ -74,7 +74,8 @@
                 <tr>
                     <th></th>
                     <th>Name</th>
-                    <th>Contact</th>
+                    <th>Contact Name</th>
+                    <th>Contact Surname</th>
                     <th>Email</th>
                     <th>Actions</th>
                 </tr>
@@ -87,7 +88,8 @@
                         <tr>
                             <td>@count</td>
                             <td>@supplier.Name</td>
-                            <td>@supplier.ContactNo</td>
+                            <td>@supplier.ContactName</td>
+                            <td>@supplier.ContactSurname</td>
                             <td>@supplier.Email</td>
                             <td>
                                 <a asp-action="Edit" asp-route-id="@supplier.SupplierId" class="btn btn-sm btn-outline-primary me-1">
@@ -115,7 +117,8 @@
                 <tr>
                     <th></th>
                     <th>Name</th>
-                    <th>Contact</th>
+                    <td>Contact Name</td>
+                    <td>Contact Surname</td>
                     <th>Email</th>
                     <th>Activate</th>
                 </tr>
@@ -128,7 +131,8 @@
                         <tr>
                             <td>@dcount</td>
                             <td>@supplier.Name</td>
-                            <td>@supplier.ContactNo</td>
+                            <td>@supplier.ContactName</td>
+                            <td>@supplier.ContactSurname</td>
                             <td>@supplier.Email</td>
                             <td>
                                 <form asp-action="Activate" method="post">

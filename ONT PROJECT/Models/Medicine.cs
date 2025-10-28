@@ -17,8 +17,12 @@ public partial class Medicine
 
     [Required(ErrorMessage = "The Supplier field is required.")]
     public int? SupplierId { get; set; }
-    public int ReorderLevel { get; set; }
-    public int Quantity { get; set; }
+    [Range(0, int.MaxValue, ErrorMessage = "Reorder Level must be a positive number.")]
+    public int? ReorderLevel { get; set; }
+
+    [Range(0, int.MaxValue, ErrorMessage = "Quantity must be a positive number.")]
+    public int? Quantity { get; set; }
+
     public string Status { get; set; } = "Active";
 
     [Required(ErrorMessage = "Please select a Form.")]

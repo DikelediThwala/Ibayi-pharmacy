@@ -29,23 +29,40 @@
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label asp-for="Name" class="form-label">Name<span class="text-danger">*</span></label>
-                    <input asp-for="Name" class="form-control" placeholder="e.g., Dikeledi Thwala" />
+                    <label asp-for="Name" class="form-label">Supplier Name<span class="text-danger">*</span></label>
+                    <input asp-for="Name" class="form-control" placeholder="e.g., ABC Medical Supplies" />
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <label asp-for="ContactNo" class="form-label">Contact Number<span class="text-danger">*</span></label>
-                    <input asp-for="ContactNo" class="form-control" placeholder="e.g., 012 345 6789" />
-                    <span asp-validation-for="ContactNo" class="text-danger"></span>
+                    <label asp-for="ContactName" class="form-label">Contact Name<span class="text-danger">*</span></label>
+                    <input asp-for="ContactName" class="form-control" placeholder="e.g., John" />
+                    <span asp-validation-for="ContactName" class="text-danger"></span>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label asp-for="Email" class="form-label">Email<span class="text-danger">*</span></label>
+                    <label asp-for="ContactSurname" class="form-label">Contact Surname<span class="text-danger">*</span></label>
+                    <input asp-for="ContactSurname" class="form-control" placeholder="e.g., Smith" />
+                    <span asp-validation-for="ContactSurname" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label">E-mail Address<span class="text-danger">*</span></label>
                     <input asp-for="Email" class="form-control" placeholder="e.g., supplier@example.com" />
                     <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Status" class="form-label">Status<span class="text-danger">*</span></label>
+                    <select asp-for="Status" class="form-select">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
                 </div>
             </div>
 
@@ -53,7 +70,6 @@
                 <a asp-controller="Supplier" asp-action="Index" class="btn btn-primary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
-
 
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-save me-1"></i> Update
