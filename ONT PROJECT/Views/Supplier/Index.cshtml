@@ -275,10 +275,11 @@
         // Deactivate supplier
         $('#confirmDelete').click(function () {
             const formData = $('#reassignForm').serialize();
-            $.post('/Supplier/Delete/' + selectedSupplierId, formData, function () {
-                bootstrap.Modal.getInstance(document.getElementById('reassignModal')).hide();
+             $.post('@Url.Action("Delete", "Supplier")/' + selectedSupplierId, formData, function () {
+                 bootstrap.Modal.getInstance(document.getElementById('reassignModal')).hide();
                 location.reload();
-            }).fail(() => alert('Failed to deactivate supplier.'));
+         }).fail(() => alert('Failed to deactivate supplier.'));
+
         });
     });
 </script>
