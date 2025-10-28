@@ -245,7 +245,7 @@ $(document).ready(function () {
         const token = $('input[name="__RequestVerificationToken"]').val();
 
         $.post({
-            url: '/Medicine/Deactivate',
+                    url: '/Supplier/DeactivateMedicine',
             data: { id: medId, __RequestVerificationToken: token },
             success: function (res) {
                 if (res.success) {
@@ -261,17 +261,21 @@ $(document).ready(function () {
             error: function () { alert('Failed to deactivate medicine.'); }
         });
     });
+    // multiple
 
-        $('#deactivateSelected').click(function () {
-        const selectedMeds = $('.deactivate-checkbox:checked').map(function () { return $(this).data('medid'); }).get();
+           // multiple
+    $('#deactivateSelected').click(function () {
+        const selectedMeds = $('.deactivate-checkbox:checked').map(function () {
+            return $(this).data('medid');
+        }).get();
+
         if (!selectedMeds.length) return;
         if (!confirm(`Deactivate ${selectedMeds.length} selected medication(s)?`)) return;
 
         const token = $('input[name="__RequestVerificationToken"]').val();
 
         selectedMeds.forEach(id => {
-               $.post('@Url.Action("Deactivate", "Medicine")', { id: medId, __RequestVerificationToken: token })
-
+            $.post('@Url.Action("DeactivateMedicine", "Supplier")', { id: id, __RequestVerificationToken: token })
             .done(function(res) {
                 if (res.success) {
                     const medDiv = $(`.deactivate-med-btn[data-medid="${id}"]`).closest('div.mb-2');
@@ -286,6 +290,7 @@ $(document).ready(function () {
 
         $('#deactivateSelected').addClass('d-none');
     });
+
 
 
 

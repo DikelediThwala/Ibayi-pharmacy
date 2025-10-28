@@ -119,6 +119,22 @@ namespace ONT_PROJECT.Controllers
         }
 
         [HttpPost]
+        public IActionResult DeactivateMedicine(int id)
+        {
+            var medicine = _context.Medicines.FirstOrDefault(m => m.MedicineId == id);
+            if (medicine == null)
+                return Json(new { success = false, message = "Medicine not found." });
+
+            medicine.Status = "Deactivated";
+            _context.SaveChanges();
+
+            ActivityLogger.LogActivity(_context, "Deactivate Medicine", $"Medicine {medicine.MedicineName} was deactivated.");
+
+            return Json(new { success = true });
+        }
+
+
+        [HttpPost]
         public IActionResult Activate(int id)
         {
             var supplier = _context.Suppliers.FirstOrDefault(s => s.SupplierId == id);
