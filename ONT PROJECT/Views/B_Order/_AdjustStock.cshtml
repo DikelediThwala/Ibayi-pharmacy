@@ -36,35 +36,64 @@
     </div> 
 </form>
 <script>
-    $(document).ready(function () { 
-        $('.stock-action').on('change', function () { $('#quantityInputDiv').show(); }); 
-        $(document).on('submit', '#adjustStockForm', function (e) { e.preventDefault();
-            const medicineId = $('input[name="medicineId"]').val();
-            const action = $('input[name="stockAction"]:checked').val(); 
-            const qty = parseInt($('input[name="quantity"]').val()) || 0; 
-            const reorder = parseInt($('input[name="reorderLevel"]').val()) || 0; 
+       $(document).ready(function () {
+        $('.stock-action').on('change', function () {
+            $('#quantityInputDiv').show();
+        });
 
-        addQuantity = 0, removeQuantity = 0, resetQuantity = 0; if (action === 'add') addQuantity = qty; else if (action === 'remove') removeQuantity = qty; 
-        else if (action === 'reset') resetQuantity = qty; 
-        
-        $.post('/B_Order/AdjustStock', { medicineId: medicineId,
-            addQuantity: addQuantity, 
-            removeQuantity: removeQuantity, 
-            resetQuantity: resetQuantity, 
-            reorderLevel: reorder },
-            function (response) { if (response.success) { 
-        const modalEl = document.getElementById('adjustStockModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide(); 
-        
-        
-        $('#mainNotification') .text('Stock updated successfully!') .fadeIn(); 
-        
-        setTimeout(() => { $('#mainNotification').fadeOut(); location.reload(); 
-        }, 5000); }
-        else { 
-            $('#mainNotification') .removeClass('alert-success') .addClass('alert-danger') .text('Error updating stock. Please try again.') .fadeIn(); setTimeout(() => { 
-                $('#mainNotification').fadeOut(); }, 5000); } 
-            });
-         }); 
-    }); 
+        $(document).on('submit', '#adjustStockForm', function (e) {
+            e.preventDefault();
+
+            const medicineId = $('input[name="medicineId"]').val();
+            const action = $('input[name="stockAction"]:checked').val();
+            const qty = parseInt($('input[name="quantity"]').val()) || 0;
+            const reorder = parseInt($('input[name="reorderLevel"]').val()) || 0;
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            let addQuantity = 0, removeQuantity = 0, resetQuantity = 0;
+            if (action === 'add') addQuantity = qty;
+            else if (action === 'remove') removeQuantity = qty;
+            else if (action === 'reset') resetQuantity = qty;
+
+            $.post('@Url.Action("AdjustStock", "B_Order")',
+                {
+                    __RequestVerificationToken: token,
+                    medicineId: medicineId,
+                    addQuantity: addQuantity,
+                    removeQuantity: removeQuantity,
+                    resetQuantity: resetQuantity,
+                    reorderLevel: reorder
+                },
+                function (response) {
+                    if (response.success) {
+                        const modalEl = document.getElementById('adjustStockModal');
+                        const modal = bootstrap.Modal.getInstance(modalEl);
+                        if (modal) modal.hide();
+
+                        $('#mainNotification')
+                            .removeClass('alert-danger')
+                            .addClass('alert-success')
+                            .text('Stock updated successfully!')
+                            .fadeIn();
+
+                        setTimeout(() => {
+                            $('#mainNotification').fadeOut();
+                            location.reload();
+                        }, 5000);
+                    } else {
+                        $('#mainNotification')
+                            .removeClass('alert-success')
+                            .addClass('alert-danger')
+                            .text('Error updating stock. Please try again.')
+                            .fadeIn();
+                        setTimeout(() => {
+                            $('#mainNotification').fadeOut();
+                        }, 5000);
+                    }
+                }
+            );
+        });
+    });
+
             
 </script>

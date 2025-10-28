@@ -180,6 +180,7 @@
                                 <a asp-action="Edit" asp-controller="User" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-primary me-1" title="Edit">
                                     <i class="material-icons">&#xE254;</i>
                                 </a>
+                              
                                 <button type="button" class="btn btn-sm btn-outline-danger deactivate-btn" data-userid="@user.UserId" title="Deactivate">
                                     <i class="material-icons">&#xE872;</i>
                                 </button>
@@ -263,7 +264,7 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script>
-    $(document).ready(function () {
+      $(document).ready(function () {
         var tables = ['#managerTable', '#pharmacistTable', '#deactivatedTable'];
         var userIdToDeactivate = 0;
         var rowToDeactivate;
@@ -290,14 +291,14 @@
         // Auto-close alerts
         function autoCloseAlerts() {
             setTimeout(function () {
-                $('.successAlert').each(function() {
+                $('.successAlert').each(function () {
                     new bootstrap.Alert(this).close();
                 });
             }, 4000);
         }
         autoCloseAlerts();
 
-        // Open deactivate modal
+        // --- DEACTIVATE USER ---
         $(document).on('click', '.deactivate-btn', function () {
             userIdToDeactivate = $(this).data('userid');
             rowToDeactivate = $(this).closest('tr');
@@ -307,47 +308,53 @@
             new bootstrap.Modal(document.getElementById('deactivateModal')).show();
         });
 
-        // Confirm deactivate
         $('#confirmDeactivate').click(function () {
-            if (userIdToDeactivate) {
-                $.post('/User/SoftDelete', { id: userIdToDeactivate })
-                    .done(function (response) {
-                        // Remove from active table
-                        var activeTable = rowToDeactivate.closest('table').DataTable();
-                        var title = rowToDeactivate.find('td:nth-child(1)').text();
-                        var firstName = rowToDeactivate.find('td:nth-child(2)').text();
-                        var lastName = rowToDeactivate.find('td:nth-child(3)').text();
-                        var email = rowToDeactivate.find('td:nth-child(4)').text();
-                        var phone = rowToDeactivate.find('td:nth-child(5)').text();
-                        var role = rowToDeactivate.find('td:nth-child(6)').text();
+            if (!userIdToDeactivate) return;
 
-                        activeTable.row(rowToDeactivate).remove().draw();
+            var token = $('input[name="__RequestVerificationToken"]').val();
 
-                        // Add to deactivated table
-                        var deactivatedTable = $('#deactivatedTable').DataTable();
-                        var activateBtn = `<button type="button" class="btn btn-sm btn-outline-success activate-btn" data-userid="${userIdToDeactivate}" title="Activate">
-                                             <i class="material-icons">&#xE5CA;</i>
-                                           </button>`;
-                        deactivatedTable.row.add([title, firstName, lastName, email, phone, role, activateBtn]).draw();
+            $.post('/User/SoftDelete', {
+                id: userIdToDeactivate,
+                __RequestVerificationToken: token
+            })
+                .done(function (response) {
+                    if (!response.success) return alert(response.message || 'Failed to deactivate user.');
 
-                        // Show success alert
-                        $('<div class="alert alert-success alert-dismissible fade show successAlert" role="alert">' +
-                          `User ${firstName} ${lastName} deactivated successfully.` +
-                          '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
-                          '</div>').prependTo('.container');
-                        autoCloseAlerts();
+                    // Move row to deactivated table
+                    var activeTable = rowToDeactivate.closest('table').DataTable();
+                    var title = rowToDeactivate.find('td:nth-child(1)').text();
+                    var firstName = rowToDeactivate.find('td:nth-child(2)').text();
+                    var lastName = rowToDeactivate.find('td:nth-child(3)').text();
+                    var email = rowToDeactivate.find('td:nth-child(4)').text();
+                    var phone = rowToDeactivate.find('td:nth-child(5)').text();
+                    var role = rowToDeactivate.find('td:nth-child(6)').text();
 
-                        // Hide modal
-                        var modal = bootstrap.Modal.getInstance(document.getElementById('deactivateModal'));
-                        modal.hide();
-                    })
-                    .fail(function () {
-                        alert('Failed to deactivate user.');
-                    });
-            }
+                    activeTable.row(rowToDeactivate).remove().draw();
+
+                    var deactivatedTable = $('#deactivatedTable').DataTable();
+                    var activateBtn = `<button type="button" class="btn btn-sm btn-outline-success activate-btn" data-userid="${userIdToDeactivate}" title="Activate">
+                                          <i class="material-icons">&#xE5CA;</i>
+                                       </button>`;
+                    deactivatedTable.row.add([title, firstName, lastName, email, phone, role, activateBtn]).draw();
+
+                    // Show success alert
+                    $('<div class="alert alert-success alert-dismissible fade show successAlert" role="alert">' +
+                        `User ${firstName} ${lastName} deactivated successfully.` +
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                        '</div>').prependTo('.container');
+                    autoCloseAlerts();
+
+                    // Hide modal
+                    var modalEl = document.getElementById('deactivateModal');
+                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modal.hide();
+                })
+                .fail(function () {
+                    alert('Failed to deactivate user.');
+                });
         });
 
-        // Activate user
+        // --- ACTIVATE USER ---
         $(document).on('click', '.activate-btn', function () {
             var userIdToActivate = $(this).data('userid');
             var $row = $(this).closest('tr');
@@ -358,8 +365,12 @@
             var phone = $row.find('td:nth-child(5)').text();
             var role = $row.find('td:nth-child(6)').text();
 
-            $.post('/User/Activate', { id: userIdToActivate })
-                .done(function () {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            $.post('/User/Activate', { id: userIdToActivate, __RequestVerificationToken: token })
+                .done(function (response) {
+                    if (!response.success) return alert(response.message || 'Failed to activate user.');
+
                     // Remove from deactivated table
                     var deactivatedTable = $('#deactivatedTable').DataTable();
                     deactivatedTable.row($row).remove().draw();
@@ -374,9 +385,9 @@
 
                     // Show success alert
                     $('<div class="alert alert-success alert-dismissible fade show successAlert" role="alert">' +
-                      `User ${firstName} ${lastName} activated successfully.` +
-                      '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
-                      '</div>').prependTo('.container');
+                        `User ${firstName} ${lastName} activated successfully.` +
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                        '</div>').prependTo('.container');
                     autoCloseAlerts();
                 })
                 .fail(function () {
@@ -384,4 +395,5 @@
                 });
         });
     });
+
 </script>

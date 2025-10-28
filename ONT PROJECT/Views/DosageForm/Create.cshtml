@@ -29,8 +29,8 @@
         <form asp-action="Create" method="post">
             @Html.AntiForgeryToken()
 
-            <div asp-validation-summary="All" class="text-danger"></div>
-
+@*             <div asp-validation-summary="All" class="text-danger"></div>
+ *@
             <div class="mb-4">
                 <label asp-for="FormName" class="form-label">Form Name <span class="text-danger">*</span></label>
                 <input asp-for="FormName" class="form-control" placeholder="..." />

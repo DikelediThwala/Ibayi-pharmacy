@@ -258,37 +258,37 @@
         // Confirm Deactivate ✅ simplified and correct
         $('#confirmDeactivate').click(function () {
             if (!medIdToDeactivate) return;
-            $.ajax({
-                url: '/Medicine/Deactivate',
-                type: 'POST',
-                headers: { 'RequestVerificationToken': token },
-                data: { id: medIdToDeactivate },
-                success: function (res) {
-                    if (res.success) location.reload();
-                    else alert(res.message || 'Failed to deactivate medicine.');
-                },
-                error: function () {
-                    alert('Failed to deactivate medicine.');
-                }
-            });
+                $.ajax({
+        url: '@Url.Action("Deactivate", "Medicine")',
+        type: 'POST',
+        headers: { 'RequestVerificationToken': token },
+        data: { id: medIdToDeactivate },
+        success: function (res) {
+            if (res.success) location.reload();
+            else alert(res.message || 'Failed to deactivate medicine.');
+        },
+        error: function () {
+            alert('Failed to deactivate medicine.');
+        }
+    });
         });
 
         // Activate ✅ same logic
         $(document).on('click', '.activate-btn', function () {
             var medId = $(this).data('id');
-            $.ajax({
-                url: '/Medicine/Activate',
-                type: 'POST',
-                headers: { 'RequestVerificationToken': token },
-                data: { id: medId },
-                success: function (res) {
-                    if (res.success) location.reload();
-                    else alert(res.message || 'Failed to activate medicine.');
-                },
-                error: function () {
-                    alert('Failed to activate medicine.');
-                }
-            });
+                $.ajax({
+        url: '@Url.Action("Activate", "Medicine")',
+        type: 'POST',
+        headers: { 'RequestVerificationToken': token },
+        data: { id: medId },
+        success: function (res) {
+            if (res.success) location.reload();
+            else alert(res.message || 'Failed to activate medicine.');
+        },
+        error: function () {
+            alert('Failed to activate medicine.');
+        }
+    });
         });
     });
 </script>

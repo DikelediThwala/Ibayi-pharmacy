@@ -248,7 +248,7 @@ namespace ONT_PROJECT.Controllers
                     var mailMessage = new MailMessage
                     {
                         From = new MailAddress(smtpUser),
-                        Subject = $"Medication Order #{savedOrder.BOrderId}",
+                        Subject = $" GRP-04-04 Order #{savedOrder.BOrderId}",
                         Body = emailBody,
                         IsBodyHtml = true,
                     };
