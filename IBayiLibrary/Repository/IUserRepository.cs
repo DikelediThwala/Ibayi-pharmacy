@@ -14,6 +14,7 @@ namespace IBayiLibrary.Repository
         Task<int> NoOfCustomer();
         Task<tblUser> GetByIdAsync(int id);
         Task<tblUser> GetPharmacistByID(int id);
-
+        Task<bool> CheckIDNumberExistsAsync(string idNumber);
+        
     }
 }

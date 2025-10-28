@@ -1,5 +1,4 @@
-﻿
-@model IBayiLibrary.Models.Domain.tblUser
+﻿@model IBayiLibrary.Models.Domain.tblUser
 @{
     ViewData["Title"] = "Manage Users";
     Layout = "PharmacistLayout";
@@ -14,6 +13,23 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger shadow-sm">
+        <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i> Please fix the following errors:</h5>
+        <ul class="mb-0">
+            @foreach (var state in ViewData.ModelState.Values)
+            {
+                foreach (var error in state.Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+
 <!-- Page Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-dark">
@@ -21,10 +37,8 @@
     </h2>
 </div>
 
-<!-- Separator -->
 <hr style="height: 4px; background-color: #011425; border: none;" />
 
-<!-- Info Card -->
 <div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
     <i class="bi bi-info-circle-fill"></i>
     Please ensure all details are accurate before saving. Fields marked with <span class="text-danger">*</span> are required.
@@ -33,13 +47,13 @@
 <!-- Form Card -->
 <div class="card shadow p-4">
     <div class="card-body">
-        <form asp-action="CreateUser" enctype="multipart/form-data" method="post">
+        <form asp-action="CreateUser" enctype="multipart/form-data" method="post" id="userForm">
             <h2>Personal Details</h2>
             <hr />
             <div class="row mb-4">
                 <div class="col-md-6">
                     <label asp-for="Title" class="form-label">Title <span class="text-danger">*</span></label>
-                    <select asp-for="Title" class="form-select">
+                    <select asp-for="Title" class="form-select" id="Title" required>
                         <option value="">-- Select Title --</option>
                         <option value="Mr.">Mr.</option>
                         <option value="Mrs.">Mrs.</option>
@@ -49,50 +63,47 @@
                     <span asp-validation-for="Title" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <div class="col-md-6">
-                        <label asp-for="IDNumber" class="form-label">
-                            ID Number <span class="text-danger">*</span>
-                        </label>
-                        <input asp-for="IDNumber" id="IDNumber" class="form-control" />
-                        <span asp-validation-for="IDNumber" class="text-danger small"></span>
-                    </div>
-
-                </div>
+                <label asp-for="IDNumber" class="form-label">
+                    ID Number <span class="text-danger">*</span>
+                </label>
+                <input asp-for="IDNumber" id="IDNumber" class="form-control" placeholder="e.g., 1234567890123" required />
+                <span asp-validation-for="IDNumber" class="text-danger small"></span>
+                <div class="invalid-feedback" id="idNumberFeedback"></div>
             </div>
+
+            </div>
+
             <div class="row mb-4">
                 <div class="col-md-6">
-
-                    <label asp-for="FirstName" class="form-label"> Firstname <span class="text-danger">*</span></label>
-                    <input asp-for="FirstName" class="form-control" id="FirstName" placeholder="e.g.,Dikeledi" />
+                    <label asp-for="FirstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                    <input asp-for="FirstName" class="form-control" id="FirstName" placeholder="e.g., Dikeledi" required />
                     <span asp-validation-for="FirstName" class="text-danger small"></span>
                 </div>
-
                 <div class="col-md-6">
-                    <label asp-for="LastName" class="form-label">LastName <span class="text-danger">*</span></label>
-                    <input asp-for="LastName" class="form-control" id="LastName" placeholder="e.g.,Thwala" />
+                    <label asp-for="LastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                    <input asp-for="LastName" class="form-control" id="LastName" placeholder="e.g., Thwala" required />
                     <span asp-validation-for="LastName" class="text-danger small"></span>
                 </div>
             </div>
+
             <h2>Contact Details</h2>
             <hr />
             <div class="row mb-4">
                 <div class="col-md-6">
                     <label asp-for="Email" class="form-label">Email <span class="text-danger">*</span></label>
-                    <input asp-for="Email" class="form-control" placeholder="e.g., user@example.com" />
+                    <input asp-for="Email" class="form-control" id="Email" type="email" placeholder="e.g., user@example.com" required />
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
                     <label asp-for="PhoneNumber" class="form-label">Contact Number <span class="text-danger">*</span></label>
-                    <input asp-for="PhoneNumber" id="PhoneNumber" class="form-control" placeholder="e.g., 012 345 6789" />
+                    <input asp-for="PhoneNumber" id="PhoneNumber" class="form-control" placeholder="e.g., 012 345 6789" required />
                     <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
                 </div>
             </div>
-           
             <div class="d-flex justify-content-between mt-4">
                 <a href="/Pharmacist/LoadPrescription" class="btn btn-primary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
-             
                 <button type="submit" class="btn btn-success btn-sm">
                     <i class="bi bi-save me-1"></i> Save
                 </button>
@@ -101,27 +112,112 @@
     </div>
 </div>
 
-<!-- Bootstrap Icons (if not already included globally) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<!-- Validation Scripts -->
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Allow only letters for first & last names
     function allowOnlyLetters(event) {
-        const regex = /^[a-zA-Z]+$/;
-        const key = String.fromCharCode(event.keyCode || event.which);
-        if (!regex.test(key)) {
-            event.preventDefault();
-        }
+        if (!/^[a-zA-Z]$/.test(event.key)) event.preventDefault();
     }
     document.getElementById("FirstName").addEventListener("keypress", allowOnlyLetters);
     document.getElementById("LastName").addEventListener("keypress", allowOnlyLetters);
-</script>
-<script>
+
+    // Allow only digits for IDNumber and PhoneNumber
     function allowOnlyDigits(event) {
-        // Allow only digits (0-9)
-        if (!/[0-9]/.test(event.key)) {
-            event.preventDefault();
-        }
+        if (!/[0-9]/.test(event.key)) event.preventDefault();
     }
     document.getElementById("IDNumber").addEventListener("keypress", allowOnlyDigits);
     document.getElementById("PhoneNumber").addEventListener("keypress", allowOnlyDigits);
+
+    // Helper: AJAX check for Email or IDNumber
+    async function checkIfExists(field, value) {
+        const url = field === "email"
+            ? `/Pharmacist/CheckEmailExists?email=${encodeURIComponent(value)}`
+            : `/Pharmacist/CheckIDNumberExists?idNumber=${encodeURIComponent(value)}`;
+        const response = await fetch(url);
+        if (!response.ok) return false;
+        const data = await response.json();
+        return data.exists;
+    }
+
+    // Real-time IDNumber check
+    const idInput = document.getElementById("IDNumber");
+    const idFeedback = document.createElement("div");
+    idFeedback.classList.add("invalid-feedback");
+    idInput.parentNode.appendChild(idFeedback);
+
+    let idNumberValid = false;
+    idInput.addEventListener("blur", async function () {
+        const value = idInput.value.trim();
+        if (!value) return;
+        const exists = await checkIfExists("idNumber", value);
+        if (exists) {
+            idInput.classList.add("is-invalid");
+            idFeedback.textContent = "This ID Number is already registered.";
+            idNumberValid = false;
+        } else {
+            idInput.classList.remove("is-invalid");
+            idFeedback.textContent = "";
+            idNumberValid = true;
+        }
+    });
+
+    // Form submission validation
+    document.getElementById("userForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const requiredFields = ["Title", "IDNumber", "FirstName", "LastName", "Email", "PhoneNumber"];
+        let isValid = true;
+
+        requiredFields.forEach(id => {
+            const field = document.getElementById(id);
+            if (!field.value.trim()) {
+                field.classList.add("is-invalid");
+                isValid = false;
+            } else {
+                field.classList.remove("is-invalid");
+            }
+        });
+
+        // Phone number validation (starts with 0, 10 digits)
+        const phoneInput = document.getElementById("PhoneNumber");
+        const phoneValue = phoneInput.value.trim();
+        if (!/^0\d{9}$/.test(phoneValue)) {
+            phoneInput.classList.add("is-invalid");
+            alert("❌ Phone number must start with 0 and be exactly 10 digits.");
+            return;
+        } else {
+            phoneInput.classList.remove("is-invalid");
+        }
+
+        if (!isValid) {
+            alert("❌ Please fill in all required fields.");
+            return;
+        }
+
+        // Email duplicate check via AJAX
+        const emailInput = document.getElementById("Email");
+        const emailValue = emailInput.value.trim();
+        if (await checkIfExists("email", emailValue)) {
+            emailInput.classList.add("is-invalid");
+            alert("❌ This email address already exists. Please use a different one.");
+            emailInput.focus();
+            return;
+        }
+
+        // IDNumber validity
+        if (!idNumberValid) {
+            idInput.classList.add("is-invalid");
+            alert("❌ This ID Number already exists. Please use a different one.");
+            idInput.focus();
+            return;
+        }
+
+        // ✅ All checks passed, submit form
+        this.submit();
+    });
+});
 </script>
+
+
 

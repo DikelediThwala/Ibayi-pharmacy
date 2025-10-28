@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 namespace IBayiLibrary.Models.Domain
 {
     public class Doctor
-    {
-        
+    {      
         public int DoctorID { get; set; }
         [Key]
         public string Name { get; set; }

@@ -33,7 +33,7 @@ public partial class TblUser
     [Remote(action: "ValidateIdNumber", controller: "User", ErrorMessage = "Invalid ID Number")]
     public string Idnumber { get; set; } = null!;
 
-
+    
 
     [Required(ErrorMessage = "Role is required")]
     public string Role { get; set; } = null!;

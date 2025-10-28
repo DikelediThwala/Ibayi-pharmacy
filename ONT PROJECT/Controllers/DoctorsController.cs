@@ -9,12 +9,12 @@ namespace ONT_PROJECT.Controllers
     {
 
         private readonly IDoctorRepository _doctorRepository;
-
+        
 
         public DoctorsController(IDoctorRepository doctorRepository)
         {
             _doctorRepository = doctorRepository; 
-
+          
         }
         public IActionResult CreateDoctor()
         {
@@ -26,6 +26,15 @@ namespace ONT_PROJECT.Controllers
         {
             try
             {
+                bool emailExists = await _doctorRepository.CheckEmailExistsAsync(doctor.Email);
+                if (emailExists)
+                {
+                    ModelState.AddModelError("Email", "This email address is already registered.");
+                    TempData["msg"] = "Email already exists!";
+                    return View(doctor);
+                }
+
+
                 bool addPerson = await _doctorRepository.AddAsync(doctor);
                 if (addPerson)
                 {
@@ -43,5 +52,7 @@ namespace ONT_PROJECT.Controllers
             }
             return RedirectToAction("LoadPrescription","Pharmacist");
         }
+       
+
     }
 }

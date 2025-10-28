@@ -6,6 +6,25 @@
 }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach (var state in ViewData.ModelState.Values)
+            {
+                foreach (var error in state.Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+
+
 <!-- Page Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-dark">
@@ -13,10 +32,8 @@
     </h2>
 </div>
 
-<!-- Separator -->
 <hr style="height: 4px; background-color: #011425; border: none;" />
 
-<!-- Info Card -->
 <div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
     <i class="bi bi-info-circle-fill"></i>
     Please ensure all details are accurate before saving. Fields marked with <span class="text-danger">*</span> are required.
@@ -25,44 +42,51 @@
 <!-- Form Card -->
 <div class="card shadow p-4">
     <div class="card-body">
-        <form asp-action="CreateDoctor" enctype="multipart/form-data" method="post">
+        <!-- added id to the form -->
+        <form asp-action="CreateDoctor" enctype="multipart/form-data" method="post" id="doctorForm" novalidate>
             <h2>Personal Details</h2>
             <hr />
             <div class="row mb-4">
                 <div class="col-md-6">
-
                     <label asp-for="Name" class="form-label"> Firstname <span class="text-danger">*</span></label>
-                    <input asp-for="Name" class="form-control" id="Name" placeholder="e.g.,Dikeledi" />
+                    <input asp-for="Name" class="form-control" id="Name" placeholder="e.g., Dikeledi" required />
                     <span asp-validation-for="Name" class="text-danger small"></span>
+                    <div class="invalid-feedback">Please enter first name.</div>
                 </div>
 
                 <div class="col-md-6">
                     <label asp-for="Surname" class="form-label">LastName <span class="text-danger">*</span></label>
-                    <input asp-for="Surname" class="form-control" id="Surname" placeholder="e.g.,Thwala" />
+                    <input asp-for="Surname" class="form-control" id="Surname" placeholder="e.g., Thwala" required />
                     <span asp-validation-for="Surname" class="text-danger small"></span>
+                    <div class="invalid-feedback">Please enter surname.</div>
                 </div>
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label asp-for="PracticeNo" class="form-label">PracticeNo <span class="text-danger">*</span></label>
-                        <input asp-for="PracticeNo" class="form-control" id="PracticeNo" placeholder="4734 3434 3434 3493" />
-                        <span asp-validation-for="PracticeNo" class="text-danger small"></span>
-                    </div>
+
+                <div class="col-md-6 mt-3">
+                    <label asp-for="PracticeNo" class="form-label">PracticeNo <span class="text-danger">*</span></label>
+                    <input asp-for="PracticeNo" class="form-control" id="PracticeNo" placeholder="4734 3434 3434 3493" required />
+                    <span asp-validation-for="PracticeNo" class="text-danger small"></span>
+                    <div class="invalid-feedback">Please enter practice number.</div>
                 </div>
             </div>
+
             <h2>Contact Details</h2>
             <hr />
             <div class="row mb-4">
                 <div class="col-md-6">
                     <label asp-for="Email" class="form-label">Email <span class="text-danger">*</span></label>
-                    <input asp-for="Email" class="form-control" placeholder="e.g., user@example.com" />
+                    <!-- use HTML5 email type and required; no regex -->
+                    <input asp-for="Email" class="form-control" id="Email" type="email" placeholder="e.g., user@example.com" required />
                     <span asp-validation-for="Email" class="text-danger small"></span>
+                    <div class="invalid-feedback">Please enter a valid email address.</div>
                 </div>
                 <div class="col-md-6">
                     <label asp-for="ContactNo" class="form-label">Contact Number <span class="text-danger">*</span></label>
-                    <input asp-for="ContactNo" class="form-control" placeholder="e.g., 012 345 6789" />
+                    <input asp-for="ContactNo" class="form-control" id="ContactNo" placeholder="e.g., 012 345 6789" required />
                     <span asp-validation-for="ContactNo" class="text-danger small"></span>
+                    <div class="invalid-feedback">Please enter contact number.</div>
                 </div>
             </div>
+
             <!-- Action Buttons -->
             <div class="d-flex justify-content-between mt-4">
                 <a asp-action="Index" asp-controller="Pharmacist" class="btn btn-primary">
@@ -75,27 +99,86 @@
         </form>
     </div>
 </div>
+
+<!-- Keep bootstrap icons link if needed -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Restrict input to only letters for names
     function allowOnlyLetters(event) {
-        const regex = /^[a-zA-Z]+$/;
-        const key = String.fromCharCode(event.keyCode || event.which);
-        if (!regex.test(key)) {
-            event.preventDefault();
-        }
-    }
-    document.getElementById("Name").addEventListener("keypress", allowOnlyLetters);
-    document.getElementById("Surname").addEventListener("keypress", allowOnlyLetters);
-</script>
-<script>
-    function allowOnlyDigits(event) {
-        // Allow only digits (0-9)
-        if (!/[0-9]/.test(event.key)) {
-            event.preventDefault();
-        }
+        const regex = /^[a-zA-Z]$/;
+        if (!regex.test(event.key)) event.preventDefault();
     }
 
-    document.getElementById("PracticeNo").addEventListener("keypress", allowOnlyDigits);
-    document.getElementById("ContactNo").addEventListener("keypress", allowOnlyDigits);
+    // Restrict input to only digits for numeric fields
+    function allowOnlyDigits(event) {
+        if (!/[0-9]/.test(event.key)) event.preventDefault();
+    }
+
+    const nameEl = document.getElementById("Name");
+    const surnameEl = document.getElementById("Surname");
+    const practiceEl = document.getElementById("PracticeNo");
+    const contactEl = document.getElementById("ContactNo");
+    const emailEl = document.getElementById("Email");
+    const form = document.getElementById("doctorForm");
+
+    if (nameEl) nameEl.addEventListener("keypress", allowOnlyLetters);
+    if (surnameEl) surnameEl.addEventListener("keypress", allowOnlyLetters);
+    if (practiceEl) practiceEl.addEventListener("keypress", allowOnlyDigits);
+    if (contactEl) contactEl.addEventListener("keypress", allowOnlyDigits);
+
+    // Remove red border when typing
+    form.querySelectorAll('input, select, textarea').forEach(el => {
+        el.addEventListener('input', () => el.classList.remove('is-invalid'));
+    });
+
+    // Form submission validation
+    form.addEventListener('submit', function (e) {
+        e.preventDefault(); // stop form temporarily
+        let isFormValid = true;
+        const requiredEls = form.querySelectorAll('[required]');
+
+        requiredEls.forEach(el => {
+            const value = (el.value || "").trim();
+
+            if (value === "") {
+                el.classList.add('is-invalid');
+                isFormValid = false;
+            } else {
+                el.classList.remove('is-invalid');
+            }
+
+            // Email check using HTML5 validity
+            if (el === emailEl && !emailEl.checkValidity()) {
+                emailEl.classList.add('is-invalid');
+                isFormValid = false;
+            }
+        });
+
+        // ✅ Contact number validation: must start with 0 and be exactly 10 digits
+        if (contactEl) {
+            const phoneValue = contactEl.value.trim();
+            const phonePattern = /^0\d{9}$/; // starts with 0, followed by 9 digits = 10 total
+            if (!phonePattern.test(phoneValue)) {
+                contactEl.classList.add('is-invalid');
+                contactEl.nextElementSibling.textContent = "Contact number must start with 0 and be exactly 10 digits.";
+                isFormValid = false;
+            } else {
+                contactEl.classList.remove('is-invalid');
+            }
+        }
+
+        // Prevent submission if invalid
+        if (!isFormValid) {
+            const firstInvalid = form.querySelector('.is-invalid');
+            if (firstInvalid) firstInvalid.focus();
+            return;
+        }
+
+        // ✅ All checks passed — submit form
+        form.submit();
+    });
+});
 </script>
+
