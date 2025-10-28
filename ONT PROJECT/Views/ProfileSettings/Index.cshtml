@@ -100,33 +100,25 @@
             <div class="text-center mb-4">
                 @if (Model.ProfilePicture != null && Model.ProfilePicture.Length > 0)
                 {
-                    var base64 = Convert.ToBase64String(Model.ProfilePicture);
-                    <img src="data:image/png;base64,@base64" class="profile-picture img-thumbnail" />
+                    <img src="data:image/png;base64,@Convert.ToBase64String(Model.ProfilePicture)" class="profile-picture img-thumbnail" />
                 }
                 else
                 {
-                    <div class="default-profile-icon">
-                        <i class="material-icons">person</i>
-                    </div>
+                    <div class="default-profile-icon"><i class="material-icons">person</i></div>
                 }
             </div>
 
             <dl class="row">
                 <dt class="col-sm-3 profile-dt">First Name</dt>
                 <dd class="col-sm-9">@Model.FirstName</dd>
-
                 <dt class="col-sm-3 profile-dt">Last Name</dt>
                 <dd class="col-sm-9">@Model.LastName</dd>
-
                 <dt class="col-sm-3 profile-dt">ID Number</dt>
                 <dd class="col-sm-9">@Model.Idnumber</dd>
-
                 <dt class="col-sm-3 profile-dt">Phone Number</dt>
                 <dd class="col-sm-9">@Model.PhoneNumber</dd>
-
                 <dt class="col-sm-3 profile-dt">Email</dt>
                 <dd class="col-sm-9">@Model.Email</dd>
-
                 <dt class="col-sm-3 profile-dt">Allergies</dt>
                 <dd class="col-sm-9">
                     @if (selectedAllergies.Any())
@@ -144,6 +136,7 @@
                     }
                     else
                     {
+
                         <span class="text-muted">No allergies listed.</span>
                     }
                 </dd>
@@ -164,47 +157,32 @@
                 <div class="text-center mb-3">
                     @if (Model.ProfilePicture != null && Model.ProfilePicture.Length > 0)
                     {
-                        var base64 = Convert.ToBase64String(Model.ProfilePicture);
-                        <img id="profilePic" src="data:image/png;base64,@base64" class="profile-picture img-thumbnail" />
+                        <img id="profilePic" src="data:image/png;base64,@Convert.ToBase64String(Model.ProfilePicture)" class="profile-picture img-thumbnail" />
                     }
                     else
                     {
-                        <div id="profilePic" class="default-profile-icon">
-                            <i class="material-icons">person</i>
-                        </div>
+
+                        <div id="profilePic" class="default-profile-icon"><i class="material-icons">person</i></div>
                     }
 
                     <label class="form-label fw-semibold mt-2">Change Profile Picture</label>
                     <input asp-for="ProfileFile" class="form-control" type="file" />
                     <span asp-validation-for="ProfileFile" class="text-danger small"></span>
-
                     <button type="button" id="removeProfileBtn" class="btn btn-outline-danger btn-sm mt-2">Remove Profile Picture</button>
                 </div>
 
                 <dl class="row">
                     <dt class="col-sm-3 profile-dt">First Name</dt>
-                    <dd class="col-sm-9">
-                        <input asp-for="FirstName" class="form-control" />
-                        <span asp-validation-for="FirstName" class="text-danger"></span>
-                    </dd>
+                    <dd class="col-sm-9"><input asp-for="FirstName" class="form-control" /><span asp-validation-for="FirstName" class="text-danger"></span></dd>
 
                     <dt class="col-sm-3 profile-dt">Last Name</dt>
-                    <dd class="col-sm-9">
-                        <input asp-for="LastName" class="form-control" />
-                        <span asp-validation-for="LastName" class="text-danger"></span>
-                    </dd>
+                    <dd class="col-sm-9"><input asp-for="LastName" class="form-control" /><span asp-validation-for="LastName" class="text-danger"></span></dd>
 
                     <dt class="col-sm-3 profile-dt">ID Number</dt>
-                    <dd class="col-sm-9">
-                        <input asp-for="Idnumber" class="form-control" />
-                        <span asp-validation-for="Idnumber" class="text-danger"></span>
-                    </dd>
+                    <dd class="col-sm-9"><input asp-for="Idnumber" class="form-control" /><span asp-validation-for="Idnumber" class="text-danger"></span></dd>
 
                     <dt class="col-sm-3 profile-dt">Phone Number</dt>
-                    <dd class="col-sm-9">
-                        <input asp-for="PhoneNumber" class="form-control" />
-                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                    </dd>
+                    <dd class="col-sm-9"><input asp-for="PhoneNumber" class="form-control" /><span asp-validation-for="PhoneNumber" class="text-danger"></span></dd>
 
                     <dt class="col-sm-3 profile-dt">Email</dt>
                     <dd class="col-sm-9">@Model.Email</dd>
@@ -221,7 +199,6 @@
                             </select>
                             <button type="button" id="addAllergyBtn" class="btn btn-sm btn-success">Add</button>
                         </div>
-
                         <ul id="selectedAllergiesList" class="list-group mb-2">
                             @foreach (var id in selectedAllergies)
                             {
@@ -251,48 +228,28 @@
 <script>
     // Toast display
     const toastEl = document.getElementById('profileToast');
-    if (toastEl) {
-        const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-        toast.show();
-    }
+    if (toastEl) { const toast = new bootstrap.Toast(toastEl, { delay: 3000 }); toast.show(); }
 
     // Remove profile picture
-    const removeBtn = document.getElementById('removeProfileBtn');
-    removeBtn?.addEventListener('click', function () {
+    document.getElementById('removeProfileBtn')?.addEventListener('click', function () {
         const profileContainer = document.getElementById('profilePic');
-
-        // Replace with default icon
-        if (profileContainer.tagName.toLowerCase() === 'img') {
-            const div = document.createElement('div');
-            div.id = 'profilePic';
-            div.className = 'default-profile-icon';
-            div.innerHTML = '<i class="material-icons">person</i>';
-            profileContainer.replaceWith(div);
-        }
-
-        document.querySelector('input[type="file"]').value = "";
-        document.getElementById('RemoveProfilePicture').value = "true";
+        const div = document.createElement('div'); div.id='profilePic'; div.className='default-profile-icon'; div.innerHTML='<i class="material-icons">person</i>';
+        profileContainer.replaceWith(div);
+        document.querySelector('input[type="file"]').value = ""; document.getElementById('RemoveProfilePicture').value = "true";
     });
 
     // Allergy add/remove
     const addBtn = document.getElementById('addAllergyBtn');
     addBtn.addEventListener('click', function () {
         const select = document.getElementById('allergySelect');
-        const selectedValue = select.value;
-        const selectedText = select.options[select.selectedIndex]?.text;
+        const selectedValue = select.value; const selectedText = select.options[select.selectedIndex]?.text;
         if (!selectedValue) { alert('Please select an allergy.'); return; }
-        if ([...document.querySelectorAll('#selectedAllergiesList input')].some(i => i.value === selectedValue)) {
-            alert('Allergy already added.'); return;
-        }
-        const li = document.createElement('li');
-        li.className = "list-group-item d-flex justify-content-between align-items-center";
-        li.innerHTML = `${selectedText} <button type="button" class="btn btn-sm btn-danger remove-btn">Remove</button><input type="hidden" name="SelectedAllergyIds" value="${selectedValue}" />`;
-        li.querySelector('.remove-btn').addEventListener('click', function () { li.remove(); });
-        document.getElementById('selectedAllergiesList').appendChild(li);
-        select.value = "";
+        if ([...document.querySelectorAll('#selectedAllergiesList input')].some(i=>i.value===selectedValue)){ alert('Allergy already added.'); return; }
+        const li = document.createElement('li'); li.className="list-group-item d-flex justify-content-between align-items-center";
+        li.innerHTML=`${selectedText} <button type="button" class="btn btn-sm btn-danger remove-btn">Remove</button><input type="hidden" name="SelectedAllergyIds" value="${selectedValue}" />`;
+        li.querySelector('.remove-btn').addEventListener('click',()=>li.remove());
+        document.getElementById('selectedAllergiesList').appendChild(li); select.value="";
     });
 
-    document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', function () { btn.parentElement.remove(); });
-    });
+    document.querySelectorAll('.remove-btn').forEach(btn=>btn.addEventListener('click',()=>btn.parentElement.remove()));
 </script>

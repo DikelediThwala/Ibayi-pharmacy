@@ -106,8 +106,8 @@ namespace ONT_PROJECT.Controllers
         //    //    return Json(new { success = false, message = "Failed to ." });         
         //}
         [HttpPost]
-        public async Task<IActionResult> Process(int[] medicineIds, string searchTerm)
-        {
+        public async Task<IActionResult> Process(int[] medicineIds, string searchTerm, PrescriptionViewModel prescriptionss)
+        {          
             if (medicineIds != null && medicineIds.Any())
             {
                 foreach (var id in medicineIds)
@@ -115,16 +115,19 @@ namespace ONT_PROJECT.Controllers
                     await _prescriptionRepository.UpdateDispnse(id);
                 }
             }
-
+            if (!string.IsNullOrEmpty(prescriptionss.Email))
+            {
+                string emailBody = $@"
+                    <p>Hello {prescriptionss.FirstName},</p>
+                    <p>Your prescription has been dispensed successfully.</p>
+                    <p><strong>Medication(s):</strong> {prescriptionss.MedicineName}</p>
+                    <p><strong>Repeats:</strong> {prescriptionss.Repeats}</p>
+                    <p><strong>Repeats Left:</strong> {prescriptionss.RepeatsLeft}</p>
+                    <p><strong>Quantity:</strong> {prescriptionss.Quantity}</p>                       
+                    <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
+                _emailService.Send(prescriptionss.Email, "Your Medication Has Been Dispensed", emailBody);
+            }
             return RedirectToAction("DispensePrescription", new { searchTerm });
         }
-
-
-
-
-
-
-
-
     }
 }

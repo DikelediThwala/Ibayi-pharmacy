@@ -26,20 +26,18 @@ namespace ONT_PROJECT.Controllers
 
             var customer = await _context.Customers
                 .Include(c => c.CustomerNavigation)
-                .FirstOrDefaultAsync(c => c.CustomerNavigation != null && c.CustomerNavigation.UserId == userId);
+                .FirstOrDefaultAsync(c => c.CustomerNavigation.UserId == userId);
 
             if (customer == null)
                 return NotFound();
 
-            // Counts
-            var prescriptionLineCount = await _context.PrescriptionLines
-                .Include(pl => pl.Prescription)
-                .CountAsync(pl => pl.Prescription.CustomerId == customer.CustomerId);
+            // Count the uploaded prescriptions (Unprocessed)
+            var prescriptionCount = await _context.UnprocessedPrescriptions
+                .CountAsync(up => up.CustomerId == customer.CustomerId);
 
             var orderCount = await _context.Orders
                 .CountAsync(o => o.CustomerId == customer.CustomerId);
 
-            // Repeats (grouped by medicine)
             var repeatCounts = await _context.RepeatRequest
                 .Include(r => r.OrderLine)
                     .ThenInclude(ol => ol.Medicine)
@@ -54,7 +52,6 @@ namespace ONT_PROJECT.Controllers
                 })
                 .ToListAsync();
 
-            // Recent Orders (last 5)
             var recentOrders = await _context.Orders
                 .Where(o => o.CustomerId == customer.CustomerId)
                 .OrderByDescending(o => o.DatePlaced)
@@ -64,7 +61,7 @@ namespace ONT_PROJECT.Controllers
                 .Select(o => new CustomerOrderViewModel
                 {
                     OrderId = o.OrderId,
-                    DatePlaced = o.DatePlaced.ToDateTime(TimeOnly.MinValue), // convert DateOnly -> DateTime
+                    DatePlaced = o.DatePlaced.ToDateTime(TimeOnly.MinValue),
                     Status = o.Status,
                     OrderLines = o.OrderLines.Select(ol => new CustomerOrderLineViewModel
                     {
@@ -74,8 +71,8 @@ namespace ONT_PROJECT.Controllers
 
             var model = new CustomerDashboardViewModel
             {
-                User = await _context.TblUsers.FindAsync(userId),
-                PrescriptionLineCount = prescriptionLineCount,
+                User = customer.CustomerNavigation,
+                PrescriptionLineCount = prescriptionCount, // now counts unprocessed prescriptions
                 OrderCount = orderCount,
                 RepeatCounts = repeatCounts,
                 RecentOrders = recentOrders

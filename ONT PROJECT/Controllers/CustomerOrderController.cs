@@ -63,7 +63,7 @@ namespace ONT_PROJECT.Controllers
             var order = new Order
             {
                 CustomerId = customer.CustomerId,
-                Status = "Pending",
+                Status = "Ordered",
                 DatePlaced = DateOnly.FromDateTime(DateTime.Now),
                 TotalDue = 0,
                 Vat = 0,
@@ -86,7 +86,7 @@ namespace ONT_PROJECT.Controllers
                         Quantity = pl.Quantity,
                         Price = price,
                         LineTotal = price * pl.Quantity,
-                        Status = "Pending"
+                        Status = "Ordered"
                     });
 
                     order.TotalDue += price * pl.Quantity;
