@@ -68,7 +68,7 @@ namespace ONT_PROJECT.Controllers
                     page.Size(PageSizes.A4);
                     page.Margin(2, Unit.Centimetre);
 
-                    // Header
+                    // ===== Header =====
                     page.Header().Row(row =>
                     {
                         row.ConstantItem(100).Image("wwwroot/images/logo_2-removebg-preview.png");
@@ -81,10 +81,10 @@ namespace ONT_PROJECT.Controllers
                         });
                     });
 
-                    // Content
+                    // ===== Content =====
                     page.Content().PaddingVertical(10).Column(col =>
                     {
-                        // ===== Prescriptions =====
+                        // === PRESCRIPTIONS ===
                         col.Item().PaddingBottom(5).Text("Dispensed Prescriptions").FontSize(18).Bold().Underline();
 
                         double prescriptionsGrandTotal = 0;
@@ -100,7 +100,8 @@ namespace ONT_PROJECT.Controllers
                             {
                                 string doctorName = $"{prescription.Doctor?.Name ?? "N/A"} {prescription.Doctor?.Surname ?? ""}".Trim();
 
-                                col.Item().PaddingTop(6).Text($"DOCTOR: {doctorName} | Date: {prescription.Date:yyyy-MM-dd}")
+                                col.Item().PaddingTop(6)
+                                    .Text($"DOCTOR: {doctorName} | Date: {prescription.Date:yyyy-MM-dd}")
                                     .FontSize(14).Bold();
 
                                 double prescriptionSubtotal = 0;
@@ -111,9 +112,9 @@ namespace ONT_PROJECT.Controllers
                                     {
                                         table.ColumnsDefinition(columns =>
                                         {
-                                            columns.RelativeColumn(3); // Medication
-                                            columns.RelativeColumn();  // Quantity
-                                            columns.RelativeColumn();  // Repeats
+                                            columns.RelativeColumn(3);
+                                            columns.RelativeColumn();
+                                            columns.RelativeColumn();
                                         });
 
                                         table.Header(header =>
@@ -135,21 +136,20 @@ namespace ONT_PROJECT.Controllers
                                     });
                                 });
 
-                                // Sub-total for this prescription
                                 col.Item().PaddingTop(2).AlignRight().Text($"Sub-total: R{prescriptionSubtotal:0.00}").Bold();
                                 prescriptionsGrandTotal += prescriptionSubtotal;
-
                                 col.Item().PaddingBottom(8);
                             }
 
-                            // Grand total for all prescriptions
                             col.Item().PaddingTop(5).AlignRight()
-                                .Text($"GRAND TOTAL: R{prescriptionsGrandTotal:0.00}")
+                                .Text($"GRAND TOTAL (Prescriptions): R{prescriptionsGrandTotal:0.00}")
                                 .FontSize(14).Bold().FontColor(Colors.Blue.Darken2);
                         }
 
-                        // ===== Orders =====
+                        // === ORDERS ===
                         col.Item().PaddingTop(12).PaddingBottom(5).Text("Orders").FontSize(18).Bold().Underline();
+
+                        double ordersGrandTotal = 0;
 
                         if (!orders.Any())
                         {
@@ -172,9 +172,9 @@ namespace ONT_PROJECT.Controllers
                                     {
                                         table.ColumnsDefinition(columns =>
                                         {
-                                            columns.RelativeColumn(3); // Medicine
-                                            columns.RelativeColumn();   // Quantity
-                                            columns.RelativeColumn();   // Price
+                                            columns.RelativeColumn(3);
+                                            columns.RelativeColumn();
+                                            columns.RelativeColumn();
                                         });
 
                                         table.Header(header =>
@@ -200,12 +200,18 @@ namespace ONT_PROJECT.Controllers
                                     });
                                 });
 
+                                ordersGrandTotal += order.TotalDue;
                                 col.Item().PaddingBottom(10);
                             }
+
+                            // Add GRAND TOTAL for all orders
+                            col.Item().PaddingTop(5).AlignRight()
+                                .Text($"GRAND TOTAL (Orders): R{ordersGrandTotal:0.00}")
+                                .FontSize(14).Bold().FontColor(Colors.Blue.Darken2);
                         }
                     });
 
-                    // Footer (page numbering)
+                    // ===== Footer (page numbering) =====
                     page.Footer().AlignCenter().Row(row =>
                     {
                         row.RelativeItem().Text(text =>
