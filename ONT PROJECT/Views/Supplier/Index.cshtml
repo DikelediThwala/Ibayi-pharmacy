@@ -178,7 +178,7 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
-                    <script>
+<script>
 $(document).ready(function () {
     // Initialize DataTables
     $('#activeSuppliersTable').DataTable();
@@ -187,8 +187,9 @@ $(document).ready(function () {
     // Auto-hide success alert
     setTimeout(() => $('#successAlert').fadeOut('slow'), 3000);
 
-    // URL for supplier deletion
+    // URL for supplier deletion & fetching medications
     const deleteSupplierUrl = '@Url.Action("Delete", "Supplier")';
+    const getSupplierMedsUrl = '@Url.Action("GetSupplierMedications", "Supplier")';
 
     let selectedSupplierId = 0;
 
@@ -197,7 +198,9 @@ $(document).ready(function () {
         selectedSupplierId = $(this).data('id');
         $('#supplierId').val(selectedSupplierId);
 
-        $.getJSON('/Supplier/GetSupplierMedications/' + selectedSupplierId, function (data) {
+        console.log('Clicked supplier ID:', selectedSupplierId);
+
+        $.getJSON(getSupplierMedsUrl + '?id=' + selectedSupplierId, function(data) {
             let medsHtml = '';
 
             if (!data.meds || data.meds.length === 0) {
@@ -224,7 +227,7 @@ $(document).ready(function () {
 
             $('#medicationsList').html(medsHtml);
             new bootstrap.Modal(document.getElementById('reassignModal')).show();
-        });
+        }).fail(() => alert('Failed to load supplier medications.'));
     });
 
     // Show/hide individual deactivate button for each medicine
