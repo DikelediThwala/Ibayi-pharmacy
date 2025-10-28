@@ -3,10 +3,9 @@
     Layout = "_ManagerLayout";
     var managers = ViewBag.Managers as List<ONT_PROJECT.Models.TblUser>;
     var pharmacists = ViewBag.Pharmacists as List<ONT_PROJECT.Models.TblUser>;
-    var customers = ViewBag.Customers as List<ONT_PROJECT.Models.TblUser>;
+    var deactivatedUsers = ViewBag.DeactivatedUsers as List<ONT_PROJECT.Models.TblUser>;
 }
 
-@Html.AntiForgeryToken() <!-- Added for AJAX -->
 <!-- External Styles -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
@@ -43,7 +42,6 @@
         }
 
         .table-title .btn {
-            float: right;
             color: #fff;
             background: #03A9F4;
             border: none;
@@ -100,10 +98,10 @@
     <section id="Manager" class="reviews-section">
         <p class="text-muted fs-5 mb-3">
             <i class="fas fa-info-circle text-primary"></i>
-            Below is the list of <strong>Pharmacy Managers</strong> who are responsible for overseeing overall pharmacy operations.
+            Below is the list of <strong>Pharmacy Managers</strong>.
         </p>
         <div class="table-wrapper">
-            <div class="table-title d-flex justify-content-between align-items-center">
+            <div class="table-title">
                 <h2><i class="material-icons">&#xe7ef;</i> Managers</h2>
             </div>
             <table id="managerTable" class="table table-striped table-hover">
@@ -147,10 +145,10 @@
     <section id="Pharmacist" class="reviews-section">
         <p class="text-muted fs-5 mb-3">
             <i class="fas fa-info-circle text-dark"></i>
-            <strong>Pharmacists</strong> who manage prescriptions, stock, and patient care within the pharmacy.
+            <strong>Pharmacists</strong> managing prescriptions, stock, and patient care.
         </p>
         <div class="table-wrapper">
-            <div class="table-title d-flex justify-content-between align-items-center">
+            <div class="table-title">
                 <h2><i class="material-icons">&#xe7ef;</i> Pharmacists</h2>
             </div>
             <table id="pharmacistTable" class="table table-striped table-hover">
@@ -199,7 +197,7 @@
             List of <strong>Inactive Users</strong>. You can reactivate them here.
         </p>
         <div class="table-wrapper">
-            <div class="table-title d-flex justify-content-between align-items-center bg-secondary">
+            <div class="table-title bg-secondary">
                 <h2><i class="material-icons">&#xe7ef;</i> Deactivated Users</h2>
             </div>
             <table id="deactivatedTable" class="table table-striped table-hover">
@@ -215,7 +213,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var user in ViewBag.DeactivatedUsers as List<ONT_PROJECT.Models.TblUser>)
+                    @foreach (var user in deactivatedUsers)
                     {
                         <tr>
                             <td>@user.Title</td>
@@ -235,6 +233,9 @@
             </table>
         </div>
     </section>
+
+    @* Hidden anti-forgery token for AJAX *@
+    @Html.AntiForgeryToken()
 </div>
 
 <!-- Deactivate User Modal -->
@@ -262,24 +263,25 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script>
     $(document).ready(function () {
-        var tables = ['#managerTable', '#pharmacistTable', '#deactivatedTable'];
-        var userIdToDeactivate = 0;
-        var rowToDeactivate;
 
-        // Initialize DataTables
-        tables.forEach(function (tableId) {
-            if ($.fn.dataTable.isDataTable(tableId)) $(tableId).DataTable().destroy();
-            var pageLength = tableId === '#deactivatedTable' ? 2 : 6;
-            $(tableId).DataTable({ pageLength: pageLength, lengthChange: false, ordering: false, language: { search: "Search table:", paginate: { previous: "← Previous", next: "Next →" } } });
-        });
+        var managerTable = $('#managerTable').DataTable({ pageLength: 6, lengthChange: false, ordering: false });
+        var pharmacistTable = $('#pharmacistTable').DataTable({ pageLength: 6, lengthChange: false, ordering: false });
+        var deactivatedTable = $('#deactivatedTable').DataTable({ pageLength: 2, lengthChange: false, ordering: false });
 
-        // Auto-close alerts
         function autoCloseAlerts() {
-            setTimeout(function () { $('.successAlert').each(function () { new bootstrap.Alert(this).close(); }); }, 4000);
+            setTimeout(function () {
+                $('.successAlert').each(function () {
+                    new bootstrap.Alert(this).close();
+                });
+            }, 4000);
         }
         autoCloseAlerts();
 
-        // --- DEACTIVATE USER ---
+        var deactivateUrl = '@Url.Action("SoftDelete", "User")';
+        var activateUrl = '@Url.Action("Activate", "User")';
+        var userIdToDeactivate = 0;
+        var rowToDeactivate;
+
         $(document).on('click', '.deactivate-btn', function () {
             userIdToDeactivate = $(this).data('userid');
             rowToDeactivate = $(this).closest('tr');
@@ -293,51 +295,68 @@
             if (!userIdToDeactivate) return;
             var token = $('input[name="__RequestVerificationToken"]').val();
 
-            $.ajax({
-                url: '/User/SoftDelete',
-                type: 'POST',
-                data: { id: userIdToDeactivate },
-                headers: { 'RequestVerificationToken': token },
-                success: function (response) {
+            $.post(deactivateUrl, { id: userIdToDeactivate, __RequestVerificationToken: token })
+                .done(function (response) {
                     if (!response.success) return alert(response.message || 'Failed to deactivate user.');
+
                     // Move row to deactivated table
-                    var activeTable = rowToDeactivate.closest('table').DataTable();
-                    var tds = rowToDeactivate.children('td').map(function () { return $(this).html(); }).get();
-                    activeTable.row(rowToDeactivate).remove().draw();
-                    var deactivatedTable = $('#deactivatedTable').DataTable();
-                    deactivatedTable.row.add([tds[0], tds[1], tds[2], tds[3], tds[4], tds[5], `<button type="button" class="btn btn-sm btn-outline-success activate-btn" data-userid="${userIdToDeactivate}" title="Activate"><i class="material-icons">&#xE5CA;</i></button>`]).draw();
-                    $('<div class="alert alert-success alert-dismissible fade show successAlert" role="alert">User ' + tds[1] + ' ' + tds[2] + ' deactivated successfully.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>').prependTo('.container');
+                    var title = rowToDeactivate.find('td:nth-child(1)').text();
+                    var firstName = rowToDeactivate.find('td:nth-child(2)').text();
+                    var lastName = rowToDeactivate.find('td:nth-child(3)').text();
+                    var email = rowToDeactivate.find('td:nth-child(4)').text();
+                    var phone = rowToDeactivate.find('td:nth-child(5)').text();
+                    var role = rowToDeactivate.find('td:nth-child(6)').text();
+
+                    if (managerTable.row(rowToDeactivate).length) managerTable.row(rowToDeactivate).remove().draw();
+                    if (pharmacistTable.row(rowToDeactivate).length) pharmacistTable.row(rowToDeactivate).remove().draw();
+
+                    var activateBtn = `<button type="button" class="btn btn-sm btn-outline-success activate-btn" data-userid="${userIdToDeactivate}" title="Activate">
+                                          <i class="material-icons">&#xE5CA;</i>
+                                       </button>`;
+                    deactivatedTable.row.add([title, firstName, lastName, email, phone, role, activateBtn]).draw();
+
+                    $('<div class="alert alert-success alert-dismissible fade show successAlert" role="alert">' +
+                        `User ${firstName} ${lastName} deactivated successfully.` +
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                        '</div>').prependTo('.container');
                     autoCloseAlerts();
+
                     bootstrap.Modal.getInstance(document.getElementById('deactivateModal')).hide();
-                },
-                error: function () { alert('Failed to deactivate user.'); }
-            });
+                })
+                .fail(function (xhr) { console.error(xhr); alert('Failed to deactivate user.'); });
         });
 
-        // --- ACTIVATE USER ---
         $(document).on('click', '.activate-btn', function () {
             var userIdToActivate = $(this).data('userid');
             var $row = $(this).closest('tr');
-            var tds = $row.children('td').map(function () { return $(this).html(); }).get();
+            var title = $row.find('td:nth-child(1)').text();
+            var firstName = $row.find('td:nth-child(2)').text();
+            var lastName = $row.find('td:nth-child(3)').text();
+            var email = $row.find('td:nth-child(4)').text();
+            var phone = $row.find('td:nth-child(5)').text();
+            var role = $row.find('td:nth-child(6)').text();
             var token = $('input[name="__RequestVerificationToken"]').val();
 
-            $.ajax({
-                url: '/User/Activate',
-                type: 'POST',
-                data: { id: userIdToActivate },
-                headers: { 'RequestVerificationToken': token },
-                success: function (response) {
+            $.post(activateUrl, { id: userIdToActivate, __RequestVerificationToken: token })
+                .done(function (response) {
                     if (!response.success) return alert(response.message || 'Failed to activate user.');
-                    $('#deactivatedTable').DataTable().row($row).remove().draw();
-                    var targetTableId = tds[5].toLowerCase().includes('manager') ? '#managerTable' : '#pharmacistTable';
-                    var targetTable = $(targetTableId).DataTable();
-                    var deactivateBtn = `<button type="button" class="btn btn-sm btn-outline-danger deactivate-btn" data-userid="${userIdToActivate}" title="Deactivate"><i class="material-icons">&#xE872;</i></button>`;
-                    targetTable.row.add([tds[0], tds[1], tds[2], tds[3], tds[4], `<span class="badge ${targetTableId === '#managerTable' ? 'bg-primary' : 'bg-secondary'}">${tds[5]}</span>`, deactivateBtn]).draw();
-                    $('<div class="alert alert-success alert-dismissible fade show successAlert" role="alert">User ' + tds[1] + ' ' + tds[2] + ' activated successfully.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>').prependTo('.container');
+
+                    deactivatedTable.row($row).remove().draw();
+
+                    var targetTable = role.toLowerCase().includes('manager') ? managerTable : pharmacistTable;
+                    var deactivateBtn = `<button type="button" class="btn btn-sm btn-outline-danger deactivate-btn" data-userid="${userIdToActivate}" title="Deactivate">
+                                            <i class="material-icons">&#xE872;</i>
+                                         </button>`;
+                    targetTable.row.add([title, firstName, lastName, email, phone, `<span class="badge ${role.toLowerCase().includes('manager') ? 'bg-primary' : 'bg-secondary'}">${role}</span>`, deactivateBtn]).draw();
+
+                    $('<div class="alert alert-success alert-dismissible fade show successAlert" role="alert">' +
+                        `User ${firstName} ${lastName} activated successfully.` +
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                        '</div>').prependTo('.container');
                     autoCloseAlerts();
-                },
-                error: function () { alert('Failed to activate user.'); }
-            });
+                })
+                .fail(function (xhr) { console.error(xhr); alert('Failed to activate user.'); });
         });
+
     });
 </script>
