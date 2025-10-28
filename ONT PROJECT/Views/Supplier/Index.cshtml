@@ -239,14 +239,14 @@ $(document).ready(function () {
         $('#deactivateSelected').toggleClass('d-none', $('.deactivate-checkbox:checked').length === 0);
     });
 
-    // Deactivate single medicine
+        // Deactivate single medicine
     $(document).on('click', '.deactivate-med-btn', function () {
         const medId = $(this).data('medid');
         const token = $('input[name="__RequestVerificationToken"]').val();
 
         $.post({
-            url: '/Medicine/Deactivate/' + medId,
-            data: { __RequestVerificationToken: token },
+            url: '/Medicine/Deactivate', // remove the medId from URL
+            data: { id: medId, __RequestVerificationToken: token }, // send id in body
             success: function (res) {
                 if (res.success) {
                     const medDiv = $(`.deactivate-med-btn[data-medid="${medId}"]`).closest('div.mb-2');
@@ -261,6 +261,7 @@ $(document).ready(function () {
             error: function () { alert('Failed to deactivate medicine.'); }
         });
     });
+
 
     // Deactivate selected medicines
     $('#deactivateSelected').click(function () {
