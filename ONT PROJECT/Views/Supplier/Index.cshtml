@@ -262,7 +262,6 @@ $(document).ready(function () {
         });
     });
 
-
     // Deactivate selected medicines
     $('#deactivateSelected').click(function () {
         const selectedMeds = $('.deactivate-checkbox:checked').map(function () { return $(this).data('medid'); }).get();
@@ -270,11 +269,12 @@ $(document).ready(function () {
         if (!confirm(`Deactivate ${selectedMeds.length} selected medication(s)?`)) return;
 
         const token = $('input[name="__RequestVerificationToken"]').val();
-        selectedMeds.forEach(id => {
-              $.post({
-                     url: '/Medicine/Deactivate',
-                     data: { id: id, __RequestVerificationToken: token },
 
+        selectedMeds.forEach(id => {
+            $.ajax({
+                type: 'POST',
+                url: '/Medicine/Deactivate',  // must match your controller route
+                data: { id: id, __RequestVerificationToken: token }, // send id + anti-forgery token
                 success: function (res) {
                     if (res.success) {
                         const medDiv = $(`.deactivate-med-btn[data-medid="${id}"]`).closest('div.mb-2');
@@ -282,7 +282,12 @@ $(document).ready(function () {
                         medDiv.find('select').prop('disabled', true);
                         medDiv.find('.deactivate-med-btn').text('Deactivated').prop('disabled', true);
                         medDiv.find('.deactivate-checkbox').prop('checked', false).prop('disabled', true);
+                    } else {
+                        alert(res.message || 'Failed to deactivate medicine.');
                     }
+                },
+                error: function () {
+                    alert('Failed to deactivate medicine.');
                 }
             });
         });
