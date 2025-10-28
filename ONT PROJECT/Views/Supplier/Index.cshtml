@@ -220,7 +220,6 @@ $(document).ready(function () {
                         <select class="form-select form-select-sm w-auto" name="reassignments[${med.medicineId}]">
                             ${optionsHtml}
                         </select>
-                        <button type="button" class="btn btn-sm btn-outline-warning deactivate-med-btn d-none" data-medid="${med.medicineId}">Deactivate</button>
                     </div>`;
                 });
             }
@@ -239,31 +238,8 @@ $(document).ready(function () {
         $('#deactivateSelected').toggleClass('d-none', $('.deactivate-checkbox:checked').length === 0);
     });
 
-        // Deactivate single medicine
-       $(document).on('click', '.deactivate-med-btn', function () {
-        const medId = $(this).data('medid');
-        const token = $('input[name="__RequestVerificationToken"]').val();
 
-        $.post({
-                    url: '/Supplier/DeactivateMedicine',
-            data: { id: medId, __RequestVerificationToken: token },
-            success: function (res) {
-                if (res.success) {
-                    const medDiv = $(`.deactivate-med-btn[data-medid="${medId}"]`).closest('div.mb-2');
-                    medDiv.addClass('bg-light text-muted');
-                    medDiv.find('select').prop('disabled', true);
-                    medDiv.find('.deactivate-med-btn').text('Deactivated').prop('disabled', true);
-                    medDiv.find('.deactivate-checkbox').prop('checked', false).prop('disabled', true);
-                } else {
-                    alert(res.message || 'Failed to deactivate medicine.');
-                }
-            },
-            error: function () { alert('Failed to deactivate medicine.'); }
-        });
-    });
-    // multiple
-
-           // multiple
+          // Multiple deactivate
     $('#deactivateSelected').click(function () {
         const selectedMeds = $('.deactivate-checkbox:checked').map(function () {
             return $(this).data('medid');
@@ -278,10 +254,9 @@ $(document).ready(function () {
             $.post('@Url.Action("DeactivateMedicine", "Supplier")', { id: id, __RequestVerificationToken: token })
             .done(function(res) {
                 if (res.success) {
-                    const medDiv = $(`.deactivate-med-btn[data-medid="${id}"]`).closest('div.mb-2');
+                    const medDiv = $(`.deactivate-checkbox[data-medid="${id}"]`).closest('div.mb-2');
                     medDiv.addClass('bg-light text-muted');
                     medDiv.find('select').prop('disabled', true);
-                    medDiv.find('.deactivate-med-btn').text('Deactivated').prop('disabled', true);
                     medDiv.find('.deactivate-checkbox').prop('checked', false).prop('disabled', true);
                 }
             })
