@@ -270,7 +270,8 @@ $(document).ready(function () {
         const token = $('input[name="__RequestVerificationToken"]').val();
 
         selectedMeds.forEach(id => {
-            $.post('/Medicine/Deactivate', { id: id, __RequestVerificationToken: token })
+               $.post('@Url.Action("Deactivate", "Medicine")', { id: medId, __RequestVerificationToken: token })
+
             .done(function(res) {
                 if (res.success) {
                     const medDiv = $(`.deactivate-med-btn[data-medid="${id}"]`).closest('div.mb-2');
