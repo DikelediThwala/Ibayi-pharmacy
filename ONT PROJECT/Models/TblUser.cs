@@ -50,8 +50,10 @@ public partial class TblUser
     public List<int> SelectedAllergyIds { get; set; } = new();
     public string? ResetToken { get; set; }
     public DateTime? TokenExpiry { get; set; }
-    [NotMapped] 
-    public string HealthCounsilRegNo { get; set; }
+
+    [NotMapped]
+    public string? HealthCounsilRegNo { get; set; }
+
     //[Required(ErrorMessage = "ID Number is required")]
     //[Display(Name = "ID Number")]
     //[SaIdNumber(ErrorMessage = "Invalid South African ID Number")]

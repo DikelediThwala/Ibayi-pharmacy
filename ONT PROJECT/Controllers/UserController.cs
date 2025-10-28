@@ -149,38 +149,45 @@ namespace ONT_PROJECT.Controllers
             return RedirectToAction("Index");
         }
 
+        // GET: Edit User
         public IActionResult Edit(int id)
         {
             var user = _context.TblUsers.FirstOrDefault(u => u.UserId == id);
             if (user == null)
                 return NotFound();
 
-
+            // Only load HealthCouncilRegNo if the user is a Pharmacist
             if (user.Role == "Pharmacist")
             {
                 var pharmacist = _context.Pharmacists.FirstOrDefault(p => p.PharmacistId == id);
                 if (pharmacist != null)
-                    ViewBag.HealthCouncilRegNo = pharmacist.HealthCounsilRegNo;
+                    user.HealthCounsilRegNo = pharmacist.HealthCounsilRegNo;
             }
 
             return View(user);
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(TblUser model)
         {
+            // Remove fields that are not posted / optional
             ModelState.Remove("Title");
             ModelState.Remove("Idnumber");
+
+            // Validate HealthCounsilRegNo only if role is Pharmacist
+            if (model.Role == "Pharmacist")
+            {
+                if (string.IsNullOrWhiteSpace(model.HealthCounsilRegNo))
+                {
+                    ModelState.AddModelError("HealthCounsilRegNo", "Health Council Reg. No is required for Pharmacists.");
+                }
+            }
 
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Please correct the errors in the form.";
-                if (model.Role == "Pharmacist")
-                {
-                    var pharmacist = _context.Pharmacists.FirstOrDefault(p => p.PharmacistId == model.UserId);
-                    if (pharmacist != null) ViewBag.HealthCouncilRegNo = pharmacist.HealthCounsilRegNo;
-                }
                 return View(model);
             }
 
@@ -193,6 +200,7 @@ namespace ONT_PROJECT.Controllers
             existingUser.PhoneNumber = model.PhoneNumber;
             existingUser.Role = model.Role;
 
+            // Profile picture
             if (model.ProfileFile != null && model.ProfileFile.Length > 0)
             {
                 using var ms = new MemoryStream();
@@ -200,22 +208,29 @@ namespace ONT_PROJECT.Controllers
                 existingUser.ProfilePicture = ms.ToArray();
             }
 
-            // Update Pharmacist info if role changed
+            // Handle Pharmacist info only if role = Pharmacist
             if (model.Role == "Pharmacist")
             {
-                string regNo = Request.Form["HealthCouncilRegNo"];
                 var pharmacist = _context.Pharmacists.FirstOrDefault(p => p.PharmacistId == model.UserId);
                 if (pharmacist != null)
-                    pharmacist.HealthCounsilRegNo = regNo;
+                {
+                    pharmacist.HealthCounsilRegNo = model.HealthCounsilRegNo;
+                }
                 else
                 {
-                    // Create if not exists
                     _context.Pharmacists.Add(new Pharmacist
                     {
                         PharmacistId = model.UserId,
-                        HealthCounsilRegNo = regNo
+                        HealthCounsilRegNo = model.HealthCounsilRegNo
                     });
                 }
+            }
+            else
+            {
+                // Remove pharmacist record if role changed
+                var pharmacist = _context.Pharmacists.FirstOrDefault(p => p.PharmacistId == model.UserId);
+                if (pharmacist != null)
+                    _context.Pharmacists.Remove(pharmacist);
             }
 
             _context.SaveChanges();
@@ -264,35 +279,39 @@ namespace ONT_PROJECT.Controllers
         {
             return View();
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult SoftDelete(int id)
         {
             var user = _context.TblUsers.FirstOrDefault(u => u.UserId == id);
-            if (user == null) return NotFound();
+            if (user == null)
+                return Json(new { success = false, message = "User not found." });
 
             user.Status = "Inactive";
             _context.SaveChanges();
 
-            TempData["SuccessMessage"] = $"User {user.FirstName} {user.LastName} deactivated successfully.";
-            ActivityLogger.LogActivity(_context, "Deactivate user", $"Medicine {user.FirstName} was deactivated.");
+            ActivityLogger.LogActivity(_context, "Deactivate user", $"User {user.FirstName} {user.LastName} was deactivated.");
 
-            return RedirectToAction("Index"); 
+            return Json(new { success = true, firstName = user.FirstName, lastName = user.LastName });
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Activate(int id)
         {
             var user = _context.TblUsers.FirstOrDefault(u => u.UserId == id);
-            if (user == null) return NotFound();
+            if (user == null)
+                return Json(new { success = false, message = "User not found." });
 
             user.Status = "Active";
             _context.SaveChanges();
 
-            TempData["SuccessMessage"] = $"User {user.FirstName} {user.LastName} activated successfully.";
-            ActivityLogger.LogActivity(_context, "Activate User", $"Medicine {user.FirstName} was activated.");
+            ActivityLogger.LogActivity(_context, "Activate user", $"User {user.FirstName} {user.LastName} was activated.");
 
-            return RedirectToAction("Index");
+            return Json(new { success = true, firstName = user.FirstName, lastName = user.LastName, role = user.Role });
         }
+
 
         [AcceptVerbs("GET", "POST")]
         public IActionResult ValidateIdNumber(string idnumber)

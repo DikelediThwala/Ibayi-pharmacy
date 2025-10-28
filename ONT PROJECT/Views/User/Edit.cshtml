@@ -26,6 +26,8 @@
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.UserId)
 
+            <div asp-validation-summary="All" class="text-danger"></div>
+
             <div class="row">
                 <!-- Left side: Profile image -->
                 <div class="col-md-3 text-center mb-3">
@@ -93,16 +95,15 @@
                         </div>
 
                         <div class="col-md-6" id="HealthRegSection" style="display:none;">
-                            <label for="HealthCouncilRegNo" class="form-label">Health Council Reg. No <span class="text-danger">*</span></label>
-                            <input type="text" name="HealthCouncilRegNo" id="HealthCouncilRegNo" class="form-control"
-                                   value="@ViewBag.HealthCouncilRegNo" placeholder="e.g., HPCSA123456" />
+                            <label asp-for="HealthCounsilRegNo" class="form-label">Health Council Reg. No <span class="text-danger">*</span></label>
+                            <input asp-for="HealthCounsilRegNo" class="form-control" placeholder="e.g., HPCSA123456" />
+                            <span asp-validation-for="HealthCounsilRegNo" class="text-danger small"></span>
                         </div>
                     </div>
 
                     <input asp-for="Password" type="hidden" />
 
                     <div class="d-flex justify-content-between mt-4">
-                      
                         <a asp-controller="User" asp-action="Index" class="btn btn-primary">
                             <i class="bi bi-arrow-left"></i> Back
                         </a>
@@ -123,7 +124,11 @@
         const healthSection = document.getElementById("HealthRegSection");
 
         function toggleHealthCouncil() {
-            healthSection.style.display = roleSelect.value === "Pharmacist" ? "block" : "none";
+            if (roleSelect.value === "Pharmacist") {
+                healthSection.style.display = "block";
+            } else {
+                healthSection.style.display = "none";
+            }
         }
 
         roleSelect.addEventListener("change", toggleHealthCouncil);
