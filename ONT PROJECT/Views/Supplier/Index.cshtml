@@ -179,8 +179,12 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
 <script>
     $(document).ready(function () {
+        // ✅ Fix: dynamic base URL for both local and published versions
+        const baseUrl = '@Url.Content("~/")';
+
         // Initialize DataTables
         $('#activeSuppliersTable').DataTable();
         $('#deactivatedSuppliersTable').DataTable();
@@ -196,7 +200,7 @@
             $('#supplierId').val(selectedSupplierId);
 
             // Fetch medications supplied by this supplier
-            $.getJSON('/Supplier/GetSupplierMedications/' + selectedSupplierId, function (data) {
+            $.getJSON(baseUrl + 'Supplier/GetSupplierMedications/' + selectedSupplierId, function (data) {
                 let medsHtml = '';
 
                 if (!data.meds || data.meds.length === 0) {
@@ -252,7 +256,7 @@
         // Deactivate individual medication
         $(document).on('click', '.deactivate-med-btn', function () {
             const medId = $(this).data('medid');
-            $.post('/Medicine/Deactivate/' + medId, {}, function (res) {
+            $.post(baseUrl + 'Medicine/Deactivate/' + medId, {}, function (res) {
                 if (res.success) {
                     const medDiv = $(`.deactivate-med-btn[data-medid="${medId}"]`).closest('div.mb-2');
                     medDiv.addClass('bg-light text-muted');
@@ -273,7 +277,7 @@
             if (!confirm(`Deactivate ${selectedMeds.length} selected medication(s)?`)) return;
 
             selectedMeds.forEach(id => {
-                $.post('/Medicine/Deactivate/' + id, {}, function (res) {
+                $.post(baseUrl + 'Medicine/Deactivate/' + id, {}, function (res) {
                     if (res.success) {
                         const medDiv = $(`.deactivate-med-btn[data-medid="${id}"]`).closest('div.mb-2');
                         medDiv.addClass('bg-light text-muted');
@@ -290,7 +294,7 @@
         // Confirm supplier delete/deactivate
         $('#confirmDelete').click(function () {
             var formData = $('#reassignForm').serialize();
-            $.post('/Supplier/Delete/' + selectedSupplierId, formData, function () {
+            $.post(baseUrl + 'Supplier/Delete/' + selectedSupplierId, formData, function () {
                 var modalEl = document.getElementById('reassignModal');
                 var modal = bootstrap.Modal.getInstance(modalEl);
                 modal.hide();
@@ -301,7 +305,7 @@
         // Activate supplier
         $(document).on('click', '.activate-btn', function () {
             var id = $(this).data('id');
-            $.post('/Supplier/Activate', { id: id })
+            $.post(baseUrl + 'Supplier/Activate', { id: id })
                 .done(function () { location.reload(); })
                 .fail(function () { alert('Failed to activate supplier.'); });
         });

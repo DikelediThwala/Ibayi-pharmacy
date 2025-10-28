@@ -182,6 +182,9 @@
 
 <script>
     $(document).ready(function() {
+        // ✅ Automatically detect base URL for local + published environments
+        const baseUrl = '@Url.Content("~/")';
+
         var ingredientIdToDeactivate = 0;
 
         // ✅ Correct table IDs for DataTables
@@ -209,24 +212,22 @@
             new bootstrap.Modal(document.getElementById('deactivateIngredientModal')).show();
         });
 
-        // Confirm deactivate
+        // ✅ Confirm deactivate with dynamic URL
         $('#confirmDeactivateIngredient').click(function() {
             if (ingredientIdToDeactivate) {
-                $.post('/ActiveIngredient/Deactivate', { id: ingredientIdToDeactivate })
+                $.post(baseUrl + 'ActiveIngredient/Deactivate', { id: ingredientIdToDeactivate })
                     .done(function() { location.reload(); })
                     .fail(function() { alert('Failed to deactivate ingredient.'); });
             }
         });
 
-        // Activate button click
+        // ✅ Activate button click with dynamic URL
         $(document).on('click', '.activate-btn', function() {
             var id = $(this).data('id');
-            $.post('/ActiveIngredient/Activate', { id: id })
+            $.post(baseUrl + 'ActiveIngredient/Activate', { id: id })
                 .done(function() { location.reload(); })
                 .fail(function() { alert('Failed to activate ingredient.'); });
         });
     });
 </script>
-
-
 

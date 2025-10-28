@@ -258,20 +258,23 @@ namespace ONT_PROJECT.Controllers
 
             return View(medicine);
         }
-
-        [HttpPost("Medicine/Deactivate/{id}")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Deactivate(int id)
         {
             var med = _context.Medicines.FirstOrDefault(m => m.MedicineId == id);
             if (med == null)
-                return NotFound();
+                return Json(new { success = false, message = "Medicine not found." });
 
             med.Status = "Deactivated";
             _context.Update(med);
             _context.SaveChanges();
 
+            ActivityLogger.LogActivity(_context, "Deactivate Medicine", $"Medicine {med.MedicineName} was deactivated.");
+
             return Json(new { success = true });
         }
+
         [HttpPost]
         public async Task<IActionResult> Activate(int id)
         {
