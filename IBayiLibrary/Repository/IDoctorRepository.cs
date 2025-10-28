@@ -10,5 +10,8 @@ namespace IBayiLibrary.Repository
     public interface IDoctorRepository
     {
         Task<bool> AddAsync(Doctor doctor);
+        Task<bool> CheckEmailExistsAsync(string email);
+        
+
     }
 }

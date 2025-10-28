@@ -17,7 +17,7 @@ namespace ONT_PROJECT.Controllers
         private readonly IUnproccessedPrescriptionRepository _unproccessedPrescriptionRepository;
         private readonly ApplicationDbContext _context;
         private readonly EmailService _emailService;
-
+        
         public PharmacistController(IUserRepository personRepository, IPrescriptionRepository prescriptionRepository,IOrderRepository orderRepository, IUnproccessedPrescriptionRepository unproccessedPrescriptionRepository, IUserRepository userRepository,ApplicationDbContext context,EmailService emailService)
         {
             _personRepository = personRepository;
@@ -96,8 +96,7 @@ namespace ONT_PROJECT.Controllers
         {
             try
             {
-                //if (!ModelState.IsValid)
-                //    return View(user);
+                
                 var newUser = user;
                 var role = user;
                 // Auto-generate password
@@ -105,10 +104,10 @@ namespace ONT_PROJECT.Controllers
                 newUser.Password = generatedPassword;
                 role.Role = "Customer";
 
-                if (_context.TblUsers.Any(u => u.Idnumber == user.IDNumber))
+                if (await _userRepository.CheckIDNumberExistsAsync(user.IDNumber))
                 {
-                    TempData["ErrorMessage"] = "A user with this ID number already exists!";
-                    return View("CreateUser", user);
+                    ModelState.AddModelError("IDNumber", "This ID Number is already registered.");
+                    return View(user);
                 }
                 var person = await _personRepository.AddAsync(user);             
                 if (!string.IsNullOrEmpty(user.Email))
@@ -128,7 +127,13 @@ namespace ONT_PROJECT.Controllers
                 TempData["msg"] = " Something went wrong!!!";
             }
             return RedirectToAction("GetAllCustomers");          
-        }      
-        
+        }
+        [HttpGet]
+        public JsonResult CheckEmailExists(string email)
+        {
+            bool exists = _context.TblUsers.Any(u => u.Email == email);
+            return Json(new { exists });
+        }
+       
     }
 }

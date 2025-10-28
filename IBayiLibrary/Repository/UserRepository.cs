@@ -50,6 +50,12 @@ namespace IBayiLibrary.Repository
             IEnumerable<tblUser> result = await _db.GetData<tblUser, dynamic>("spGetPharmacistID", new { UserID = id });
             return result.FirstOrDefault();
         }
+        public async Task<bool> CheckIDNumberExistsAsync(string idNumber)
+        {
+            return await _db.GetSingleValue<bool, dynamic>(
+                "spCheckUserIDNumberExists",
+                new { IDNumber = idNumber });
+        }
 
     }
 }

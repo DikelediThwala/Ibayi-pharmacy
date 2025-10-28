@@ -29,5 +29,13 @@ namespace IBayiLibrary.Repository
                 return false;
             }
         }
+        public async Task<bool> CheckEmailExistsAsync(string email)
+        {
+            // Calls the stored procedure and expects a single BIT value (bool)
+            return await _db.GetSingleValue<bool, dynamic>(
+                "spCheckDoctorEmail",
+                new { Email = email });
+        }
+
     }
 }
