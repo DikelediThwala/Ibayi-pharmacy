@@ -74,57 +74,133 @@ namespace ONT_PROJECT.Controllers
         }
 
         // POST: Update Profile
+        // POST: Update Profile - USING REGISTRATION PATTERN
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Index(TblUser model, List<int> SelectedAllergyIds, string RemoveProfilePicture)
         {
-            var email = HttpContext.Session.GetString("UserEmail");
-            if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "CustomerRegister");
-
-            var user = _context.TblUsers
-                .Include(u => u.Customer)
-                    .ThenInclude(c => c.CustomerAllergies)
-                .FirstOrDefault(u => u.Email == email);
-
-            if (user == null) return NotFound();
-
-            // Update required fields safely
-            user.FirstName = model.FirstName ?? user.FirstName;
-            user.LastName = model.LastName ?? user.LastName;
-            user.Idnumber = model.Idnumber ?? user.Idnumber;
-            user.PhoneNumber = model.PhoneNumber ?? user.PhoneNumber;
-
-            // Handle profile picture
-            if (RemoveProfilePicture == "true")
-                user.ProfilePicture = null;
-            else if (model.ProfileFile != null && model.ProfileFile.Length > 0)
+            try
             {
-                using var ms = new MemoryStream();
-                model.ProfileFile.CopyTo(ms);
-                user.ProfilePicture = ms.ToArray();
-            }
+                var email = HttpContext.Session.GetString("UserEmail");
+                if (string.IsNullOrEmpty(email))
+                    return RedirectToAction("Login", "CustomerRegister");
 
-            // Update allergies
-            if (user.Customer != null)
-            {
-                _context.CustomerAllergies.RemoveRange(user.Customer.CustomerAllergies);
+                // Get the existing user from database
+                var user = _context.TblUsers
+                    .Include(u => u.Customer)
+                        .ThenInclude(c => c.CustomerAllergies)
+                    .FirstOrDefault(u => u.Email == email);
 
-                if (SelectedAllergyIds != null)
+                if (user == null)
+                    return NotFound();
+
+                // MANUAL VALIDATION LIKE REGISTRATION - Don't rely on ModelState.IsValid
+
+                // Check required fields manually
+                var validationErrors = new List<string>();
+
+                if (string.IsNullOrWhiteSpace(model.FirstName))
+                    validationErrors.Add("First name is required.");
+
+                if (string.IsNullOrWhiteSpace(model.LastName))
+                    validationErrors.Add("Last name is required.");
+
+                if (string.IsNullOrWhiteSpace(model.Idnumber))
+                    validationErrors.Add("ID number is required.");
+
+                if (string.IsNullOrWhiteSpace(model.PhoneNumber))
+                    validationErrors.Add("Phone number is required.");
+
+                // If there are validation errors, return to edit mode
+                if (validationErrors.Any())
                 {
-                    foreach (var id in SelectedAllergyIds)
+                    TempData["ErrorMessage"] = string.Join(" ", validationErrors);
+                    return RedirectToEditModeWithData(user, SelectedAllergyIds, model);
+                }
+
+                // UPDATE FIELDS - Same pattern as registration but for existing user
+                user.FirstName = model.FirstName.Trim();
+                user.LastName = model.LastName.Trim();
+                user.Idnumber = model.Idnumber.Trim();
+                user.PhoneNumber = model.PhoneNumber.Trim();
+
+                // Handle profile picture
+                if (RemoveProfilePicture == "true")
+                {
+                    user.ProfilePicture = null;
+                }
+                else if (model.ProfileFile != null && model.ProfileFile.Length > 0)
+                {
+                    using var ms = new MemoryStream();
+                    model.ProfileFile.CopyTo(ms);
+                    user.ProfilePicture = ms.ToArray();
+                }
+
+                // Update allergies - Same pattern as registration
+                if (user.Customer != null)
+                {
+                    // Remove existing allergies
+                    _context.CustomerAllergies.RemoveRange(user.Customer.CustomerAllergies);
+
+                    // Add new selected allergies
+                    if (SelectedAllergyIds != null && SelectedAllergyIds.Any())
                     {
-                        user.Customer.CustomerAllergies.Add(new CustomerAllergy
+                        foreach (var allergyId in SelectedAllergyIds.Distinct())
                         {
-                            CustomerId = user.Customer.CustomerId,
-                            ActiveIngredientId = id
-                        });
+                            user.Customer.CustomerAllergies.Add(new CustomerAllergy
+                            {
+                                CustomerId = user.Customer.CustomerId,
+                                ActiveIngredientId = allergyId
+                            });
+                        }
                     }
                 }
-            }
 
-            _context.SaveChanges();
-            TempData["SuccessMessage"] = "Profile updated successfully!";
-            return RedirectToAction("Index");
+                // Save changes - Same as registration but without Add()
+                _context.SaveChanges();
+
+                TempData["SuccessMessage"] = "Profile updated successfully!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred while updating your profile. Please try again.";
+                return RedirectToAction("Index", new { edit = true });
+            }
+        }
+
+        private IActionResult RedirectToEditModeWithData(TblUser user, List<int> selectedAllergyIds, TblUser model = null)
+        {
+            // Use the model data for form fields, but user data for other properties
+            var viewModel = new TblUser
+            {
+                UserId = user.UserId,
+                FirstName = model?.FirstName ?? user.FirstName,
+                LastName = model?.LastName ?? user.LastName,
+                Idnumber = model?.Idnumber ?? user.Idnumber,
+                PhoneNumber = model?.PhoneNumber ?? user.PhoneNumber,
+                Email = user.Email,
+                ProfilePicture = user.ProfilePicture,
+                Role = user.Role,
+                Title = user.Title,
+                Status = user.Status
+            };
+
+            // Repopulate view data for the edit view - Same as registration
+            var allAllergies = _context.ActiveIngredient
+                .Select(ai => new SelectListItem
+                {
+                    Value = ai.ActiveIngredientId.ToString(),
+                    Text = ai.Ingredients
+                })
+                .OrderBy(a => a.Text)
+                .ToList();
+
+            ViewBag.SelectedAllergies = selectedAllergyIds ?? new List<int>();
+            ViewBag.ActiveIngredients = allAllergies;
+            ViewBag.EditMode = true;
+
+            return View("Index", viewModel);
         }
 
         // POST: Delete Account
