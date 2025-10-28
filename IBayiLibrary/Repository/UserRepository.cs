@@ -55,7 +55,6 @@ namespace IBayiLibrary.Repository
             return await _db.GetSingleValue<bool, dynamic>(
                 "spCheckUserIDNumberExists",
                 new { IDNumber = idNumber });
-        }
-
+        }       
     }
 }

@@ -19,7 +19,7 @@ namespace IBayiLibrary.Models.Domain
         public string Email { get; set; }
         public string Password { get; set; }
         [Required(ErrorMessage = "ID Number is required.")]
-        [SouthAfricanID]
+        [SouthAfricanID(ErrorMessage = "ID Number has an invalid date of birth in the first 6 digits.")]
         public string IDNumber { get; set; }
         public string Role { get; set; }
         public string PhoneNumber { get; set; }
