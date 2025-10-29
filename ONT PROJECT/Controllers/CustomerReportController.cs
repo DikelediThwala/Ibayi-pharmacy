@@ -126,8 +126,9 @@ namespace ONT_PROJECT.Controllers
 
                                         foreach (var line in prescription.PrescriptionLines.Where(l => l.Date >= start && l.Date <= end))
                                         {
-                                            double lineTotal = line.Medicine != null ? line.Medicine.SalesPrice * line.Quantity : 0;
-                                            prescriptionSubtotal += lineTotal;
+                                            // Calculate using unit price (SalesPrice) for subtotal but don't display it
+                                            double unitPrice = line.Medicine?.SalesPrice ?? 0;
+                                            prescriptionSubtotal += unitPrice; // Sum of unit prices only
 
                                             table.Cell().Border(1).Text(line.Medicine?.MedicineName ?? "N/A");
                                             table.Cell().Border(1).Text(line.Quantity.ToString());

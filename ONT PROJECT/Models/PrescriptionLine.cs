@@ -25,6 +25,7 @@ namespace ONT_PROJECT.Models
 
         public int? RepeatsLeft { get; set; }
         public int? Repeats { get; set; }
+      
 
         [Required]
         [Range(1, int.MaxValue)]
