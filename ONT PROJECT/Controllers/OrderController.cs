@@ -106,7 +106,7 @@ namespace ONT_PROJECT.Controllers
             {
                 string emailBody = $@"
                         <p>Hello {person.FirstName}<br>{person.LastName}</p>                       
-                        <p>Your Order is ready for collection</p>
+                        <p>Your Order has been collected</p>
                         <p><strong>#Order ID:</strong> {person.OrderID}</p>                      
                         <p><strong>Medicine:</strong> {person.MedicineName}</p>
                         <p><strong>Date Placed:</strong> {person.DatePlaced}</p>  
@@ -115,7 +115,7 @@ namespace ONT_PROJECT.Controllers
                         <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
 
 
-                _emailService.Send(person.Email, "Your order has been collected", emailBody);
+                _emailService.Send(person.Email, "GRP-04-04:Order Collected", emailBody);
             }
             return RedirectToAction("GetOrdersMedication", new { id = person.OrderID });
         }

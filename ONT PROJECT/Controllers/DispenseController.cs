@@ -33,7 +33,7 @@ namespace ONT_PROJECT.Controllers
 
             // Group by Customer + Doctor + Date
             var grouped = results
-                .GroupBy(r => new { r.FirstName, r.Name, r.Date, r.Status, r.Repeats, r.RepeatsLeft,r.IDNumber,r.PrescriptionID,r.Email })
+                .GroupBy(r => new { r.FirstName, r.Name, r.Date, r.Status, r.Repeats, r.RepeatsLeft,r.Quantity,r.Instructions,r.IDNumber,r.PrescriptionID,r.Email, })
                 .Select(g => new PrescriptionModel
                 {
                     FirstName = g.Key.FirstName,
@@ -42,6 +42,8 @@ namespace ONT_PROJECT.Controllers
                     Status = g.Key.Status,
                     Repeats = g.Key.Repeats,
                     RepeatsLeft = g.Key.RepeatsLeft,
+                    Quantity = g.Key.Quantity,
+                    Instructions = g.Key.Instructions,
                     IDNumber = g.Key.IDNumber,
                     PrescriptionID = g.Key.PrescriptionID,
                     Email = g.Key.Email,
@@ -67,14 +69,15 @@ namespace ONT_PROJECT.Controllers
             if (!string.IsNullOrEmpty(prescriptionss.Email))
             {
                 string emailBody = $@"
-                    <p>Hello {prescriptionss.FirstName},</p>
-                    <p>Your prescription has been dispensed successfully.</p>
+                    <p>Hello {prescriptionss.FirstName},</p>                  
+                    <p>Your Medication Has Been Dispensed.</p>
                     <p><strong>Medication(s):</strong> {prescriptionss.MedicineName}</p>
+                    <p><strong>Intsructions:</strong> {prescriptionss.Instructions}</p>
                     <p><strong>Repeats:</strong> {prescriptionss.Repeats}</p>
-                    <p><strong>Repeats Left:</strong> {prescriptionss.RepeatsLeft}</p>
-                    <p><strong>Quantity:</strong> {prescriptionss.Quantity}</p>                       
+                    <p><strong>Repeats Left:</strong> {prescriptionss.RepeatsLeft}</p>                                         
                     <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
-                _emailService.Send(prescriptionss.Email, "Your Medication Has Been Dispensed", emailBody);
+                    
+                _emailService.Send(prescriptionss.Email, "GRP-04-04:Dispense", emailBody);
             }
             return RedirectToAction("DispensePrescription", new { searchTerm });
         }

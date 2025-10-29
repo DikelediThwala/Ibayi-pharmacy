@@ -114,17 +114,17 @@ namespace ONT_PROJECT.Controllers
                     return View(user);
                 }
                 
-                var person = await _personRepository.AddAsync(user);             
+                var person = await _personRepository.AddAsync(user);
+                var resetLink = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/User/ResetPassword?email={user.Email}";
                 if (!string.IsNullOrEmpty(user.Email))
                 {
                     string emailBody = $@"
                         <p>Hello {user.FirstName}<br>{user.LastName}</p>                       
-                        <p>Your Order is ready for collection</p>
-                        <p>Here's your passowrd {user.Password}</p> ";
-                        
-
-
-                    _emailService.Send(user.Email,"", emailBody);
+                        <p>Here's your Temporary Password</p>
+                        <strong>{user.Password}</strong> 
+                        <p>Please reset your password by clicking the link below:</p>
+                        <p><a href='{resetLink}'>Reset Password</a></p>";
+                    _emailService.Send(user.Email, "GRP-04-04:Temporary Password", emailBody);
                 }
             }
             catch (Exception ex)
