@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,8 @@ namespace IBayiLibrary.Models.Domain
         public string Title { get; set; }
         public string FullName { get; set; }
         public string MedicineName { get; set; }
+        [Column("Phone Number")]
+        public string PhoneNumber { get; set; }
         public int PrescriptionLineID { get; set; }
         public int Schedule { get; set; }
         public int NoOfReadyOrders { get; set; }

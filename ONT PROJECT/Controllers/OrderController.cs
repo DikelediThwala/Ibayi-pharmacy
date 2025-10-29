@@ -119,11 +119,26 @@ namespace ONT_PROJECT.Controllers
             }
             return RedirectToAction("GetOrdersMedication", new { id = person.OrderID });
         }
-        public async Task<IActionResult> Pack()
+        [HttpGet]
+        public async Task<IActionResult> Pack(string searchQuery)
         {
-            var success = await _orderRepository.PackOrder();
-            return View(success);
+            // Fetch all pack orders (your repository should return IEnumerable<tblOrder>)
+            var orders = await _orderRepository.PackOrder();
+
+            // If the user typed something, filter it
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                orders = orders.Where(o =>
+                    o.OrderID.ToString().Contains(searchQuery) ||
+                    o.FirstName.Contains(searchQuery) ||
+                    o.LastName.Contains(searchQuery))
+                    .ToList();
+            }
+
+            // Pass filtered list to the view
+            return View(orders);
         }
+
         [HttpPost]
         public async Task<IActionResult> UpdatePackOrders(int[] medicineIds)
         {

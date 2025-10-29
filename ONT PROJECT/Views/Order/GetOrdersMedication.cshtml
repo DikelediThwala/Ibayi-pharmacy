@@ -324,13 +324,26 @@
                             <td>R @item.LineTotal.ToString("0.00")</td>
                             <td class="status-cell">@item.Status</td>
                             <td>
-                                <a class="btn btn-primary process-btn"
-                                   data-id="@item.OrderID"
-                                   asp-route-id="@item.OrderLineID"
-                                   asp-action="Edit">
-                                    Order Details
-                                </a>                               
+                                @if (item.Status == "Ready")
+                                {
+                                    <a class="btn btn-primary process-btn"
+                                       data-id="@item.OrderID"
+                                       asp-route-id="@item.OrderLineID"
+                                       asp-action="Edit">
+                                        Collect Order
+                                    </a>
+                                }
+                                else if (item.Status == "Ordered" || item.Status == "Walk-in")
+                                {
+                                    <a class="btn btn-success text-white"
+                                       asp-action="Pack">
+                                        Pack Order
+                                    </a>
+
+
+                                }
                             </td>
+
                         </tr>
                     }
                 </tbody>

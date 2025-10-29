@@ -3,6 +3,20 @@
     ViewData["Title"] = "Pack Orders";
     Layout = "PharmacistLayout";   
 }
+<form method="get" asp-action="Pack" class="d-flex mb-4">
+    <input type="text" name="searchQuery"
+           value="@Context.Request.Query["searchQuery"]"
+           class="form-control me-2"
+           placeholder="Search by Name or Order ID..." />
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+@if (!Model.Any())
+{
+    <div class="alert alert-warning text-center">
+        No orders found matching your search.
+    </div>
+}
+
 @foreach (var orderGroup in Model.GroupBy(o => o.OrderID))
 {
     var first = orderGroup.First();
