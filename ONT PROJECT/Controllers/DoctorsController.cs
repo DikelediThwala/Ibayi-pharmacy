@@ -14,13 +14,11 @@ namespace ONT_PROJECT.Controllers
           
         }
         [HttpGet]
-        public IActionResult CreateDoctor()
+        public IActionResult CreateDoctor(string returnUrl = null)
         {
-            
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateDoctor(Doctor doctor, string returnUrl = null)

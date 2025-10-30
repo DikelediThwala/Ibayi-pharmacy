@@ -262,12 +262,11 @@
                 <div class="col-md-3 d-flex align-items-end">
                     <a asp-controller="Doctors"
                        asp-action="CreateDoctor"
-                       asp-route-returnUrl="@Context.Request.Path + Context.Request.QueryString"
+                       asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
                        class="quick-action-card text-decoration-none">
                         <i class="bi bi-person-plus text-warning"></i>
                         <span>Add Doctor</span>
                     </a>
-
                 </div>
             </div>
             <div class="row mb-4">
