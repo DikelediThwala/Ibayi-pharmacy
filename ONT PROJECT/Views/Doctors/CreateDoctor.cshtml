@@ -1,7 +1,9 @@
-﻿@model IBayiLibrary.Models.Domain.Doctor;
+﻿@using System.Web
+@model IBayiLibrary.Models.Domain.Doctor;
 @{
     ViewData["Title"] = "Manage Doctors";
     Layout = "PharmacistLayout";
+    var returnUrl = ViewData["ReturnUrl"] as string ?? "";
 }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -21,9 +23,6 @@
         </ul>
     </div>
 }
-
-
-
 <!-- Page Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-dark">
@@ -43,6 +42,7 @@
     <div class="card-body">
         <!-- added id to the form -->
         <form asp-action="CreateDoctor" enctype="multipart/form-data" method="post" id="doctorForm" novalidate>
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
             <h2>Personal Details</h2>
             <hr />
             <div class="row mb-4">
@@ -88,9 +88,9 @@
 
             <!-- Action Buttons -->
             <div class="d-flex justify-content-between mt-4">
-                <a asp-action="Index" asp-controller="Pharmacist" class="btn btn-primary">
+                <button type="button" class="btn btn-secondary" id="btnBack">
                     <i class="bi bi-arrow-left"></i> Back
-                </a>
+                </button>
                 <button type="submit" class="btn btn-success btn-sm">
                     Submit
                 </button>
@@ -180,4 +180,32 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+@section Scripts {
+    <script>
+        (function() {
+            var returnUrl = '@Html.Raw(HttpUtility.JavaScriptStringEncode(returnUrl))';
+            var btn = document.getElementById('btnBack');
 
+            if (returnUrl && returnUrl.length > 0) {
+                // Use location.href so the browser navigates to the desired page
+                btn.addEventListener('click', function() {
+                    // If for some reason the returnUrl is not local, fallback to history.back()
+                    try {
+                        // Simple local check — adjust server-side if needed
+                        var isLocal = returnUrl.indexOf(window.location.origin) === 0 || returnUrl.indexOf('/') === 0;
+                        if (isLocal) {
+                            window.location.href = returnUrl;
+                        } else {
+                            history.back();
+                        }
+                    } catch (e) {
+                        history.back();
+                    }
+                });
+            } else {
+                // No returnUrl — just go back in history
+                btn.addEventListener('click', function() { history.back(); });
+            }
+        })();
+    </script>
+}

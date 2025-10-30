@@ -89,50 +89,57 @@ namespace ONT_PROJECT.Controllers
         {
 
             return View();
-        }     
+        }
         [HttpPost]
-        //[ValidateAntiFogeryToken]
-        public async Task<IActionResult> CreateUser(tblUser user)
+        public async Task<IActionResult> CreateUser(tblUser user, string returnUrl = null)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
+                    ViewData["ReturnUrl"] = returnUrl; // keep returnUrl for the view
                     return View(user);
                 }
 
-                var newUser = user;
-                var role = user;
-                // Auto-generate password
-                string generatedPassword = PasswordGenerator.GeneratePassword();
-                newUser.Password = generatedPassword;
-                role.Role = "Customer";
+                // Auto-generate password and set role
+                user.Password = PasswordGenerator.GeneratePassword();
+                user.Role = "Customer";
 
                 if (await _userRepository.CheckIDNumberExistsAsync(user.IDNumber))
                 {
                     ModelState.AddModelError("IDNumber", "This ID Number is already registered.");
+                    ViewData["ReturnUrl"] = returnUrl;
                     return View(user);
                 }
-                
+
                 var person = await _personRepository.AddAsync(user);
-                var resetLink = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/User/ResetPassword?email={user.Email}";
+
                 if (!string.IsNullOrEmpty(user.Email))
                 {
+                    var resetLink = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/User/ResetPassword?email={user.Email}";
                     string emailBody = $@"
-                        <p>Hello {user.FirstName}<br>{user.LastName}</p>                       
-                        <p>Here's your Temporary Password</p>
-                        <strong>{user.Password}</strong> 
-                        <p>Please reset your password by clicking the link below:</p>
-                        <p><a href='{resetLink}'>Reset Password</a></p>";
-                    _emailService.Send(user.Email, "GRP-04-04:Temporary Password", emailBody);
+                <p>Hello {user.FirstName} {user.LastName}</p>                       
+                <p>Here's your Temporary Password:</p>
+                <strong>{user.Password}</strong> 
+                <p>Please reset your password by clicking the link below:</p>
+                <p><a href='{resetLink}'>Reset Password</a></p>";
+                    _emailService.Send(user.Email, "GRP-04-04: Temporary Password", emailBody);
                 }
+
+                // Redirect back to returnUrl if provided, else fallback
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+
+                return RedirectToAction("GetAllCustomers");
             }
             catch (Exception ex)
             {
-                TempData["msg"] = " Something went wrong!!!";
+                TempData["msg"] = "Something went wrong!!!";
+                ViewData["ReturnUrl"] = returnUrl;
+                return View(user);
             }
-            return RedirectToAction("GetAllCustomers");          
         }
+
         [HttpGet]
         public JsonResult CheckEmailExists(string email)
         {

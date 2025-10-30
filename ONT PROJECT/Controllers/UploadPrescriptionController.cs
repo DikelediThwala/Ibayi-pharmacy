@@ -52,8 +52,7 @@ namespace ONT_PROJECT.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePrescForImmediateDispense(PrescriptionViewModel prescription, int id, int[] medicineIds)
-        {
-            
+        {           
                 if (prescription.PescriptionFile != null && prescription.PescriptionFile.Length > 0)
                 {
                     // Open stream and validate PDF header
@@ -104,48 +103,35 @@ namespace ONT_PROJECT.Controllers
 
 
                 int prescriptionID = lastRow?.PrescriptionID ?? 0;
+            var pl = await _prescriptionRepository.GetLastPrescriptionLineRow();
+            var plr = pl.FirstOrDefault();
+            int prescLine = plr?.PrescriptionLineID ?? 0;
                
             if (prescription.MedicationList != null && prescription.MedicationList.Any())
             {
                 foreach (var med in prescription.MedicationList)
                 {
-                    med.PrescriptionID = prescriptionID; // assign FK
+                    med.PrescriptionID = prescriptionID;
+                    med.PrescriptionLineID = prescLine; // assign FK
                     med.Date = prescription.Date ?? DateTime.Now; // assign date
                     med.DoctorID = prescription.DoctorID;         // assign doctor
                     med.RepeatsLeft = med.Repeats;               // assign initial RepeatsLeft
                     await _prescriptionRepository.AddPrescLineAsync(med);
+                    await _prescriptionRepository.UpdateDispnse(med.PrescriptionLineID);
                 }
             }
-            var prescId = prescription;
-            prescId.PrescriptionID = prescId.PrescriptionID;
-            var custId = prescription;
-            custId.CustomerID = prescId.CustomerID;
-
-
-            var prescriptionss = await _prescriptionRepository.GetDispenseById(repLeft.PrescriptionID);
-
-            var prescriptionToUpdate = new PrescriptionModel
-            {
-                PrescriptionID = prescId.PrescriptionID
-            };
-            if (medicineIds != null && medicineIds.Any())
-            {
-                foreach (var ids in medicineIds)
-                {
-                    await _prescriptionRepository.UpdateDispnse(ids);
-                }
-            }
-            if (!string.IsNullOrEmpty(prescriptionss.Email))
+            var dispense = await _prescriptionRepository.GetDispenseById(prescriptionID);
+            if (!string.IsNullOrEmpty(dispense.Email))
             {
                 string emailBody = $@"
-                    <p>Hello {prescriptionss.FirstName},</p>
+                    <p>Hello {dispense.FirstName},</p>
                     <p>Your Medication Has Been Dispensed.</p>
-                    <p><strong>Medication(s):</strong> {prescriptionss.MedicineName}</p>
-                    <p><strong>Repeats:</strong> {prescriptionss.Repeats}</p>
-                    <p><strong>Repeats Left:</strong> {prescriptionss.RepeatsLeft}</p>
-                    <p><strong>Quantity:</strong> {prescriptionss.Quantity}</p>                       
+                    <p><strong>Medication(s):</strong> {dispense.MedicineName}</p>
+                    <p><strong>Repeats:</strong> {dispense.Repeats}</p>
+                    <p><strong>Repeats Left:</strong> {dispense.RepeatsLeft}</p>
+                    <p><strong>Quantity:</strong> {dispense.Quantity}</p>                       
                     <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
-                _emailService.Send(prescriptionss.Email, "GRP-04-04:Dispense", emailBody);
+                _emailService.Send(dispense.Email, "GRP-04-04:Dispense", emailBody);
             }
             return RedirectToAction("GetUnprocessedPrescription", "UnproccessedPrescription");
             

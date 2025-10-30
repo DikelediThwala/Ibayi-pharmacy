@@ -275,9 +275,14 @@
                     </select>
                 </div>
                 <div class="col-md-3 d-flex align-items-end">
-                    <a asp-controller="Doctors" asp-action="CreateDoctorForPresc" type="button" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i> Add
+                    <a asp-controller="Doctors"
+                       asp-action="CreateDoctor"
+                       asp-route-returnUrl="@Context.Request.Path + Context.Request.QueryString"
+                       class="quick-action-card text-decoration-none">
+                        <i class="bi bi-person-plus text-warning"></i>
+                        <span>Add Doctor</span>
                     </a>
+
                 </div>
             </div>
             <div class="row mb-4">
@@ -349,7 +354,7 @@
                 }
             }           
             <div class="d-flex justify-content-between mt-4">
-                <a href="/Pharmacist/Index" class="btn btn-primary">
+                <a asp-controller="UnproccessedPrescription" asp-action="GetUnprocessedPrescription" class="btn btn-primary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
                 <button type="submit" class="btn btn-success btn-sm">

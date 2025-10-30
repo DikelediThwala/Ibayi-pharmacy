@@ -207,10 +207,14 @@
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a asp-controller="Pharmacist" asp-action="CreateUser" class="quick-action-card text-decoration-none">
+                        <a asp-controller="Pharmacist"
+                           asp-action="CreateUser"
+                           asp-route-returnUrl="@Context.Request.Path"
+                           class="quick-action-card text-decoration-none">
                             <i class="bi bi-person-plus text-info"></i>
                             <span>Add Customer</span>
                         </a>
+
                     </div>
                     <div class="col-md-3">
                         <a asp-controller="UploadPrescription" asp-action="CreatePrescForWalkins" class="quick-action-card text-decoration-none">

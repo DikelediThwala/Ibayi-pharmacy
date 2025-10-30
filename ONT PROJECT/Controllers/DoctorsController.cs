@@ -7,122 +7,62 @@ namespace ONT_PROJECT.Controllers
 {
     public class DoctorsController : Controller
     {
-
-        private readonly IDoctorRepository _doctorRepository;
-        
-
+        private readonly IDoctorRepository _doctorRepository;       
         public DoctorsController(IDoctorRepository doctorRepository)
         {
             _doctorRepository = doctorRepository; 
           
         }
+        [HttpGet]
         public IActionResult CreateDoctor()
         {
+            
             return View();
         }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateDoctor(Doctor doctor)
+        public async Task<IActionResult> CreateDoctor(Doctor doctor, string returnUrl = null)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    ViewData["ReturnUrl"] = returnUrl; // keep returnUrl for the view
+                    return View(doctor);
+                }
+
+                // Check for existing email
                 bool emailExists = await _doctorRepository.CheckEmailExistsAsync(doctor.Email);
                 if (emailExists)
                 {
                     ModelState.AddModelError("Email", "This email address is already registered.");
                     TempData["msg"] = "Email already exists!";
+                    ViewData["ReturnUrl"] = returnUrl;
                     return View(doctor);
                 }
 
-
+                // Add doctor
                 bool addPerson = await _doctorRepository.AddAsync(doctor);
-                if (addPerson)
+                TempData["msg"] = addPerson ? "Successfully Added" : "Could not add";
+
+                // ✅ Redirect to previous page if returnUrl exists and is local
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
-                    TempData["msg"] = "Sucessfully Added";
+                    return Redirect(returnUrl);
                 }
-                else
-                {
-                    TempData["msg"] = "Could not add";
-                }
-               
+
+                // ✅ Otherwise, fallback to your desired default page
+                return RedirectToAction("CreatePrescForWalkins", "UploadPrescription");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                TempData["msg"] = " Something went wrong!!!";
+                TempData["msg"] = "Something went wrong!!!";
+                ViewData["ReturnUrl"] = returnUrl;
+                return View(doctor);
             }
-            return RedirectToAction("CreatePrescForWalkins", "UploadPrescription");
-        }
-        public IActionResult CreateDoctorForImmediateDispense()
-        {
-            return View();
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateDoctorForImmediateDispense(Doctor doctor)
-        {
-            try
-            {
-                bool emailExists = await _doctorRepository.CheckEmailExistsAsync(doctor.Email);
-                if (emailExists)
-                {
-                    ModelState.AddModelError("Email", "This email address is already registered.");
-                    TempData["msg"] = "Email already exists!";
-                    return View(doctor);
-                }
-
-
-                bool addPerson = await _doctorRepository.AddAsync(doctor);
-                if (addPerson)
-                {
-                    TempData["msg"] = "Sucessfully Added";
-                }
-                else
-                {
-                    TempData["msg"] = "Could not add";
-                }
-
-            }
-            catch (Exception ex)
-            {
-                TempData["msg"] = " Something went wrong!!!";
-            }
-            return RedirectToAction("CreatePrescForImmediateDispense", "UploadPrescription");
-        }
-        public IActionResult CreateDoctorForPresc()
-        {
-            return View();
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateDoctorForPresc(Doctor doctor)
-        {
-            try
-            {
-                bool emailExists = await _doctorRepository.CheckEmailExistsAsync(doctor.Email);
-                if (emailExists)
-                {
-                    ModelState.AddModelError("Email", "This email address is already registered.");
-                    TempData["msg"] = "Email already exists!";
-                    return View(doctor);
-                }
-
-
-                bool addPerson = await _doctorRepository.AddAsync(doctor);
-                if (addPerson)
-                {
-                    TempData["msg"] = "Sucessfully Added";
-                }
-                else
-                {
-                    TempData["msg"] = "Could not add";
-                }
-
-            }
-            catch (Exception ex)
-            {
-                TempData["msg"] = " Something went wrong!!!";
-            }
-            return RedirectToAction("CreatePrescriptions", "UploadPrescription");
         }
     }
 }
+

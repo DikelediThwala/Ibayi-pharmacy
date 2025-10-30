@@ -259,9 +259,17 @@
                         <span asp-validation-for="CustomerID" class="text-danger small"></span>
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
-                        <a asp-controller="Pharmacist" asp-action="CreateUser" type="button" class="btn btn-primary">
-                            <i class="fas fa-plus me-1"></i> Add
+                        <!-- Use Request.Path + QueryString so you pass the full origin -->
+                        <a asp-controller="Pharmacist"
+                           asp-action="CreateUser"
+                           asp-route-returnUrl="@(ViewContext.HttpContext.Request.Path + ViewContext.HttpContext.Request.QueryString)"
+                           class="quick-action-card text-decoration-none">
+                            <i class="bi bi-person-plus text-info"></i>
+                            <span>Add Customer</span>
                         </a>
+
+
+
                     </div>
                     <div class="col-md-3 d-flex align-items-end">                  
                         <input type="text" id="searchBox" placeholder="Search Customer..." class="form-control me-2" />                   
@@ -294,12 +302,15 @@
                     </select>
                     <span asp-validation-for="DoctorID" class="text-danger small"></span> 
                 </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <a asp-controller="Doctors" asp-action="CreateDoctor" type="button" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i> Add
+                <div class="col-md-3 d-flex align-items-end">                   
+                    <a asp-controller="Doctors"
+                       asp-action="CreateDoctor"
+                       asp-route-returnUrl="@(ViewContext.HttpContext.Request.Path + ViewContext.HttpContext.Request.QueryString)"
+                       class="quick-action-card text-decoration-none">
+                        <i class="bi bi-person-plus text-warning"></i>
+                        <span>Add Doctor</span>
                     </a>
                 </div>
-
             </div>
             <div class="row mb-4">
                 <div class="col-md-4">
@@ -347,7 +358,7 @@
             </div>
 
             <div class="d-flex justify-content-between mt-4">
-                <a href="/Pharmacist/Index" class="btn btn-primary">
+                <a asp-controller="Pharmacist" asp-action="Index" class="btn btn-primary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
 

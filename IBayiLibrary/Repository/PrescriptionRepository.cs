@@ -112,6 +112,11 @@ namespace IBayiLibrary.Repository
             string query = "spGetLastPrescriptioRow";
             return await _db.GetData<PrescriptionLines, dynamic>(query, new { });
         }
+        public async Task<IEnumerable<PrescriptionViewModel>> GetLastPrescriptionLineRow()
+        {
+            string query = "spSelectLastPrescLineID";
+            return await _db.GetData<PrescriptionViewModel, dynamic>(query, new { });
+        }
         public async Task<IEnumerable<PrescriptionModel>> GetLastPrescriptions()
         {
             string query = "spGetProccessedPrescrption";

@@ -17,6 +17,7 @@ namespace IBayiLibrary.Repository
         Task<IEnumerable<tblUser>> GetCutomerIDNo();
         Task<IEnumerable<PrescriptionLines>> GetLastPrescriptioRow();
         Task<IEnumerable<PrescriptionModel>> GetLastPrescriptions();
+        Task<IEnumerable<PrescriptionViewModel>> GetLastPrescriptionLineRow();
         Task<tblUser> GetCustomerByIDs(int UserID);
         Task<PrescriptionViewModel> SelectCustomerName(int userID);
         Task<PrescriptionViewModel> GetPrescriptionByID(int id);

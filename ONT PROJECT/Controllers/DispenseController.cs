@@ -12,14 +12,12 @@ namespace ONT_PROJECT.Controllers
         private readonly IPrescriptionLineRepository _lineRepository;
         private readonly IPrescriptionRepository _prescriptionRepository;
         private readonly EmailService _emailService;
-
         public DispenseController(IPrescriptionLineRepository lineRepository, IPrescriptionRepository prescriptionRepository, EmailService emailService)
         {
             _lineRepository = lineRepository;
             _prescriptionRepository = prescriptionRepository;
             _emailService = emailService;
         }
-
         public async Task<IActionResult> DispensePrescription(string searchTerm)
         {
             ViewBag.SearchTerm = searchTerm;
@@ -28,9 +26,7 @@ namespace ONT_PROJECT.Controllers
             {
                 return View(new List<PrescriptionModel>());
             }
-
             var results = await _lineRepository.SearchPrescriptions(searchTerm);
-
             // Group by Customer + Doctor + Date
             var grouped = results
                 .GroupBy(r => new { r.FirstName, r.Name, r.Date, r.Status, r.Repeats, r.RepeatsLeft,r.Quantity,r.Instructions,r.IDNumber,r.PrescriptionID,r.Email, })
@@ -55,7 +51,6 @@ namespace ONT_PROJECT.Controllers
 
             return View(grouped);
         }
-
         [HttpPost]
         public async Task<IActionResult> Process(int[] medicineIds, string searchTerm, PrescriptionViewModel prescriptionss)
         {          
