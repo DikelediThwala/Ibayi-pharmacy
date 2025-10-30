@@ -94,13 +94,7 @@ namespace ONT_PROJECT.Controllers
         public async Task<IActionResult> CreateUser(tblUser user, string returnUrl = null)
         {
             try
-            {
-                if (!ModelState.IsValid)
-                {
-                    ViewData["ReturnUrl"] = returnUrl; // keep returnUrl for the view
-                    return View(user);
-                }
-
+            {              
                 // Auto-generate password and set role
                 user.Password = PasswordGenerator.GeneratePassword();
                 user.Role = "Customer";
@@ -128,9 +122,7 @@ namespace ONT_PROJECT.Controllers
 
                 // Redirect back to returnUrl if provided, else fallback
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                    return Redirect(returnUrl);
-
-                return RedirectToAction("GetAllCustomers");
+                    return Redirect(returnUrl);               
             }
             catch (Exception ex)
             {
@@ -138,8 +130,8 @@ namespace ONT_PROJECT.Controllers
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(user);
             }
+            return RedirectToAction("CreatePrescForWalkins", "UploadPrescription");
         }
-
         [HttpGet]
         public JsonResult CheckEmailExists(string email)
         {

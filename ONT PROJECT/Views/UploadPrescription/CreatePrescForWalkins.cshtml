@@ -6,6 +6,8 @@
 }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 
 <style>
     #pdfPreviewContainer {
@@ -220,14 +222,10 @@
         border-color: #ca452e;
         background: #da4932;
 </style>
-<div id="popupNotification" class="popup">
-    <strong>⚠️Warning!</strong>
-    Customer has an allergy for this Medication!
-</div>
+<div id="allergyAlertContainer"></div>
 <hr style="height: 4px; background-color: #011425; border: none;" />
 <div class="card shadow p-4">
     <div class="card-body">
-
         <form asp-action="CreatePrescForWalkins" enctype="multipart/form-data" method="post">
             
 
@@ -267,9 +265,6 @@
                             <i class="bi bi-person-plus text-info"></i>
                             <span>Add Customer</span>
                         </a>
-
-
-
                     </div>
                     <div class="col-md-3 d-flex align-items-end">                  
                         <input type="text" id="searchBox" placeholder="Search Customer..." class="form-control me-2" />                   
@@ -285,7 +280,7 @@
                 <div class="row mb-4">
                     <div class="col-md-4">
                         <label class="form-label">First Name</label>
-                    <input asp-for="FirstName" type="text" class="form-control" id="FirstName" readonly />
+                    <input asp-for="FirstName" type="text" class="form-control" id="FirstName" readonly  />
                     </div>
 
                     <div class="col-md-4">
@@ -297,7 +292,7 @@
             <div class="row mb-4">
                 <div class="col-md-6">
                     <label asp-for="DoctorID" class="form-label">Doctors <span class="text-danger">*</span></label>               
-                    <select asp-for="DoctorID" class="form-select" asp-items="@ViewBag.DoctorID">
+                    <select asp-for="DoctorID" class="form-select" asp-items="@ViewBag.DoctorID" required>
                         <option value="">-- Select Doctor --</option>
                     </select>
                     <span asp-validation-for="DoctorID" class="text-danger small"></span> 
@@ -330,24 +325,24 @@
                 <div class="row mb-3 medication-row align-items-end">
                     <div class="col-md-3">
                         <label class="form-label">Medicine Name</label>
-                        <select name="MedicationList[0].MedicineID" class="form-select" asp-items="@ViewBag.MedicineID">
+                        <select name="MedicationList[0].MedicineID" class="form-select" asp-items="@ViewBag.MedicineID" required>
                             <option value="">-- Select Medication --</option>
                         </select>
                     </div>
 
                     <div class="col-md-2">
                         <label class="form-label">Quantity</label>
-                        <input name="MedicationList[0].Quantity" type="number" min="1" max="100" class="form-control" />
+                        <input name="MedicationList[0].Quantity" type="number" min="1" max="100" class="form-control" required />
                     </div>
 
                     <div class="col-md-2">
                         <label>Repeats</label>
-                        <input name="MedicationList[0].Repeats" type="number" min="0" max="6" class="form-control" />
+                        <input name="MedicationList[0].Repeats" type="number" min="0" max="6" class="form-control" required/>
                     </div>
 
                     <div class="col-md-2">
                         <label>Instructions</label>
-                        <input name="MedicationList[0].Instructions" type="text" class="form-control" />
+                        <input name="MedicationList[0].Instructions" type="text" class="form-control" required />
                     </div>
 
                     <div class="col-md-2 d-flex gap-2">
@@ -398,6 +393,7 @@
         const container = document.getElementById('medicationContainer');
         const form = document.querySelector('form');
         const customerSelect = document.querySelector('select[name="CustomerID"]');
+        const alertContainer = document.getElementById('allergyAlertContainer');
 
         // 🌡️ Allergy-related variables
         let patientHasAllergies = false;
@@ -407,6 +403,9 @@
         if (customerSelect) {
             customerSelect.addEventListener('change', function () {
                 const customerId = this.value;
+
+                // Clear existing alert
+                alertContainer.innerHTML = '';
 
                 if (!customerId) {
                     patientHasAllergies = false;
@@ -421,7 +420,14 @@
                         allergyAlertMessage = data.message || '';
 
                         if (patientHasAllergies) {
-                            alert(allergyAlertMessage);
+                            // Create Bootstrap warning alert dynamically
+                            alertContainer.innerHTML = `
+                                <div class="alert alert-warning alert-dismissible fade show shadow-sm d-flex align-items-center gap-2 mt-3" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <div><strong>⚠️ Allergy Alert:</strong> ${allergyAlertMessage}</div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            `;
                         }
                     })
                     .catch(err => console.error("Error checking allergies:", err));
@@ -433,9 +439,15 @@
             // ➕ Add new medication row
             if (e.target.classList.contains('add-btn')) {
 
-                // ⚠️ Show allergy alert before adding a new medication row
-                if (patientHasAllergies) {
-                    alert(allergyAlertMessage);
+                // ⚠️ Show allergy alert again when adding a new medication
+                if (patientHasAllergies && allergyAlertMessage) {
+                    alertContainer.innerHTML = `
+                        <div class="alert alert-warning alert-dismissible fade show shadow-sm d-flex align-items-center gap-2 mt-3" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <div><strong>⚠️ Allergy Alert:</strong> ${allergyAlertMessage}</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
                 }
 
                 const row = e.target.closest('.medication-row');
@@ -490,7 +502,7 @@
             }
         });
 
-        // 🧾 4️⃣ Validate before submission (block duplicates)
+        // 🧾 4️⃣ Validate before submission (keep existing behavior)
         if (form) {
             form.addEventListener('submit', function (e) {
                 const allSelects = Array.from(container.querySelectorAll('select[name*="MedicineID"]'));
@@ -515,6 +527,7 @@
         }
     });
 </script>
+
 <script>
     document.getElementById("btnSearch").addEventListener("click", function () {
         let searchTerm = document.getElementById("searchBox").value;
@@ -555,9 +568,11 @@
                 if (data.success) {
                     document.getElementById("FirstName").value = data.data.firstName;                   
                     document.getElementById("IDNumber").value = data.data.idNumber;
+                    
                 } else {
                     document.getElementById("FirstName").value = "";                    
                     document.getElementById("IDNumber").value = "";
+                    
                 }
             })
             .catch(err => console.error(err));
@@ -592,3 +607,6 @@
     makeDraggable(document.getElementById("pdfPreviewContainer"));
 </script>
 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -299,8 +299,7 @@
                         <th>First Name</th>
                         <th>Last Name</th>                       
                         <th>Medicine Name</th>
-                        <th>Date Placed</th>
-                        <th>Date Received</th>
+                        <th>Date Placed</th>                       
                         <th>Sales Price</th>
                         <th>Quantity</th>
                         <th>Total</th>
@@ -317,8 +316,7 @@
                             <td>@item.FirstName</td>
                             <td>@item.LastName</td>                          
                             <td>@item.MedicineName</td>
-                            <td>@item.DatePlaced</td>
-                            <td>@item.DateRecieved</td>
+                            <td>@item.DatePlaced.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
                             <td>@item.SalesPrice</td>
                             <td>@item.Quantity</td>
                             <td>R @item.LineTotal.ToString("0.00")</td>

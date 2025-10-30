@@ -138,7 +138,6 @@ namespace ONT_PROJECT.Controllers
             // Pass filtered list to the view
             return View(orders);
         }
-
         [HttpPost]
         public async Task<IActionResult> UpdatePackOrders(int[] medicineIds)
         {
