@@ -29,6 +29,7 @@ namespace ONT_PROJECT.Controllers
             _emailService = emailService;
             _userRepository = userRepository;
         }
+        [HttpGet]
         public async Task<IActionResult> CreatePrescForWalkins()
         {
             var customerRequests = await _prescriptionRepository.GetCustomerName();
@@ -41,11 +42,13 @@ namespace ONT_PROJECT.Controllers
 
             return View();
         }
+        [HttpGet]
         public async Task<IActionResult> CreatePrescriptions()
         {
            
             return View();
         }
+        [HttpGet]
         public async Task<IActionResult> CreatePrescForImmediateDispense()
         {
             return View();

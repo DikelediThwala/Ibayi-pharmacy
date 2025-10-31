@@ -226,9 +226,7 @@
 <hr style="height: 4px; background-color: #011425; border: none;" />
 <div class="card shadow p-4">
     <div class="card-body">
-        <form asp-action="CreatePrescForWalkins" enctype="multipart/form-data" method="post">
-            
-
+        <form asp-action="CreatePrescForWalkins" enctype="multipart/form-data" method="post">          
             <div id="allergy-alert-box" class="alert alert-warning d-none"></div>
             <div class="alert alert-info shadow-sm d-flex align-items-center gap-2">
                 <i class="bi bi-info-circle-fill"></i>
@@ -300,7 +298,7 @@
                 <div class="col-md-3 d-flex align-items-end">                   
                     <a asp-controller="Doctors"
                        asp-action="CreateDoctor"
-                       asp-route-returnUrl= "@(ViewContext.HttpContext.Request.Path + ViewContext.HttpContext.Request.QueryString)"
+                       asp-route-returnUrl="@(ViewContext.HttpContext.Request.Path + ViewContext.HttpContext.Request.QueryString)"
                        class="quick-action-card text-decoration-none">
                         <i class="bi bi-person-plus text-warning"></i>
                         <span>Add Doctor</span>
