@@ -1,0 +1,99 @@
+﻿
+@{
+    ViewData["Title"] = "Registration Successful";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <meta http-equiv="refresh" content="5;url=@Url.Action("Register", "CustomerRegister")" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: url('@Url.Content("~/images/Register/Capture.PNG")') no-repeat center center;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+            /* Semi-transparent overlay for readability */
+            body::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 0;
+            }
+
+        .success-card {
+            position: relative;
+            z-index: 1;
+            background-color: #ffffff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 400px;
+            color: #333;
+        }
+
+        h2 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin-top: 15px;
+            font-size: 1rem;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+            a:hover {
+                background-color: #0056b3;
+            }
+
+        .small-text {
+            font-size: 0.85rem;
+            margin-top: 10px;
+            color: #666;
+        }
+
+        .success-image {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-card">
+        <!-- ✅ Registration success image -->
+        <img src="~/images/register_success.png" alt="Registration Successful" class="success-image" />
+
+        <h2>Registration Successful!</h2>
+        <p>Your account has been created successfully.</p>
+
+        <a href="@Url.Action("Register", "CustomerRegister")">Go to Login</a>
+        <p class="small-text">You will be redirected automatically in 5 seconds...</p>
+    </div>
+</body>
+</html>
