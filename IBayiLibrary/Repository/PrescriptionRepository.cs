@@ -166,7 +166,14 @@ namespace IBayiLibrary.Repository
 
             return result.Select(r => r.Ingredients).ToList(); // return ingredient names
         }
+        public async Task<PrescriptionViewModel> GetMedicineDetailsByIdAsync(int id)
+        {
+            var results = await _db.GetData<PrescriptionViewModel, dynamic>(
+                "GetMedicineDetailsById",
+                new { PrescriptionLineID = id });
 
+            return results.FirstOrDefault();
+        }
 
     }
 }

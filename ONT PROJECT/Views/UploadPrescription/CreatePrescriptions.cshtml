@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
-
     .draggable-pdf {
         position: fixed;
         top: 100px;
@@ -262,7 +261,8 @@
                 <div class="col-md-3 d-flex align-items-end">
                     <a asp-controller="Doctors"
                        asp-action="CreateDoctor"
-                       asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
+                       asp-route-returnUrl="@(ViewContext.HttpContext.Request.Path + ViewContext.HttpContext.Request.QueryString)"
+
                        class="quick-action-card text-decoration-none">
                         <i class="bi bi-person-plus text-warning"></i>
                         <span>Add Doctor</span>

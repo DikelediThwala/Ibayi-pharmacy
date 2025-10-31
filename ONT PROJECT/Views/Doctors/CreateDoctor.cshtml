@@ -88,7 +88,7 @@
 
             <!-- Action Buttons -->
             <div class="d-flex justify-content-between mt-4">
-                <button type="button" class="btn btn-secondary" id="btnBack">
+                <button type="button" class="btn btn-primary" id="btnBack">
                     <i class="bi bi-arrow-left"></i> Back
                 </button>
                 <button type="submit" class="btn btn-success btn-sm">
@@ -182,30 +182,20 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 @section Scripts {
     <script>
-        (function() {
+        (function () {
             var returnUrl = '@Html.Raw(HttpUtility.JavaScriptStringEncode(returnUrl))';
             var btn = document.getElementById('btnBack');
 
-            if (returnUrl && returnUrl.length > 0) {
-                // Use location.href so the browser navigates to the desired page
-                btn.addEventListener('click', function() {
-                    // If for some reason the returnUrl is not local, fallback to history.back()
-                    try {
-                        // Simple local check — adjust server-side if needed
-                        var isLocal = returnUrl.indexOf(window.location.origin) === 0 || returnUrl.indexOf('/') === 0;
-                        if (isLocal) {
-                            window.location.href = returnUrl;
-                        } else {
-                            history.back();
-                        }
-                    } catch (e) {
-                        history.back();
-                    }
-                });
-            } else {
-                // No returnUrl — just go back in history
-                btn.addEventListener('click', function() { history.back(); });
-            }
+            btn.addEventListener('click', function () {
+                if (returnUrl && returnUrl.trim().length > 0) {
+                    // Use URL constructor to handle relative paths correctly
+                    var targetUrl = new URL(returnUrl, window.location.origin + '@Context.Request.PathBase/');
+                    window.location.href = targetUrl.href;
+                } else {
+                    history.back();
+                }
+            });
         })();
     </script>
 }
+

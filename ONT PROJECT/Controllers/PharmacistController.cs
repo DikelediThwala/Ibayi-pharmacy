@@ -91,6 +91,7 @@ namespace ONT_PROJECT.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateUser(tblUser user, string returnUrl = null)
         {
             try

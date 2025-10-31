@@ -9,6 +9,7 @@ using System.IO;
 using System.Text;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
+using static QuestPDF.Helpers.Colors;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ONT_PROJECT.Controllers
@@ -52,61 +53,35 @@ namespace ONT_PROJECT.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePrescForImmediateDispense(PrescriptionViewModel prescription, int id, int[] medicineIds)
-        {           
-                if (prescription.PescriptionFile != null && prescription.PescriptionFile.Length > 0)
-                {
-                    // Open stream and validate PDF header
-                    var stream = prescription.PescriptionFile.OpenReadStream();
-                    using var reader = new BinaryReader(stream);
-                    var header = reader.ReadBytes(4);
+        {
+            var role = prescription;
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var user = await _userRepository.GetPharmacistByID(userId.Value);
 
-                    // Reset stream position so we can read it again below
-                    stream.Position = 0;
+            // Assign pharmacist ID
+            role.PharmacistID = user.UserID;
 
-                    if (Encoding.ASCII.GetString(header) != "%PDF")
-                    {
-                        ModelState.AddModelError("PescriptionFile", "This is not a valid PDF file.");
-                        return View(prescription);
-                    }
+            // Update prescription status
+            prescription.Status = "Processed";
 
-                    // Copy full file to memory
-                    using var ms = new MemoryStream();
-                    await prescription.PescriptionFile.CopyToAsync(ms);
-                    prescription.PrescriptionPhoto = ms.ToArray();
-                }
+            // Add prescription
+            bool addPerson = await _prescriptionRepository.AddAsync(prescription);
+            TempData["msg"] = addPerson ? "Successfully Added" : "Could not add";
 
+            // Update unprocessed prescription
+            await _unproccessedprescriptionRepository.UpdateUnprocessedPrescription(prescription.UnprocessedPrescriptionID);
 
+            // Get last prescription row
+            var lastPrescriptionResult = await _prescriptionLineRepository.GetLastPrescriptioRow();
+            var lastRow = lastPrescriptionResult.FirstOrDefault();
+            int prescriptionID = lastRow?.PrescriptionID ?? 0;
 
-                var role = prescription;
-                var userId = HttpContext.Session.GetInt32("UserId");
-                var user = await _userRepository.GetPharmacistByID(userId.Value);
-                // if user found, build full nam                 
-                role.PharmacistID = user.UserID;
-                var status = prescription;
-                status.Status = "Proccessed";
-                var repLeft = prescription;
-               
-                bool addPerson = await _prescriptionRepository.AddAsync(prescription);
-                if (addPerson)
-                {
-                    TempData["msg"] = "Sucessfully Added";
-                }
-                else
-                {
-                    TempData["msg"] = "Could not add";
-                }
-            var statu = prescription;
-            statu.UnprocessedPrescriptionID = statu.UnprocessedPrescriptionID;
-            await _unproccessedprescriptionRepository.UpdateUnprocessedPrescription(statu.UnprocessedPrescriptionID);
-                var result = await _prescriptionLineRepository.GetLastPrescriptioRow();
-                var lastRow = result.FirstOrDefault();
-
-
-                int prescriptionID = lastRow?.PrescriptionID ?? 0;
+            // Get last prescription line row
             var pl = await _prescriptionRepository.GetLastPrescriptionLineRow();
             var plr = pl.FirstOrDefault();
             int prescLine = plr?.PrescriptionLineID ?? 0;
-               
+
+            // Add prescription lines and update dispense status
             if (prescription.MedicationList != null && prescription.MedicationList.Any())
             {
                 foreach (var med in prescription.MedicationList)
@@ -120,23 +95,61 @@ namespace ONT_PROJECT.Controllers
                     await _prescriptionRepository.UpdateDispnse(med.PrescriptionLineID);
                 }
             }
+
+            // Get dispensed prescription details
             var dispense = await _prescriptionRepository.GetDispenseById(prescriptionID);
-            if (!string.IsNullOrEmpty(dispense.Email))
+
+            // Send email with table if email exists and medication list is not empty
+            if (!string.IsNullOrEmpty(dispense.Email) && prescription.MedicationList != null && prescription.MedicationList.Any())
             {
+                var medicationRows = new StringBuilder();
+
+                foreach(var med in prescription.MedicationList)
+{
+                    // Fetch full medicine details including name
+                    var medicine = await _prescriptionRepository.GetMedicineDetailsByIdAsync(med.PrescriptionLineID);
+
+                    medicationRows.Append($@"
+                    <tr>
+                        <td style='border:1px solid #ccc; padding:8px;'>{medicine?.MedicineName}</td>
+                        <td style='border:1px solid #ccc; padding:8px;'>{med.Instructions}</td>
+                        <td style='border:1px solid #ccc; padding:8px; text-align:center;'>{med.Repeats}</td>
+                        <td style='border:1px solid #ccc; padding:8px; text-align:center;'>{med.RepeatsLeft}</td>
+                        <td style='border:1px solid #ccc; padding:8px; text-align:center;'>{med.Quantity}</td>
+                    </tr>");
+                            }
                 string emailBody = $@"
-                    <p>Hello {dispense.FirstName},</p>
-                    <p>Your Medication Has Been Dispensed.</p>
-                    <p><strong>Medication(s):</strong> {dispense.MedicineName}</p>
-                    <p><strong>Repeats:</strong> {dispense.Repeats}</p>
-                    <p><strong>Repeats Left:</strong> {dispense.RepeatsLeft}</p>
-                    <p><strong>Quantity:</strong> {dispense.Quantity}</p>                       
-                    <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
-                _emailService.Send(dispense.Email, "GRP-04-04:Dispense", emailBody);
+            <html>
+            <body style='font-family: Arial, sans-serif; color:#333;'>
+                <p>Hello {dispense.FirstName},</p>
+                <p>Your medication(s) have been successfully <strong>dispensed</strong>.</p>
+                <table style='border-collapse:collapse; width:100%; max-width:700px;'>
+                    <thead style='background-color:#f2f2f2;'>
+                        <tr>
+                            <th style='border:1px solid #ccc; padding:8px;'>Medication</th>
+                            <th style='border:1px solid #ccc; padding:8px;'>Instructions</th>
+                            <th style='border:1px solid #ccc; padding:8px; text-align:center;'>Repeats</th>
+                            <th style='border:1px solid #ccc; padding:8px; text-align:center;'>Repeats Left</th>
+                            <th style='border:1px solid #ccc; padding:8px; text-align:center;'>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {medicationRows}
+                    </tbody>
+                </table>
+
+                <p style='margin-top:15px;'><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>
+                <p>Thank you for choosing <strong>IBAYI PHARMACY</strong>.</p>
+                <p>Stay healthy,<br><strong>GRP-04-04 Pharmacy Team</strong></p>
+            </body>
+            </html>";
+
+                _emailService.Send(dispense.Email, "GRP-04-04: Medication Dispensed", emailBody);
             }
+
             return RedirectToAction("GetUnprocessedPrescription", "UnproccessedPrescription");
-            
-                        
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePrescForWalkins(PrescriptionViewModel prescription)

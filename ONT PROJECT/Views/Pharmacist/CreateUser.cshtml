@@ -33,6 +33,8 @@
 <div class="card shadow p-4">
     <div class="card-body">
         <form asp-action="CreateUser" enctype="multipart/form-data" method="post" id="userForm">
+            @Html.AntiForgeryToken()
+
             <input type="hidden" name="returnUrl" value="@returnUrl" />
             <h2>Personal Details</h2>
             <hr />
@@ -118,15 +120,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Helper: AJAX check for Email or IDNumber
     async function checkIfExists(field, value) {
-        const url = field === "email"
-            ? `/Pharmacist/CheckEmailExists?email=${encodeURIComponent(value)}`
-            : `/Pharmacist/CheckIDNumberExists?idNumber=${encodeURIComponent(value)}`;
+            const url = field === "email"
+        ? '@Url.Action("CheckEmailExists", "Pharmacist")?email=' + encodeURIComponent(value)
+        : '@Url.Action("CheckIDNumberExists", "Pharmacist")?idNumber=' + encodeURIComponent(value);
         const response = await fetch(url);
         if (!response.ok) return false;
         const data = await response.json();
         return data.exists;
     }
-
     // Real-time IDNumber check
     const idInput = document.getElementById("IDNumber");
     const idFeedback = document.createElement("div");

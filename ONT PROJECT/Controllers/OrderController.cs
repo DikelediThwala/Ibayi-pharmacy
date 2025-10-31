@@ -95,28 +95,11 @@ namespace ONT_PROJECT.Controllers
         }
         [HttpPost]
         public async Task<IActionResult> Update(tblOrder person)
-        {
-            
+        {        
             var date = person;
             date.DateRecieved = DateTime.Now;
             
-            var success = await _orderRepository.UpdateOrder(person.OrderLineID,person.Status);
-
-            if (!string.IsNullOrEmpty(person.Email))
-            {
-                string emailBody = $@"
-                        <p>Hello {person.FirstName}<br>{person.LastName}</p>                       
-                        <p>Your Order has been collected</p>
-                        <p><strong>#Order ID:</strong> {person.OrderID}</p>                      
-                        <p><strong>Medicine:</strong> {person.MedicineName}</p>
-                        <p><strong>Date Placed:</strong> {person.DatePlaced}</p>  
-                        <p><strong>Quantity:</strong> {person.Quantity}</p>             
-                        <p><strong>Total:</strong> {person.LineTotal}</p>  
-                        <p><strong>Dispensed On:</strong> {DateTime.Now:yyyy-MM-dd}</p>";
-
-
-                _emailService.Send(person.Email, "GRP-04-04:Order Collected", emailBody);
-            }
+            var success = await _orderRepository.UpdateOrder(person.OrderLineID,person.Status);        
             return RedirectToAction("GetOrdersMedication", new { id = person.OrderID });
         }
         [HttpGet]

@@ -19,7 +19,6 @@ namespace IBayiLibrary.Models.Domain
         public string Email { get; set; }
         [Required(ErrorMessage = "Title is required")]
         public string Title { get; set; }
-
         public string FullName { get; set; }
         [Required(ErrorMessage = "Medicine is required")]
         public string MedicineName { get; set; }
