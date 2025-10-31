@@ -74,7 +74,7 @@ namespace ONT_PROJECT.Controllers
         }
 
         // POST: Update Profile
-        // POST: Update Profile - USING REGISTRATION PATTERN
+        // POST: Update Profile - FIXED WITH EMAIL UPDATE
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Index(TblUser model, List<int> SelectedAllergyIds, string RemoveProfilePicture)
@@ -111,6 +111,19 @@ namespace ONT_PROJECT.Controllers
                 if (string.IsNullOrWhiteSpace(model.PhoneNumber))
                     validationErrors.Add("Phone number is required.");
 
+                if (string.IsNullOrWhiteSpace(model.Email))
+                    validationErrors.Add("Email is required.");
+
+                // Check if email is being changed and if new email already exists (excluding current user)
+                if (!string.IsNullOrWhiteSpace(model.Email) && model.Email.Trim() != user.Email)
+                {
+                    bool emailExists = _context.TblUsers.Any(u => u.Email.ToLower() == model.Email.Trim().ToLower() && u.UserId != user.UserId);
+                    if (emailExists)
+                    {
+                        validationErrors.Add("This email is already registered by another user.");
+                    }
+                }
+
                 // If there are validation errors, return to edit mode
                 if (validationErrors.Any())
                 {
@@ -118,11 +131,12 @@ namespace ONT_PROJECT.Controllers
                     return RedirectToEditModeWithData(user, SelectedAllergyIds, model);
                 }
 
-                // UPDATE FIELDS - Same pattern as registration but for existing user
+                // UPDATE FIELDS - INCLUDING EMAIL
                 user.FirstName = model.FirstName.Trim();
                 user.LastName = model.LastName.Trim();
                 user.Idnumber = model.Idnumber.Trim();
                 user.PhoneNumber = model.PhoneNumber.Trim();
+                user.Email = model.Email.Trim(); // ADD THIS LINE
 
                 // Handle profile picture
                 if (RemoveProfilePicture == "true")
@@ -156,8 +170,14 @@ namespace ONT_PROJECT.Controllers
                     }
                 }
 
-                // Save changes - Same as registration but without Add()
+                // Save changes
                 _context.SaveChanges();
+
+                // Update session with new email if it was changed
+                if (user.Email != email)
+                {
+                    HttpContext.Session.SetString("UserEmail", user.Email);
+                }
 
                 TempData["SuccessMessage"] = "Profile updated successfully!";
                 return RedirectToAction("Index");
@@ -179,7 +199,7 @@ namespace ONT_PROJECT.Controllers
                 LastName = model?.LastName ?? user.LastName,
                 Idnumber = model?.Idnumber ?? user.Idnumber,
                 PhoneNumber = model?.PhoneNumber ?? user.PhoneNumber,
-                Email = user.Email,
+                Email = model?.Email ?? user.Email, // ADD THIS LINE
                 ProfilePicture = user.ProfilePicture,
                 Role = user.Role,
                 Title = user.Title,
