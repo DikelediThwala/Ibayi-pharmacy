@@ -83,7 +83,12 @@ namespace ONT_PROJECT.Controllers
 
             // Show success message and redirect to login panel
             TempData["Success"] = "Successfully registered! You can now log in.";
-            return RedirectToAction("Register"); // Stay on same page
+            return RedirectToAction("Success"); // Stay on same page
+        }
+
+        public IActionResult Success()
+        {
+            return View();
         }
 
         // Remote email validation
