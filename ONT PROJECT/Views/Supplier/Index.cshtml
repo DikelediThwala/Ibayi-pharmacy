@@ -184,56 +184,40 @@
 
 <script>
 $(document).ready(function () {
-    // Initialize DataTables
     $('#activeSuppliersTable').DataTable();
     $('#deactivatedSuppliersTable').DataTable();
-
-    // Auto-hide success alert
     setTimeout(() => $('#successAlert').fadeOut('slow'), 3000);
-
-    // URL for supplier deletion & fetching medications
     const deleteSupplierUrl = '@Url.Action("Delete", "Supplier")';
     const getSupplierMedsUrl = '@Url.Action("GetSupplierMedications", "Supplier")';
 
     let selectedSupplierId = 0;
-
-    // Open modal on deactivate supplier
     $(document).on('click', '.deactivate-btn', function () {
         selectedSupplierId = $(this).data('id');
         $('#supplierId').val(selectedSupplierId);
-
         console.log('Clicked supplier ID:', selectedSupplierId);
-
         $.getJSON(getSupplierMedsUrl + '?id=' + selectedSupplierId, function(data) {
             let medsHtml = '';
-
             if (!data.meds || data.meds.length === 0) {
                 medsHtml = '<p>This supplier has no medications. Click "Deactivate Supplier" to continue.</p>';
-            } else {
-                medsHtml += '<p>Select medications to deactivate or reassign:</p>';
+            } 
+            else {medsHtml += '<p>Select medications to deactivate or reassign:</p>';
                 data.meds.forEach(med => {
                     let optionsHtml = '<option value="">-- Select Supplier --</option>';
                     data.otherSuppliers.forEach(s => {
-                        optionsHtml += `<option value="${s.supplierId}">${s.name}</option>`;
-                    });
-
+                        optionsHtml += `<option value="${s.supplierId}">${s.name}</option>`;});
                     medsHtml += `
                     <div class="d-flex align-items-center gap-3 mb-2 border p-2 rounded">
                         <input type="checkbox" class="form-check-input deactivate-checkbox" data-medid="${med.medicineId}">
                         <label class="mb-0 fw-bold flex-grow-1">${med.medicineName}</label>
-                        <select class="form-select form-select-sm w-auto" name="reassignments[${med.medicineId}]">
-                            ${optionsHtml}
-                        </select>
+                        <select class="form-select form-select-sm w-auto" name="reassignments[${med.medicineId}]">${optionsHtml} </select>
                     </div>`;
                 });
             }
-
             $('#medicationsList').html(medsHtml);
             new bootstrap.Modal(document.getElementById('reassignModal')).show();
         }).fail(() => alert('Failed to load supplier medications.'));
     });
 
-    // Show/hide individual deactivate button for each medicine
     $(document).on('change', '.deactivate-checkbox', function () {
         const medId = $(this).data('medid');
         const btn = $(`.deactivate-med-btn[data-medid="${medId}"]`);
@@ -241,9 +225,6 @@ $(document).ready(function () {
 
         $('#deactivateSelected').toggleClass('d-none', $('.deactivate-checkbox:checked').length === 0);
     });
-
-
-          // Multiple deactivate
     $('#deactivateSelected').click(function () {
         const selectedMeds = $('.deactivate-checkbox:checked').map(function () {
             return $(this).data('medid');
@@ -253,7 +234,6 @@ $(document).ready(function () {
         if (!confirm(`Deactivate ${selectedMeds.length} selected medication(s)?`)) return;
 
         const token = $('input[name="__RequestVerificationToken"]').val();
-
         selectedMeds.forEach(id => {
             $.post('@Url.Action("DeactivateMedicine", "Supplier")', { id: id, __RequestVerificationToken: token })
             .done(function(res) {
@@ -266,16 +246,10 @@ $(document).ready(function () {
             })
             .fail(() => alert('Failed to deactivate medicine.'));
         });
-
         $('#deactivateSelected').addClass('d-none');
     });
-
-
-
-
-    // Deactivate supplier
     $('#confirmDelete').click(function () {
-        const formData = $('#reassignForm').serialize(); // includes supplierId & anti-forgery token
+        const formData = $('#reassignForm').serialize(); 
         $.post(deleteSupplierUrl, formData, function () {
             bootstrap.Modal.getInstance(document.getElementById('reassignModal')).hide();
             location.reload();

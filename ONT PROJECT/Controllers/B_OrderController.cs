@@ -48,52 +48,28 @@ namespace ONT_PROJECT.Controllers
 
         [HttpPost]
         public IActionResult MarkSupplierLinesAsReceived(int orderId, string supplierName)
-        {
-            // Fetch first, then filter in memory
-            var lines = _context.BOrderLines
-                .Include(l => l.Medicine)
-                    .ThenInclude(m => m.Supplier)
-                .Where(l => l.BOrderId == orderId)
-                .ToList() // pull into memory
-                .Where(l => (l.Medicine != null && l.Medicine.Supplier != null ? l.Medicine.Supplier.Name : "Unknown Supplier") == supplierName)
-                .ToList();
-
+        { var lines = _context.BOrderLines.Include(l => l.Medicine).ThenInclude(m => m.Supplier).Where(l => l.BOrderId == orderId)
+                .ToList() .Where(l => (l.Medicine != null && l.Medicine.Supplier != null ? l.Medicine.Supplier.Name : "Unknown Supplier") == supplierName).ToList();
             foreach (var line in lines)
-            {
-                // Mark as received
-                line.Status = "Received";
-
-                // Increase medicine quantity
+            {  line.Status = "Received";
                 if (line.Medicine != null)
                 {
                     line.Medicine.Quantity += line.Quantity;
                 }
             }
-
-            // Update order status if all lines are received
-            var order = _context.BOrders
-                .Include(o => o.BOrderLines)
-                .FirstOrDefault(o => o.BOrderId == orderId);
-
+            var order = _context.BOrders.Include(o => o.BOrderLines).FirstOrDefault(o => o.BOrderId == orderId);
             if (order != null && order.BOrderLines.All(l => l.Status == "Received"))
             {
                 order.Status = "Received";
                 order.DateRecieved = DateOnly.FromDateTime(DateTime.Now);
             }
-
             _context.SaveChanges();
             return RedirectToAction("Index", new { tab = "orders" });
         }
-
-
-
         [HttpPost]
         public IActionResult MarkAsReceived(int id)
         {
-            var order = _context.BOrders
-                .Include(o => o.BOrderLines)
-                .FirstOrDefault(o => o.BOrderId == id);
-
+            var order = _context.BOrders.Include(o => o.BOrderLines).FirstOrDefault(o => o.BOrderId == id);
             if (order != null)
             {
                 order.Status = "Received";
@@ -104,7 +80,6 @@ namespace ONT_PROJECT.Controllers
                 }
                 _context.SaveChanges();
             }
-
             return RedirectToAction("Index");
         }
 

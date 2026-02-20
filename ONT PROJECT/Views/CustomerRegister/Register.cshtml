@@ -229,11 +229,7 @@
 </style>
 
 <div class="container" id="container">
-    <!-- Success / Error Messages -->
-    @* @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success text-center mt-2">@TempData["Success"]</div>
-    } *@
+    
     @if (ViewData["LoginError"] != null)
     {
         <div class="alert alert-danger text-center mt-2">@ViewData["LoginError"]</div>
@@ -312,6 +308,7 @@
             </div>
 
             <button type="submit">Sign Up</button>
+         
         </form>
     </div>
 
@@ -329,6 +326,17 @@
 
             <a asp-controller="CustomerRegister" asp-action="ForgotPassword">Forgot your password?</a>
             <button type="submit" class="btn btn-primary mt-2">Sign In</button>
+            <h2>Log in AS:</h2>
+            <a asp-controller="Manager" asp-action="Dashboard" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Manager
+            </a>
+           @*  <a asp-controller="Pharmacist" asp-action="Index" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Pharmacist
+            </a>
+            <a asp-controller="Customer" asp-action="Dashboard" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Customer 
+            </a> *@
+          
         </form>
     </div>
 
