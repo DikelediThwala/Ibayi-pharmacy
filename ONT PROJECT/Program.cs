@@ -8,11 +8,15 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add this line for Render deployment
-var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
-builder.WebHost.UseUrls($"http://*:{port}");
+//// Add this line for Render deployment
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+//builder.WebHost.UseUrls($"http://*:{port}");
 
-
+if (!builder.Environment.IsDevelopment())
+{
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+    builder.WebHost.UseUrls($"http://*:{port}");
+}
 // Database context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
